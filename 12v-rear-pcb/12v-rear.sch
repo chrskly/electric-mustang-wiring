@@ -334,7 +334,7 @@ Text GLabel 6550 4550 2    50   Input ~ 0
 CHARGER_SWITCH_B
 Text GLabel 7750 2650 0    50   Input ~ 0
 CHARGER_SWITCH_A
-Text GLabel 7750 2750 0    50   Input ~ 0
+Text GLabel 7750 2550 0    50   Input ~ 0
 CHARGER_SWITCH_B
 Wire Wire Line
 	5550 2750 5750 2750
@@ -385,7 +385,7 @@ F 11 "https://www.arrow.com/en/products/282836-6/te-connectivity" H 8400 1750 50
 	1    7750 2550
 	1    0    0    -1  
 $EndComp
-Text GLabel 7750 2550 0    50   Input ~ 0
+Text GLabel 5550 2950 0    50   Input ~ 0
 REVERSE_LIGHT
 Text Notes 4950 2300 0    50   ~ 0
 ### Signals from front box which go directly to target ###\n\n* BRAKE_LIGHT\n* LH_REAR_INDICATOR\n* RH_REAR_INDICATOR\n* BMS 12V
@@ -412,11 +412,11 @@ Text GLabel 7750 1350 0    50   Input ~ 0
 BMS_GND
 Text GLabel 7750 1250 0    50   Input ~ 0
 BMS_12V
-Text GLabel 5750 1350 0    50   Input ~ 0
+Text GLabel 9850 1350 0    50   Input ~ 0
 RH_REAR_INDICATOR
 Text GLabel 5750 1550 0    50   Input ~ 0
 BRAKE_LIGHT
-Text GLabel 5750 1250 0    50   Input ~ 0
+Text GLabel 9850 1250 0    50   Input ~ 0
 LH_REAR_INDICATOR
 Text GLabel 5550 2650 0    50   Input ~ 0
 TESLA_GND
@@ -438,4 +438,43 @@ Text Notes 850  3050 0    118  ~ 0
 LIM
 Text Notes 850  5400 0    118  ~ 0
 REVERSE
+Text GLabel 3400 4450 2    50   Input ~ 0
+GND
+Text GLabel 1250 4450 0    50   Input ~ 0
+LIM_GND
+Wire Wire Line
+	3400 4450 1250 4450
+$Comp
+L Mechanical:MountingHole H1
+U 1 1 61AB741D
+P 12050 9700
+F 0 "H1" H 12150 9746 50  0000 L CNN
+F 1 "MountingHole" H 12150 9655 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3mm" H 12050 9700 50  0001 C CNN
+F 3 "~" H 12050 9700 50  0001 C CNN
+	1    12050 9700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H2
+U 1 1 61AB79CE
+P 12900 9700
+F 0 "H2" H 13000 9746 50  0000 L CNN
+F 1 "MountingHole" H 13000 9655 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3mm" H 12900 9700 50  0001 C CNN
+F 3 "~" H 12900 9700 50  0001 C CNN
+	1    12900 9700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H3
+U 1 1 61AB7EEF
+P 13700 9700
+F 0 "H3" H 13800 9746 50  0000 L CNN
+F 1 "MountingHole" H 13800 9655 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3mm" H 13700 9700 50  0001 C CNN
+F 3 "~" H 13700 9700 50  0001 C CNN
+	1    13700 9700
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
