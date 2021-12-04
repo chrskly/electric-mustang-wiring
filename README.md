@@ -21,3 +21,6 @@ Schematic and PCB for wiring that sits in the rear of the car (boot).
 * On-board AC charger
 * DC charger
 * Charger VCU
+
+## dashboard-vcu
+Schematic and PCB for VCU to control the car dashboard.
