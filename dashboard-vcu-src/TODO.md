@@ -1,0 +1,5 @@
+[ ] CANbus, listen for temperature data from battery BMS
+[ ] Input of charger on signal
+[ ] Different modes, run and charge
+[ ] CANbus, listen for soc data from ISA shunt
+[ ] Status indication implementation
