@@ -649,4 +649,23 @@ Text GLabel 2900 13400 2    50   Input ~ 0
 12V
 Text GLabel 1900 13600 0    50   Input ~ 0
 GND
+$Comp
+L Transistor_BJT:TIP102 IC?
+U 1 1 61BEAF3E
+P 11250 5750
+F 0 "IC?" H 11878 5696 50  0000 L CNN
+F 1 "TIP102" H 11878 5605 50  0000 L CNN
+F 2 "TO270P460X1020X2008-3P" H 11900 5850 50  0001 L CNN
+F 3 "http://www.st.com/web/en/resource/technical/document/datasheet/CD00001234.pdf" H 11900 5750 50  0001 L CNN
+F 4 "TIP102, Darlington Transistor, NPN 8 A 100 V HFE:200, 3-Pin, TO-220" H 11900 5650 50  0001 L CNN "Description"
+F 5 "4.6" H 11900 5550 50  0001 L CNN "Height"
+F 6 "STMicroelectronics" H 11900 5450 50  0001 L CNN "Manufacturer_Name"
+F 7 "TIP102" H 11900 5350 50  0001 L CNN "Manufacturer_Part_Number"
+F 8 "511-TIP102" H 11900 5250 50  0001 L CNN "Mouser Part Number"
+F 9 "https://www.mouser.co.uk/ProductDetail/STMicroelectronics/TIP102?qs=ljbEvF4DwONmWw0zLDYvVw%3D%3D" H 11900 5150 50  0001 L CNN "Mouser Price/Stock"
+F 10 "TIP102" H 11900 5050 50  0001 L CNN "Arrow Part Number"
+F 11 "https://www.arrow.com/en/products/tip102/stmicroelectronics?region=nac" H 11900 4950 50  0001 L CNN "Arrow Price/Stock"
+	1    11250 5750
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
