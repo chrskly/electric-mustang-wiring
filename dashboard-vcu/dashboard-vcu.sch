@@ -16,9 +16,9 @@ $EndDescr
 Text Notes 20600 1900 0    50   ~ 0
 Features\n\n* Fuel PWM\n* Temperature PWM\n* LH RGB - (3x pwm pins)\n* RH RGB - (3x pwm pins)\n* CAN bus\n* Stepper motor (speedo/odometer)\n* Power for backlights
 Text GLabel 8450 9100 2    50   Input ~ 0
-PWM0
+RXD0
 Text GLabel 8450 9200 2    50   Input ~ 0
-PWM1
+TXD0
 Text GLabel 8450 9500 2    50   Input ~ 0
 PWM2
 Text GLabel 8450 9600 2    50   Input ~ 0
@@ -632,7 +632,7 @@ U 1 1 61BC48B3
 P 1900 12500
 F 0 "J1" H 2400 12765 50  0000 C CNN
 F 1 "776163-1" H 2400 12674 50  0000 C CNN
-F 2 "7761631" H 2750 12600 50  0001 L CNN
+F 2 "Connector:7761631" H 2750 12600 50  0001 L CNN
 F 3 "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Customer+Drawing%7F776163%7FJ11%7Fpdf%7FEnglish%7FENG_CD_776163_J11.pdf%7F776163-1" H 2750 12500 50  0001 L CNN
 F 4 "35P AMPSEAL HDR ASSY W/GASKET" H 2750 12400 50  0001 L CNN "Description"
 F 5 "32.3" H 2750 12300 50  0001 L CNN "Height"
@@ -645,27 +645,263 @@ F 11 "https://www.arrow.com/en/products/776163-1/te-connectivity?region=nac" H 2
 	1    1900 12500
 	1    0    0    -1  
 $EndComp
-Text GLabel 2900 13400 2    50   Input ~ 0
+Text GLabel 1900 12500 0    50   Input ~ 0
 12V
 Text GLabel 1900 13600 0    50   Input ~ 0
 GND
 $Comp
-L Transistor_BJT:TIP102 IC?
+L Transistor_BJT:TIP102 IC2
 U 1 1 61BEAF3E
-P 11250 5750
-F 0 "IC?" H 11878 5696 50  0000 L CNN
-F 1 "TIP102" H 11878 5605 50  0000 L CNN
-F 2 "TO270P460X1020X2008-3P" H 11900 5850 50  0001 L CNN
-F 3 "http://www.st.com/web/en/resource/technical/document/datasheet/CD00001234.pdf" H 11900 5750 50  0001 L CNN
-F 4 "TIP102, Darlington Transistor, NPN 8 A 100 V HFE:200, 3-Pin, TO-220" H 11900 5650 50  0001 L CNN "Description"
-F 5 "4.6" H 11900 5550 50  0001 L CNN "Height"
-F 6 "STMicroelectronics" H 11900 5450 50  0001 L CNN "Manufacturer_Name"
-F 7 "TIP102" H 11900 5350 50  0001 L CNN "Manufacturer_Part_Number"
-F 8 "511-TIP102" H 11900 5250 50  0001 L CNN "Mouser Part Number"
-F 9 "https://www.mouser.co.uk/ProductDetail/STMicroelectronics/TIP102?qs=ljbEvF4DwONmWw0zLDYvVw%3D%3D" H 11900 5150 50  0001 L CNN "Mouser Price/Stock"
-F 10 "TIP102" H 11900 5050 50  0001 L CNN "Arrow Part Number"
-F 11 "https://www.arrow.com/en/products/tip102/stmicroelectronics?region=nac" H 11900 4950 50  0001 L CNN "Arrow Price/Stock"
-	1    11250 5750
+P 11550 5400
+F 0 "IC2" H 12178 5346 50  0000 L CNN
+F 1 "TIP102" H 12178 5255 50  0000 L CNN
+F 2 "Package_TO_SOT_THT:TO270P460X1020X2008-3P" H 12200 5500 50  0001 L CNN
+F 3 "http://www.st.com/web/en/resource/technical/document/datasheet/CD00001234.pdf" H 12200 5400 50  0001 L CNN
+F 4 "TIP102, Darlington Transistor, NPN 8 A 100 V HFE:200, 3-Pin, TO-220" H 12200 5300 50  0001 L CNN "Description"
+F 5 "4.6" H 12200 5200 50  0001 L CNN "Height"
+F 6 "STMicroelectronics" H 12200 5100 50  0001 L CNN "Manufacturer_Name"
+F 7 "TIP102" H 12200 5000 50  0001 L CNN "Manufacturer_Part_Number"
+F 8 "511-TIP102" H 12200 4900 50  0001 L CNN "Mouser Part Number"
+F 9 "https://www.mouser.co.uk/ProductDetail/STMicroelectronics/TIP102?qs=ljbEvF4DwONmWw0zLDYvVw%3D%3D" H 12200 4800 50  0001 L CNN "Mouser Price/Stock"
+F 10 "TIP102" H 12200 4700 50  0001 L CNN "Arrow Part Number"
+F 11 "https://www.arrow.com/en/products/tip102/stmicroelectronics?region=nac" H 12200 4600 50  0001 L CNN "Arrow Price/Stock"
+	1    11550 5400
 	1    0    0    -1  
 $EndComp
+$Comp
+L Device:R_US R4
+U 1 1 61BEC522
+P 11200 5400
+F 0 "R4" V 10995 5400 50  0000 C CNN
+F 1 "2k2" V 11086 5400 50  0000 C CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 11240 5390 50  0001 C CNN
+F 3 "~" H 11200 5400 50  0001 C CNN
+	1    11200 5400
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	11350 5400 11550 5400
+Text GLabel 10850 5400 0    50   Input ~ 0
+PWM2
+Wire Wire Line
+	11050 5400 10850 5400
+Text GLabel 10850 5600 0    50   Input ~ 0
+GND
+Text GLabel 10850 5500 0    50   Input ~ 0
+FUEL_GAUGE
+Wire Wire Line
+	10850 5500 11550 5500
+Wire Wire Line
+	10850 5600 11550 5600
+Text GLabel 1900 13300 0    50   Input ~ 0
+FUEL_GAUGE
+$Comp
+L Transistor_BJT:TIP102 IC3
+U 1 1 61C0C4F8
+P 11550 6150
+F 0 "IC3" H 12178 6096 50  0000 L CNN
+F 1 "TIP102" H 12178 6005 50  0000 L CNN
+F 2 "Package_TO_SOT_THT:TO270P460X1020X2008-3P" H 12200 6250 50  0001 L CNN
+F 3 "http://www.st.com/web/en/resource/technical/document/datasheet/CD00001234.pdf" H 12200 6150 50  0001 L CNN
+F 4 "TIP102, Darlington Transistor, NPN 8 A 100 V HFE:200, 3-Pin, TO-220" H 12200 6050 50  0001 L CNN "Description"
+F 5 "4.6" H 12200 5950 50  0001 L CNN "Height"
+F 6 "STMicroelectronics" H 12200 5850 50  0001 L CNN "Manufacturer_Name"
+F 7 "TIP102" H 12200 5750 50  0001 L CNN "Manufacturer_Part_Number"
+F 8 "511-TIP102" H 12200 5650 50  0001 L CNN "Mouser Part Number"
+F 9 "https://www.mouser.co.uk/ProductDetail/STMicroelectronics/TIP102?qs=ljbEvF4DwONmWw0zLDYvVw%3D%3D" H 12200 5550 50  0001 L CNN "Mouser Price/Stock"
+F 10 "TIP102" H 12200 5450 50  0001 L CNN "Arrow Part Number"
+F 11 "https://www.arrow.com/en/products/tip102/stmicroelectronics?region=nac" H 12200 5350 50  0001 L CNN "Arrow Price/Stock"
+	1    11550 6150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_US R5
+U 1 1 61C0C502
+P 11200 6150
+F 0 "R5" V 10995 6150 50  0000 C CNN
+F 1 "2k2" V 11086 6150 50  0000 C CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 11240 6140 50  0001 C CNN
+F 3 "~" H 11200 6150 50  0001 C CNN
+	1    11200 6150
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	11350 6150 11550 6150
+Text GLabel 10850 6150 0    50   Input ~ 0
+PWM3
+Wire Wire Line
+	11050 6150 10850 6150
+Text GLabel 10850 6350 0    50   Input ~ 0
+GND
+Text GLabel 10850 6250 0    50   Input ~ 0
+TEMP_GAUGE
+Wire Wire Line
+	10850 6250 11550 6250
+Wire Wire Line
+	10850 6350 11550 6350
+Text GLabel 1900 13200 0    50   Input ~ 0
+TEMP_GAUGE
+Text GLabel 2450 6100 2    50   Input ~ 0
+DTR
+Wire Wire Line
+	2100 5950 2100 6100
+Wire Wire Line
+	2100 6100 2450 6100
+$Comp
+L Connector_Generic_MountingPin:Conn_01x05_MountingPin J2
+U 1 1 61C3419F
+P 11950 7300
+F 0 "J2" H 12038 7264 50  0000 L CNN
+F 1 "Conn_01x05_MountingPin" H 12038 7173 50  0000 L CNN
+F 2 "Connector_PinHeader_1.00mm:PinHeader_1x05_P1.00mm_Vertical" H 11950 7300 50  0001 C CNN
+F 3 "~" H 11950 7300 50  0001 C CNN
+	1    11950 7300
+	1    0    0    -1  
+$EndComp
+Text GLabel 11600 7500 0    50   Input ~ 0
+DTR
+Text GLabel 11600 7400 0    50   Input ~ 0
+RXD0
+Text GLabel 11600 7300 0    50   Input ~ 0
+TXD0
+Text GLabel 11600 7200 0    50   Input ~ 0
+GND
+Text GLabel 11600 7100 0    50   Input ~ 0
+5V
+Wire Wire Line
+	11600 7100 11750 7100
+Wire Wire Line
+	11600 7200 11750 7200
+Wire Wire Line
+	11600 7300 11750 7300
+Wire Wire Line
+	11600 7400 11750 7400
+Wire Wire Line
+	11600 7500 11750 7500
+$Comp
+L Device:R_US R6
+U 1 1 61C7825A
+P 11150 8600
+F 0 "R6" V 10945 8600 50  0000 C CNN
+F 1 "220" V 11036 8600 50  0000 C CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 11190 8590 50  0001 C CNN
+F 3 "~" H 11150 8600 50  0001 C CNN
+	1    11150 8600
+	0    1    1    0   
+$EndComp
+Text GLabel 11450 8600 2    50   Input ~ 0
+STATUS_A_R
+Wire Wire Line
+	11300 8600 11450 8600
+Text GLabel 10850 8600 0    50   Input ~ 0
+PWM4
+Wire Wire Line
+	10850 8600 11000 8600
+$Comp
+L Device:R_US R7
+U 1 1 61C8B9DB
+P 11150 8950
+F 0 "R7" V 10945 8950 50  0000 C CNN
+F 1 "220" V 11036 8950 50  0000 C CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 11190 8940 50  0001 C CNN
+F 3 "~" H 11150 8950 50  0001 C CNN
+	1    11150 8950
+	0    1    1    0   
+$EndComp
+Text GLabel 11450 8950 2    50   Input ~ 0
+STATUS_A_G
+Wire Wire Line
+	11300 8950 11450 8950
+Text GLabel 10850 8950 0    50   Input ~ 0
+PWM5
+Wire Wire Line
+	10850 8950 11000 8950
+$Comp
+L Device:R_US R8
+U 1 1 61C8FAE4
+P 11150 9300
+F 0 "R8" V 10945 9300 50  0000 C CNN
+F 1 "220" V 11036 9300 50  0000 C CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 11190 9290 50  0001 C CNN
+F 3 "~" H 11150 9300 50  0001 C CNN
+	1    11150 9300
+	0    1    1    0   
+$EndComp
+Text GLabel 11450 9300 2    50   Input ~ 0
+STATUS_A_B
+Wire Wire Line
+	11300 9300 11450 9300
+Text GLabel 10850 9300 0    50   Input ~ 0
+PWM6
+Wire Wire Line
+	10850 9300 11000 9300
+Text GLabel 1900 13800 0    50   Input ~ 0
+STATUS_A_R
+Text GLabel 1900 13900 0    50   Input ~ 0
+STATUS_A_G
+Text GLabel 1900 14000 0    50   Input ~ 0
+STATUS_A_B
+$Comp
+L Device:R_US R9
+U 1 1 61CD4145
+P 12850 8600
+F 0 "R9" V 12645 8600 50  0000 C CNN
+F 1 "220" V 12736 8600 50  0000 C CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 12890 8590 50  0001 C CNN
+F 3 "~" H 12850 8600 50  0001 C CNN
+	1    12850 8600
+	0    1    1    0   
+$EndComp
+Text GLabel 13150 8600 2    50   Input ~ 0
+STATUS_B_R
+Wire Wire Line
+	13000 8600 13150 8600
+Text GLabel 12550 8600 0    50   Input ~ 0
+PWM7
+Wire Wire Line
+	12550 8600 12700 8600
+$Comp
+L Device:R_US R10
+U 1 1 61CD4167
+P 12850 8950
+F 0 "R10" V 12645 8950 50  0000 C CNN
+F 1 "220" V 12736 8950 50  0000 C CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 12890 8940 50  0001 C CNN
+F 3 "~" H 12850 8950 50  0001 C CNN
+	1    12850 8950
+	0    1    1    0   
+$EndComp
+Text GLabel 13150 8950 2    50   Input ~ 0
+STATUS_B_G
+Wire Wire Line
+	13000 8950 13150 8950
+Text GLabel 12550 8950 0    50   Input ~ 0
+PWM8
+Wire Wire Line
+	12550 8950 12700 8950
+$Comp
+L Device:R_US R11
+U 1 1 61CD4175
+P 12850 9300
+F 0 "R11" V 12645 9300 50  0000 C CNN
+F 1 "220" V 12736 9300 50  0000 C CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 12890 9290 50  0001 C CNN
+F 3 "~" H 12850 9300 50  0001 C CNN
+	1    12850 9300
+	0    1    1    0   
+$EndComp
+Text GLabel 13150 9300 2    50   Input ~ 0
+STATUS_B_B
+Wire Wire Line
+	13000 9300 13150 9300
+Text GLabel 12550 9300 0    50   Input ~ 0
+PWM9
+Wire Wire Line
+	12550 9300 12700 9300
+Text GLabel 1900 14100 0    50   Input ~ 0
+STATUS_B_R
+Text GLabel 1900 14200 0    50   Input ~ 0
+STATUS_B_G
+Text GLabel 1900 14300 0    50   Input ~ 0
+STATUS_B_B
 $EndSCHEMATC
