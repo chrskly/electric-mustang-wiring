@@ -8,13 +8,24 @@ Mustang to a EV.
 Schematic and PCB for wiring that sits in the front of the car (engine bay).
 
 * Ignition
-* Indicators / hazard
-* Internal lighting
 * Dashboard VCU
 * BMS
 * Horn
-* Headlights / highbeams
 * Drive inhibition (preventing driving off when charging)
+* Radio
+* Vacuum pump
+* Coolant pump
+* Inverter
+* Contactors
+
+## 12v-lighting
+
+Schematic and PCB for wiring for all of the lighting.
+
+* Headlights/highbeams
+* Indicators
+* Brake lights
+* Interior lights
 
 ## 12v-rear-pcb
 
