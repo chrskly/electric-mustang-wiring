@@ -27,6 +27,18 @@ BMS will have states of rest, drive, and charge.
 
 8. Report range estimate.
 
+## Connections
+
+1. CAN port connected to main CAN bus.
+
+2. CAN port connected to front battery CAN bus.
+
+3. CAN port connected to rear battery CAN bus.
+
+4. Low side switch for rear battery contactor.
+
+5. Low side switch for front battery contactor.
+
 ## CAN messages consumed by BMS
 
 1. SoC data from ISA shunt.
