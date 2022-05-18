@@ -25,3 +25,12 @@ https://www.digikey.be/en/maker/projects/raspberry-pi-pico-rp2040-spi-example-wi
 https://raspberrypi.github.io/pico-sdk-doxygen/modules.html
 
 Ampseal35, 1.3mm tin 8A, 1.3mm gold 17A
+
+8 circuit molex, high current connections
+https://ie.rs-online.com/web/p/pcb-headers/1615968
+https://ie.rs-online.com/web/p/pcb-headers/1615961
+https://www.molex.com/molex/products/part-detail/pcb_headers/1720650208
+https://www.molex.com/molex/products/part-detail/crimp_housings/1700010108
+https://www.molex.com/molex/products/part-detail/crimp_terminals/1720630311
+https://componentsearchengine.com/part-view/172065-0208/Molex
+
