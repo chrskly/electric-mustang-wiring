@@ -10,7 +10,7 @@ lower power mode when car is not driving/charging.
 
 ## Physical dash functionality
 
-1. Show SoC on fuel gauge.
+1. Read SoC from ISA shunt and show on fuel gauge.
 
 2. Show max of all temps on temp gauge (what temps will be available?)
 
