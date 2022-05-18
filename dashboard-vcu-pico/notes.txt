@@ -1,0 +1,25 @@
+
+https://raspberrypi.github.io/pico-sdk-doxygen/modules.html
+https://raspberrypi.github.io/pico-sdk-doxygen/rp2__common_2hardware__spi_2include_2hardware_2spi_8h.html
+http://docs.longan-labs.cc/1030018/
+https://www.hackster.io/fhdm-dev/use-arduino-libraries-with-the-rasperry-pi-pico-c-c-sdk-eff55c
+https://fhdm-dev.github.io/pico-arduino-compat/libraries.html
+https://github.com/fhdm-dev/pico-arduino-compat/tree/master/libs/adafruit-ssd1306
+https://github.com/107-systems/107-Arduino-MCP2515
+
+
+https://copperhilltech.com/pican-2-can-bus-interface-for-raspberry-pi/
+https://copperhilltech.com/blog/obdii-data-logging-with-raspberry-pi-and-pican2-can-bus-interface/
+https://copperhilltech.com/blog/troubleshooting-your-pican2-can-interface-board-for-raspberry-pi/
+
+### Pico PIO
+https://www.digikey.com/en/maker/projects/raspberry-pi-pico-and-rp2040-cc-part-3-how-to-use-pio/123ff7700bc547c79a504858c1bd8110
+
+### Pico SDK
+https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#ga594e390dc5e7407a35bcce6cae73ae2c
+
+### Catphish bms
+https://github.com/catphish/ev-charge-controller/blob/master/firmware-pico/bms.c
+
+### Getting started with Pico
+https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf

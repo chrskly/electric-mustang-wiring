@@ -14,3 +14,4 @@ elf2uf2
 generated
 pico-sdk
 pico_sdk_import.cmake
+CMakeLists.txt
