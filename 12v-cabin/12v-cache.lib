@@ -1,0 +1,114 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# Connector_178.6165.0001
+#
+DEF Connector_178.6165.0001 U 0 30 Y Y 1 F N
+F0 "U" 650 300 50 H V L CNN
+F1 "Connector_178.6165.0001" 650 200 50 H V L CNN
+F2 "17861650001" 650 100 50 H I L CNN
+F3 "https://www.mouser.com/datasheet/2/240/Littelfuse-Fuse-Holder-ATO-FLR-pcb-Datasheet-1317199.pdf" 650 0 50 H I L CNN
+F4 "FLR PCB FUSE HOLDER FOR ATO STYLE BLADE FUSE RATED 58V" 650 -100 50 H I L CNN "Description"
+F5 "17.5" 650 -200 50 H I L CNN "Height"
+F6 "LITTELFUSE" 650 -300 50 H I L CNN "Manufacturer_Name"
+F7 "178.6165.0001" 650 -400 50 H I L CNN "Manufacturer_Part_Number"
+F8 "576-178.6165.0001" 650 -500 50 H I L CNN "Mouser Part Number"
+F9 "https://www.mouser.co.uk/ProductDetail/Littelfuse/17861650001?qs=CSLd874fYV1KI1oBGU5EQg%3D%3D" 650 -600 50 H I L CNN "Mouser Price/Stock"
+F10 "178.6165.0001" 650 -700 50 H I L CNN "Arrow Part Number"
+F11 "https://www.arrow.com/en/products/178.6165.0001/littelfuse" 650 -800 50 H I L CNN "Arrow Price/Stock"
+DRAW
+P 5 0 1 6 200 100 600 100 600 -400 200 -400 200 100 N
+X 1 1 0 0 200 R 50 50 0 0 P
+X 2 2 0 -100 200 R 50 50 0 0 P
+X 3 3 0 -200 200 R 50 50 0 0 P
+X 4 4 0 -300 200 R 50 50 0 0 P
+X 5 5 800 -300 200 L 50 50 0 0 P
+X 6 6 800 -200 200 L 50 50 0 0 P
+X 7 7 800 -100 200 L 50 50 0 0 P
+X 8 8 800 0 200 L 50 50 0 0 P
+ENDDRAW
+ENDDEF
+#
+# Connector_282836-6
+#
+DEF Connector_282836-6 J 0 30 Y Y 1 F N
+F0 "J" 650 300 50 H V L CNN
+F1 "Connector_282836-6" 650 200 50 H V L CNN
+F2 "2828366" 650 100 50 H I L CNN
+F3 "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Customer+Drawing%7F282836%7FJ%7Fpdf%7FEnglish%7FENG_CD_282836_J.pdf%7F282836-6" 650 0 50 H I L CNN
+F4 "Fixed Terminal Blocks 5.0MM PCB MOUNT 6P" 650 -100 50 H I L CNN "Description"
+F5 "10.2" 650 -200 50 H I L CNN "Height"
+F6 "TE Connectivity" 650 -300 50 H I L CNN "Manufacturer_Name"
+F7 "282836-6" 650 -400 50 H I L CNN "Manufacturer_Part_Number"
+F8 "571-2828366" 650 -500 50 H I L CNN "Mouser Part Number"
+F9 "https://www.mouser.co.uk/ProductDetail/TE-Connectivity/282836-6/?qs=A%252Bip%252BNCYi6MsYFpaQLKbfg%3D%3D" 650 -600 50 H I L CNN "Mouser Price/Stock"
+F10 "282836-6" 650 -700 50 H I L CNN "Arrow Part Number"
+F11 "https://www.arrow.com/en/products/282836-6/te-connectivity" 650 -800 50 H I L CNN "Arrow Price/Stock"
+DRAW
+P 5 0 1 6 200 100 600 100 600 -600 200 -600 200 100 N
+X 1 1 0 0 200 R 50 50 0 0 P
+X 2 2 0 -100 200 R 50 50 0 0 P
+X 3 3 0 -200 200 R 50 50 0 0 P
+X 4 4 0 -300 200 R 50 50 0 0 P
+X 5 5 0 -400 200 R 50 50 0 0 P
+X 6 6 0 -500 200 R 50 50 0 0 P
+ENDDRAW
+ENDDEF
+#
+# DZ85AB-5-PCB_DZ85AB-5-PCB
+#
+DEF DZ85AB-5-PCB_DZ85AB-5-PCB J 0 30 Y Y 1 F N
+F0 "J" 650 300 50 H V L CNN
+F1 "DZ85AB-5-PCB_DZ85AB-5-PCB" 650 200 50 H V L CNN
+F2 "DZ85AB5PCB" 650 100 50 H I L CNN
+F3 "https://componentsearchengine.com/Datasheets/2/DZ85AB-5-PCB.pdf" 650 0 50 H I L CNN
+F4 "Durakool 1 Pin Relay Socket, Plug In for use with Various Series" 650 -100 50 H I L CNN "Description"
+F5 "14.5" 650 -200 50 H I L CNN "Height"
+F6 "DURAKOOL" 650 -300 50 H I L CNN "Manufacturer_Name"
+F7 "DZ85AB-5-PCB" 650 -400 50 H I L CNN "Manufacturer_Part_Number"
+DRAW
+P 5 0 1 6 200 100 600 100 600 -300 200 -300 200 100 N
+X 1 1 0 0 200 R 50 50 0 0 P
+X 2 2 0 -100 200 R 50 50 0 0 P
+X 3 3 0 -200 200 R 50 50 0 0 P
+X 4 4 800 0 200 L 50 50 0 0 P
+X 5 5 800 -100 200 L 50 50 0 0 P
+ENDDRAW
+ENDDEF
+#
+# Diode_10A10
+#
+DEF Diode_10A10 D 0 30 Y Y 1 F N
+F0 "D" 450 200 50 H V L CNN
+F1 "Diode_10A10" 450 100 50 H V L CNN
+F2 "DIOAD4425W130L885D885" 450 0 50 H I L CNN
+F3 "https://www.rectron.com/data_sheets/10a05-10a10.pdf" 450 -100 50 H I L CNN
+F4 "10A10" 450 -200 50 H I L CNN "Description"
+F5 "Rectron" 450 -400 50 H I L CNN "Manufacturer_Name"
+F6 "10A10" 450 -500 50 H I L CNN "Manufacturer_Part_Number"
+F7 "10A10" 450 -800 50 H I L CNN "Arrow Part Number"
+F8 "https://www.arrow.com/en/products/10a10/rectron" 450 -900 50 H I L CNN "Arrow Price/Stock"
+DRAW
+P 2 0 1 6 200 100 200 -100 N
+P 4 0 1 10 200 0 400 100 400 -100 200 0 F
+X ~ 1 0 0 200 R 50 50 0 0 P
+X ~ 2 600 0 200 L 50 50 0 0 P
+ENDDRAW
+ENDDEF
+#
+# Mechanical_MountingHole
+#
+DEF Mechanical_MountingHole H 0 40 Y Y 1 F N
+F0 "H" 0 200 50 H V C CNN
+F1 "Mechanical_MountingHole" 0 125 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+$FPLIST
+ MountingHole*
+$ENDFPLIST
+DRAW
+C 0 0 50 0 1 50 N
+ENDDRAW
+ENDDEF
+#
+#End Library
