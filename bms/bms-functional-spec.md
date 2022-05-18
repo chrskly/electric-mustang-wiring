@@ -6,18 +6,18 @@ BMS will always be on.
 
 BMS will be able to enable/disable HV for each pack separately via contactors.
 
-BMS will have states of rest, drive, and charge.
+BMS will have states of : rest, drive, and charge.
 
 ## Functionality
 
 1. Deny concator close when pack 1 and pack 2 voltages differ by more than a
    certain number of mV.
 
-2. Warn when cell(s) near overvolt.
+2. Send CAN message warn when cell(s) near overvolt.
 
-3. Deny charging when cell(s) overvolt.
+3. Deny charging when cell(s) overvolt. Programmable buffer.
 
-4. Warn when cell(s) near undervolt.
+4. Warn when cell(s) near undervolt. Programmable buffer.
 
 5. Deny drive when cell(s) undervolt.
 
@@ -35,9 +35,9 @@ BMS will have states of rest, drive, and charge.
 
 3. CAN port connected to rear battery CAN bus.
 
-4. Low side switch for rear battery contactor.
+4. Low side switch for rear battery contactors.
 
-5. Low side switch for front battery contactor.
+5. Low side switch for front battery contactors.
 
 ## CAN messages consumed by BMS
 
@@ -53,3 +53,12 @@ BMS will have states of rest, drive, and charge.
 3. Over/under voltage warning.
 
 4. Over/under temp warning.
+
+## Configurables
+
+1. minCellVoltage - disallow drive when cell voltage at or below this level.
+2. maxCellVoltage - disallow charge when cell voltage at or above this level.
+3. maxPackVoltageDelta - max allowed difference in voltage between packs. Above
+   this, contactors will not be allowed to close.
+4. minChargeTemp - disallow charging at or below this temperature.
+
