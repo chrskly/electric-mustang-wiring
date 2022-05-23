@@ -9,6 +9,8 @@ pico_sdk_init()
 add_executable(bms
         mcp2515/mcp2515.cpp
         bms.cpp
+        update.cpp
+        statemachine.cpp
         pack.h
         module.h
         mcp2515/can.h
