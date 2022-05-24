@@ -8,13 +8,17 @@ pico_sdk_init()
 
 add_executable(bms
         mcp2515/mcp2515.cpp
+        module.h
+        module.cpp
+        pack.h
+        pack.cpp
+        battery.h
+        battery.cpp
         bms.cpp
         update.cpp
+        comms.cpp
         statemachine.cpp
-        pack.h
-        module.h
-        mcp2515/can.h
-        mcp2515/mcp2515.h
+        statemachine.h
         )
 
 pico_add_extra_outputs(bms)

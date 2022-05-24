@@ -7,3 +7,15 @@ enum Event {
 	E_OPEN_CONTACTORS,     //
 	E_CLOSE_CONTACTORS,    //
 };
+
+typedef void (*State)(Event);
+
+void state_standby(Event event);
+void state_drive(Event event);
+void state_chargeInitialise(Event event);
+void state_chargeInProgress(Event event);
+void state_overTempFault(Event event);
+void state_underVoltageFault(Event event);
+void state_unknownFault(Event event);
+
+

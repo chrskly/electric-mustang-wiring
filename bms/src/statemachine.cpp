@@ -1,12 +1,19 @@
 
 #include "statemachine.h"
 
+#include "battery.h"
+
+
 /*
     State = standby
 */
 void state_standby(Event event) {
+
+	extern Battery battery;
+	extern State state;
+
 	if ( event == E_TEMPERATURE_UPDATE ) {
-		if ( batteryHasCellOverTemp(battery) ) {
+		if ( batteryHasCellOverTemp(&battery) ) {
 			state = state_overTempFault;
 		}
 	}
@@ -26,6 +33,7 @@ void state_standby(Event event) {
 	if ( event == E_CLOSE_CONTACTORS ) {
 		//
 	}
+
 }
 
 /*

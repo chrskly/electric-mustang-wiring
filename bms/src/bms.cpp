@@ -20,10 +20,14 @@ SPIO15 (20) SPI0 CS1 - to CS on mcp2515 board 1 (vai level converter)
 #include "hardware/gpio.h"
 
 #include "mcp2515/mcp2515.h"
+
+#include "structs.h"
+
 #include "pack.h"
 #include "update.h"
 #include "bms.h"
 #include "statemachine.h"
+
 
 #define SPI_PORT      spi0
 
@@ -51,9 +55,6 @@ SPIO15 (20) SPI0 CS1 - to CS on mcp2515 board 1 (vai level converter)
 
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
-// Current state of the BMS
-//enum state state = standby;
-
 // CAN interfaces
 MCP2515 mainCAN(spi0, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
 MCP2515 batt1CAN(spi0, BATT1_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
@@ -64,19 +65,29 @@ bool mainCANInterrupt = false;
 bool batt1CANInterrupt = false;
 bool batt2CANInterrupt = false;
 
-struct BatteryPack batt1;
-struct BatteryPack batt2;
+// Set up battery
+
+struct Battery battery;
+
+//struct BatteryPack batt1;
+//struct BatteryPack batt2;
+//battery.pack[0] = batt1;
+//battery.pack[1] = batt2;
 
 struct can_frame rx;
 
 // receive frame
 struct can_frame frame;
 
+// Store the statemachine state
+State state;
+
 
 void setupCAN() {
     // set up CAN ports
-    batt1.CAN = batt1CAN;
-    batt2.CAN = batt2CAN;
+
+    battery.packs[0]->CAN = batt1CAN;
+    battery.packs[2]->CAN = batt2CAN;
 
     mainCAN.reset();
     mainCAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
@@ -89,6 +100,7 @@ void setupCAN() {
     batt2CAN.reset();
     batt2CAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
     batt2CAN.setNormalMode();
+
 }
 
 void handleMainCANInterrupt(uint gpio, uint32_t events) {
@@ -173,6 +185,16 @@ int main() {
     gpio_set_irq_enabled_with_callback(BATT1_CAN_INT, GPIO_IRQ_LEVEL_LOW, true, &handleBatt1CANInterrupt);
     gpio_set_irq_enabled_with_callback(BATT2_CAN_INT, GPIO_IRQ_LEVEL_LOW, true, &handleBatt2CANInterrupt);
 
+    for ( int p = 0; p < NUM_PACKS; p++ ) {
+        struct BatteryPack pack;
+        battery.packs[p] = &pack;
+        for ( int m = 0; m < MODULES_PER_PACK; m++ ) {
+            BatteryModule module;
+                pack.modules[m] = &module;
+        }
+    }
+
+    /*
     while(true) {
         if(mainCAN.readMessage(&rx) == MCP2515::ERROR_OK) {
             char str[200];
@@ -191,6 +213,7 @@ int main() {
             batt1CAN.sendMessage(&rx);
         }
     }
+    */
 
     return 0;
 }
