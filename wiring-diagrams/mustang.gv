@@ -21,142 +21,177 @@ graph {
  <tr><td>
   <table border="0" cellspacing="0" cellpadding="3" cellborder="1">
    <tr>
+    <td port="p1l">1</td>
     <td>12V</td>
     <td port="p1r">1</td>
    </tr>
    <tr>
+    <td port="p2l">2</td>
     <td>GND</td>
     <td port="p2r">2</td>
    </tr>
    <tr>
+    <td port="p3l">3</td>
     <td>MG2_FWD</td>
     <td port="p3r">3</td>
    </tr>
    <tr>
+    <td port="p4l">4</td>
     <td>MG2_REV</td>
     <td port="p4r">4</td>
    </tr>
    <tr>
+    <td port="p5l">5</td>
     <td>MG2_START</td>
     <td port="p5r">5</td>
    </tr>
    <tr>
+    <td port="p6l">6</td>
     <td>MG2_BRAKE</td>
     <td port="p6r">6</td>
    </tr>
    <tr>
+    <td port="p7l">7</td>
     <td>CRUISE</td>
     <td port="p7r">7</td>
    </tr>
    <tr>
+    <td port="p8l">8</td>
     <td>5V</td>
     <td port="p8r">8</td>
    </tr>
    <tr>
+    <td port="p9l">9</td>
     <td>MG2_ACCEL_1</td>
     <td port="p9r">9</td>
    </tr>
    <tr>
+    <td port="p10l">10</td>
     <td>MG2_ACCEL_2</td>
     <td port="p10r">10</td>
    </tr>
    <tr>
+    <td port="p11l">11</td>
     <td>GND</td>
     <td port="p11r">11</td>
    </tr>
    <tr>
+    <td port="p12l">12</td>
     <td>MG1_EXC_A</td>
     <td port="p12r">12</td>
    </tr>
    <tr>
+    <td port="p13l">13</td>
     <td>MG1_T2</td>
     <td port="p13r">13</td>
    </tr>
    <tr>
+    <td port="p14l">14</td>
     <td>5V</td>
     <td port="p14r">14</td>
    </tr>
    <tr>
+    <td port="p15l">15</td>
     <td>MG2_ENC_1</td>
     <td port="p15r">15</td>
    </tr>
    <tr>
+    <td port="p16l">16</td>
     <td>MG2_ENC_2</td>
     <td port="p16r">16</td>
    </tr>
    <tr>
+    <td port="p17l">17</td>
     <td>GND</td>
     <td port="p17r">17</td>
    </tr>
    <tr>
+    <td port="p18l">18</td>
     <td>MG2_SIN_A</td>
     <td port="p18r">18</td>
    </tr>
    <tr>
+    <td port="p19l">19</td>
     <td>MG2_COS_A</td>
     <td port="p19r">19</td>
    </tr>
    <tr>
+    <td port="p20l">20</td>
     <td>MG2_EXC_A</td>
     <td port="p20r">20</td>
    </tr>
    <tr>
+    <td port="p21l">21</td>
     <td>GND</td>
     <td port="p21r">21</td>
    </tr>
    <tr>
+    <td port="p22l">22</td>
     <td>MG2_T1</td>
     <td port="p22r">22</td>
    </tr>
    <tr>
+    <td port="p23l">23</td>
     <td>MG2_T2</td>
     <td port="p23r">23</td>
    </tr>
    <tr>
+    <td port="p24l">24</td>
     <td>MAIN_CON</td>
     <td port="p24r">24</td>
    </tr>
    <tr>
+    <td port="p25l">25</td>
     <td>PRECHG</td>
     <td port="p25r">25</td>
    </tr>
    <tr>
+    <td port="p26l">26</td>
     <td>AC_CON</td>
     <td port="p26r">26</td>
    </tr>
    <tr>
+    <td port="p27l">27</td>
     <td>HV_CON</td>
     <td port="p27r">27</td>
    </tr>
    <tr>
+    <td port="p28l">28</td>
     <td>AC_PRECH</td>
     <td port="p28r">28</td>
    </tr>
    <tr>
+    <td port="p29l">29</td>
     <td>MG1_T1</td>
     <td port="p29r">29</td>
    </tr>
    <tr>
+    <td port="p30l">30</td>
     <td>EVSE_PROXY</td>
     <td port="p30r">30</td>
    </tr>
    <tr>
+    <td port="p31l">31</td>
     <td>CP</td>
     <td port="p31r">31</td>
    </tr>
    <tr>
+    <td port="p32l">32</td>
     <td>CHG_CAN_H</td>
     <td port="p32r">32</td>
    </tr>
    <tr>
+    <td port="p33l">33</td>
     <td>CHG_CAN_L</td>
     <td port="p33r">33</td>
    </tr>
    <tr>
+    <td port="p34l">34</td>
     <td>MG1_ENC_1</td>
     <td port="p34r">34</td>
    </tr>
    <tr>
+    <td port="p35l">35</td>
     <td>MG1_ENC_2</td>
     <td port="p35r">35</td>
    </tr>
@@ -263,6 +298,261 @@ graph {
    <tr>
     <td port="p8l">8</td>
     <td>GND</td>
+   </tr>
+  </table>
+ </td></tr>
+</table>
+> fillcolor="#FFFFFF" shape=box style=filled]
+	BATT1 [label=<
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">BATT1</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">2pin</td>
+   <td balign="left">2-pin</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1">
+   <tr>
+    <td>12V</td>
+    <td port="p1r">1</td>
+   </tr>
+   <tr>
+    <td>GND</td>
+    <td port="p2r">2</td>
+   </tr>
+  </table>
+ </td></tr>
+</table>
+> fillcolor="#FFFFFF" shape=box style=filled]
+	J1 [label=<
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">J1</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">Molex MegaFit</td>
+   <td balign="left">male</td>
+   <td balign="left">2-pin</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1">
+   <tr>
+    <td port="p1l">1</td>
+    <td>GND</td>
+   </tr>
+   <tr>
+    <td port="p2l">2</td>
+    <td>12V_BATT_IN</td>
+   </tr>
+  </table>
+ </td></tr>
+</table>
+> fillcolor="#FFFFFF" shape=box style=filled]
+	J2 [label=<
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">J2</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">Molex MegaFit</td>
+   <td balign="left">male</td>
+   <td balign="left">4-pin</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1">
+   <tr>
+    <td>INVERTER_REV</td>
+    <td port="p1r">1</td>
+   </tr>
+   <tr>
+    <td>INVERTER_12V</td>
+    <td port="p2r">2</td>
+   </tr>
+   <tr>
+    <td>INVERTER_FWD</td>
+    <td port="p3r">3</td>
+   </tr>
+   <tr>
+    <td>INVERTER_GND</td>
+    <td port="p4r">4</td>
+   </tr>
+  </table>
+ </td></tr>
+</table>
+> fillcolor="#FFFFFF" shape=box style=filled]
+	J3 [label=<
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">J3</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">Molex MegaFit</td>
+   <td balign="left">male</td>
+   <td balign="left">4-pin</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1">
+   <tr>
+    <td port="p1l">1</td>
+    <td>CHARGER_ENABLE_IN</td>
+   </tr>
+   <tr>
+    <td port="p2l">2</td>
+    <td>IGNITION_ENABLE_OUT</td>
+   </tr>
+   <tr>
+    <td port="p3l">3</td>
+    <td>REVERSE_SIGNAL</td>
+   </tr>
+   <tr>
+    <td port="p4l">4</td>
+    <td>NONE</td>
+   </tr>
+  </table>
+ </td></tr>
+</table>
+> fillcolor="#FFFFFF" shape=box style=filled]
+	J4 [label=<
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">J4</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">Molex MegaFit</td>
+   <td balign="left">male</td>
+   <td balign="left">4-pin</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1">
+   <tr>
+    <td port="p1l">1</td>
+    <td>ISA_SHUNT_12V</td>
+   </tr>
+   <tr>
+    <td port="p2l">2</td>
+    <td>CONTACTORS_12V</td>
+   </tr>
+   <tr>
+    <td port="p3l">3</td>
+    <td>ISA_SHUNT_GND</td>
+   </tr>
+   <tr>
+    <td port="p4l">4</td>
+    <td>CONTACTORS_GND</td>
+   </tr>
+  </table>
+ </td></tr>
+</table>
+> fillcolor="#FFFFFF" shape=box style=filled]
+	J5 [label=<
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">J5</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">Molex MegaFit</td>
+   <td balign="left">male</td>
+   <td balign="left">2-pin</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1">
+   <tr>
+    <td port="p1l">1</td>
+    <td>IGNITION_SWITCH_A</td>
+   </tr>
+   <tr>
+    <td port="p2l">2</td>
+    <td>IGNITION_SWITCH_B</td>
+   </tr>
+  </table>
+ </td></tr>
+</table>
+> fillcolor="#FFFFFF" shape=box style=filled]
+	J6 [label=<
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">J6</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">Molex MegaFit</td>
+   <td balign="left">male</td>
+   <td balign="left">4-pin</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1">
+   <tr>
+    <td port="p1l">1</td>
+    <td>SHIFTER_FWD</td>
+   </tr>
+   <tr>
+    <td port="p2l">2</td>
+    <td>NONE</td>
+   </tr>
+   <tr>
+    <td port="p3l">3</td>
+    <td>SHIFTER_12V</td>
+   </tr>
+   <tr>
+    <td port="p4l">4</td>
+    <td>SHIFTER_REV</td>
+   </tr>
+  </table>
+ </td></tr>
+</table>
+> fillcolor="#FFFFFF" shape=box style=filled]
+	J7 [label=<
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">J7</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">Molex MegaFit</td>
+   <td balign="left">male</td>
+   <td balign="left">2-pin</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1">
+   <tr>
+    <td port="p1l">1</td>
+    <td>COOLANT_GND</td>
+   </tr>
+   <tr>
+    <td port="p2l">2</td>
+    <td>COOLANT_12V</td>
    </tr>
   </table>
  </td></tr>
@@ -625,6 +915,162 @@ graph {
     <td><!-- s_out --></td>
    </tr>
    <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0" port="ws"></td></tr>
+   <tr><td>&nbsp;</td></tr>
+  </table>
+ </td></tr>
+</table>
+> fillcolor="#FFFFFF" shape=box style=filled]
+	edge [color="#000000:#ffffff:#000000"]
+	BATT1:p1r:e -- W3:w1:w
+	W3:w1:e -- J1:p2l:w
+	edge [color="#000000:#ffffff:#000000"]
+	BATT1:p2r:e -- W3:w2:w
+	W3:w2:e -- J1:p1l:w
+	W3 [label=<
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">W3</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">2x</td>
+   <td balign="left">6 mm²</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellborder="0">
+   <tr><td>&nbsp;</td></tr>
+   <tr>
+    <td>BATT1:1:12V</td>
+    <td>
+     1
+    </td>
+    <td>J1:2:12V_BATT_IN</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w1" height="6">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>BATT1:2:GND</td>
+    <td>
+     2
+    </td>
+    <td>J1:1:GND</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w2" height="6">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr><td>&nbsp;</td></tr>
+  </table>
+ </td></tr>
+</table>
+> fillcolor="#FFFFFF" shape=box style=filled]
+	edge [color="#000000:#ffffff:#000000"]
+	J2:p1r:e -- W4:w1:w
+	W4:w1:e -- X1:p4l:w
+	edge [color="#000000:#ffffff:#000000"]
+	J2:p2r:e -- W4:w2:w
+	W4:w2:e -- X1:p1l:w
+	edge [color="#000000:#ffffff:#000000"]
+	J2:p3r:e -- W4:w3:w
+	W4:w3:e -- X1:p3l:w
+	edge [color="#000000:#ffffff:#000000"]
+	J2:p4r:e -- W4:w4:w
+	W4:w4:e -- X1:p2l:w
+	W4 [label=<
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">W4</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellpadding="3" cellborder="1"><tr>
+   <td balign="left">4x</td>
+   <td balign="left">0.25 mm²</td>
+  </tr></table>
+ </td></tr>
+ <tr><td>
+  <table border="0" cellspacing="0" cellborder="0">
+   <tr><td>&nbsp;</td></tr>
+   <tr>
+    <td>J2:1:INVERTER_REV</td>
+    <td>
+     1
+    </td>
+    <td>X1:4:MG2_REV</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w1" height="6">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>J2:2:INVERTER_12V</td>
+    <td>
+     2
+    </td>
+    <td>X1:1:12V</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w2" height="6">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>J2:3:INVERTER_FWD</td>
+    <td>
+     3
+    </td>
+    <td>X1:3:MG2_FWD</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w3" height="6">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
+   <tr>
+    <td>J2:4:INVERTER_GND</td>
+    <td>
+     4
+    </td>
+    <td>X1:2:GND</td>
+   </tr>
+   <tr>
+    <td colspan="3" border="0" cellspacing="0" cellpadding="0" port="w4" height="6">
+     <table cellspacing="0" cellborder="0" border="0">
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#ffffff" border="0"></td></tr>
+      <tr><td colspan="3" cellpadding="0" height="2" bgcolor="#000000" border="0"></td></tr>
+     </table>
+    </td>
+   </tr>
    <tr><td>&nbsp;</td></tr>
   </table>
  </td></tr>
