@@ -34,5 +34,5 @@
 - [ ] BMS (always on)
 
 ## Others
-[ ] Vacuum pump
-[ ] Heated seats
+- [ ] Vacuum pump
+- [ ] Heated seats
