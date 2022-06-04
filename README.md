@@ -1,22 +1,22 @@
 # Electric Mustang Wiring
 
-This repo contains the wiring diagrams for my project to convert a 1965 Ford
-Mustang to a EV.
+This repo contains the circuits, software, and wiring diagrams for my project to
+convert a 1965 Ford Mustang to a EV.
+
+## bms - Battery Management System
+
+Schematic, PCB, and software for the battery management system.
 
 ## 12v-front-pcb
 
 Schematic and PCB for wiring that sits in the front of the car (engine bay).
 
-* Ignition
-* Dashboard VCU
-* BMS
-* Horn
+* Ignition switch
 * Drive inhibition (preventing driving off when charging)
-* Radio
-* Vacuum pump
 * Coolant pump
 * Inverter
 * Contactors
+* Shunt
 
 ## 12v-lighting
 
