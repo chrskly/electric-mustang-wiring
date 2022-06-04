@@ -6,7 +6,19 @@ BMS will always be on.
 
 BMS will be able to enable/disable HV for each pack separately via contactors.
 
-BMS will have states of : rest, drive, and charge.
+BMS will have states of : standby, drive, and charge.
+
+## State machine
+
+State=standby
+State=drive
+  - event : cell voltage low => State=underVoltageFault
+  - event : cell temperature over setpoint => State=overTempFault
+State=chargeInitialise
+State=chargeInProgress
+State=overTempFault
+State=underVoltageFault
+State=unknownFault
 
 ## Functionality
 
@@ -38,6 +50,10 @@ BMS will have states of : rest, drive, and charge.
 4. Low side switch for rear battery contactors.
 
 5. Low side switch for front battery contactors.
+
+6. Drive-enable input signal
+
+7. Charge-enable input signal
 
 ## CAN messages consumed by BMS
 
