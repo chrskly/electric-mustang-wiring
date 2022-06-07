@@ -16,3 +16,6 @@ void updatePackCellVoltage(BatteryPack *pack, int moduleIndex, int cellIndex, fl
 float getPackLowestTemperature(BatteryPack *pack);
 float getPackHighestTemperature(BatteryPack *pack);
 bool packHasCellOverTemp(BatteryPack *pack);
+
+int packGetMaxChargingCurrent(BatteryPack *pack);
+bool packHasCellOverVoltage(BatteryPack *pack);

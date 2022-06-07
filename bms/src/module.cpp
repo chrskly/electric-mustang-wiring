@@ -45,8 +45,28 @@ void updateModuleCellVoltage(BatteryModule *module, int cellIndex, float newCell
 	module->cellVoltage[cellIndex] = newCellVoltage;
 }
 
+bool moduleHasCellOverVoltage(BatteryModule *module) {
+	for ( int c = 0; c < CELLS_PER_MODULE; c++ ) {
+		if ( module->cellVoltage[c] > CELL_OVER_VOLTAGE_FAULT_THRESHOLD ) {
+			return true;
+		}
+	}
+	return false;
+}
+
 
 // Temperature
+
+float moduleGetHighestCellTemperature(BatteryModule *module) {
+	float highestCellTemperature;
+	highestCellTemperature = module->cellTemperature[0];
+	for ( int t = 1; t < TEMPS_PER_MODULE; t++ ) {
+		if ( module->cellTemperature[t] > highestCellTemperature ) {
+			highestCellTemperature = module->cellTemperature[t];
+		}
+	}
+	return highestCellTemperature;
+}
 
 /*
 float getModuleLowestTemperature(BatteryModule *module) {
@@ -88,3 +108,22 @@ bool moduleTemperatureDisallowsCharging(BatteryModule *module) {
 	}
 	return false;
 }
+
+// Charging
+
+int moduleGetMaxChargingCurrent(BatteryModule *module) {
+    float highestCellTemperature = moduleGetHighestCellTemperature(module);
+    if ( highestCellTemperature > CHARGE_THROTTLE_TEMP_LOW ) {
+    	float degreesOver = highestCellTemperature - CHARGE_THROTTLE_TEMP_LOW;
+    	float scaleFactor = 1 - ( degreesOver / ( CHARGE_THROTTLE_TEMP_HIGH - CHARGE_THROTTLE_TEMP_LOW ) );
+    	float chargeCurrent = ( scaleFactor * ( CHARGE_CURRENT_MAX - CHARGE_CURRENT_MIN ) ) + CHARGE_CURRENT_MIN;
+    	return (int)chargeCurrent;
+    } else {
+    	return (int)CHARGE_CURRENT_MAX;
+    }
+}
+
+
+
+
+

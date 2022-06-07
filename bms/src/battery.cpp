@@ -10,6 +10,10 @@ void initialiseBattery(Battery *battery) {
 	}
 }
 
+void batteryOpenContactors(Battery *battery) {
+	return;
+}
+
 // Voltage
 
 float getBatteryVoltage(Battery *battery) {
@@ -62,19 +66,18 @@ void updateBatteryHighestCellVoltage(Battery *battery) {
 	battery->highestCellVoltage = newBatteryHighestCellVoltage;
 }
 
+bool batteryHasCellOverVoltage(Battery *battery) {
+	for ( int p = 0; p < NUM_PACKS; p++ ) {
+		if ( packHasCellOverVoltage(battery->packs[p]) ) {
+			return true;
+		}
+	}
+	return false;
+}
 
 
 
 // Temperature
-/*
-float getBatteryLowestTemperature(Battery *battery) {
-	return battery.lowestCellTemperature;
-}
-
-float getBatteryHighestTemperature(Battery *battery) {
-	return battery.highestCellTemperature;
-}
-*/
 
 bool batteryHasCellOverTemp(Battery *battery) {
 	for ( int i = 0; i < NUM_PACKS; i++ ) {
@@ -83,4 +86,15 @@ bool batteryHasCellOverTemp(Battery *battery) {
 		}
 	}
 	return false;
+}
+
+
+int batteryGetMaxChargingCurrent(Battery *battery) {
+	int maxChargeCurrent = CHARGE_CURRENT_MAX;
+	for ( int p = 0; p < NUM_PACKS; p++ ) {
+		if ( packGetMaxChargingCurrent(battery->packs[p]) < maxChargeCurrent ) {
+			maxChargeCurrent = packGetMaxChargingCurrent(battery->packs[p]);
+		}
+	}
+	return maxChargeCurrent;
 }

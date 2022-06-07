@@ -44,6 +44,16 @@ float getPackLowestCellVoltage(BatteryPack *pack) {
 	return packLowestCellVoltage;
 }
 
+bool packHasCellOverVoltage(BatteryPack *pack) {
+	for ( int m = 0; m < MODULES_PER_PACK; m++ ){
+		if ( moduleHasCellOverVoltage(pack->modules[m]) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
 /*
 float getPackHighestCellVoltage(BatteryPack *pack) {
 	return pack.highestCellVoltage;
@@ -74,4 +84,15 @@ bool packHasCellOverTemp(BatteryPack *pack) {
 	}
 	return false;
 }
+
+int packGetMaxChargingCurrent(BatteryPack *pack) {
+	int maxChargeCurrent = moduleGetMaxChargingCurrent(pack->modules[0]);
+	for ( int m = 1; m < MODULES_PER_PACK; m++ ) {
+		if ( moduleGetMaxChargingCurrent(pack->modules[m]) < maxChargeCurrent ) {
+			maxChargeCurrent = moduleGetMaxChargingCurrent(pack->modules[m]);
+		}
+	}
+	return maxChargeCurrent;
+}
+
 

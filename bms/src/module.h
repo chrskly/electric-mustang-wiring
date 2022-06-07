@@ -15,3 +15,6 @@ float getModuleLowestTemperature(BatteryModule *module);
 float getModuleHighestTemperature(BatteryModule *module);
 bool moduleHasCellOverTemp(BatteryModule *module);
 
+int moduleGetMaxChargingCurrent(BatteryModule *module);
+bool moduleHasCellOverVoltage(BatteryModule *module);
+

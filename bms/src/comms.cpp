@@ -2,7 +2,10 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 
+#include "settings.h"
 #include "comms.h"
+#include "statemachine.h"
+#include "battery.h"
 #include "structs.h"
 
 /*
@@ -26,6 +29,10 @@ uint8_t getcheck(CAN_message_t &msg, int id)
 */
 
 // Polling the modules for voltage and temperature readings
+
+struct can_frame pollModuleFrame;
+
+struct repeating_timer pollModuleTimer;
 
 void requestModuleData(BatteryModule *module) {
 	struct can_frame pollMsg;
@@ -79,6 +86,124 @@ bool pollAllModulesForData(struct repeating_timer *t) {
 }
 
 
-void startModulePolling() {
-    add_repeating_timer_ms(1000, pollAllModulesForData, NULL, &timer);
+void enableModulePolling() {
+    add_repeating_timer_ms(1000, pollAllModulesForData, NULL, &pollModuleTimer);
 }
+
+//// ---- status messages
+
+// CAN frame to hold status message sent out to rest of car
+// bit 0-4 = state (0=standby, 1=drive, 2=charging, 3=overTempFault, 4=underVoltageFault ) 
+struct can_frame statusFrame;
+
+struct repeating_timer statusMessageTimer;
+
+bool sendStatusMessage(struct repeating_timer *t) {
+	extern State state;
+	extern MCP2515 mainCAN;
+	statusFrame.can_id = STATUS_MSG_ID;
+	statusFrame.can_dlc = 1;
+	if ( state == state_standby ) {
+		statusFrame.data[0] = 0x00 << 4;
+	} else if ( state == state_drive ) {
+		statusFrame.data[0] = 0x01 << 4;
+	} else if ( state == state_charging ) {
+		statusFrame.data[0] = 0x02 << 4;
+	} else if ( state == state_overTempFault ) {
+		statusFrame.data[0] = 0x03 << 4;
+	} else if ( state == state_underVoltageFault ) {
+		statusFrame.data[0] = 0x04 << 4;
+	} else {
+		//
+	}
+	// do pack dead check
+
+	mainCAN.sendMessage(&statusFrame);
+	return true;
+}
+
+void enableStatusMessages() {
+	add_repeating_timer_ms(1000, sendStatusMessage, NULL, &statusMessageTimer);
+}
+
+
+//// ---- send charge limits message (id = 0x102)
+
+// CAN frame to hold charge limits message
+// byte 0 = 0x0
+// byte 1 = DC voltage limit MSB
+// byte 2 = DC voltage limit LSB
+// byte 3 = DC current set point
+// byte 4 = 1 == enable charging
+// byte 5 = SoC
+// byte 6 = 0x0
+// byte 7 = 0x0
+// From https://openinverter.org/wiki/Tesla_Model_S/X_GEN2_Charger
+struct can_frame chargeLimitsFrame;
+
+struct repeating_timer chargeLimitsMessageTimer;
+
+bool sendChargeLimitsMessage(struct repeating_timer *t) {
+	extern Battery battery;
+	chargeLimitsFrame.can_id = 0x102;
+	chargeLimitsFrame.can_dlc = 8;
+	// byte 0
+	chargeLimitsFrame.data[0] = 0x0;
+	// byte 1 -- DC voltage limit MSB
+	chargeLimitsFrame.data[1] = 0x0; //fixme
+	// byte 2 -- DC voltage limit LSB
+	chargeLimitsFrame.data[2] = 0x0; //fixme
+	// byte 3 -- DC current set point
+	chargeLimitsFrame.data[3] = (__u8)batteryGetMaxChargingCurrent(&battery);
+	// byte 4 -- 1 == enable charging
+	chargeLimitsFrame.data[4] = 0x0; //fixme
+	// byte 5 -- SoC
+	chargeLimitsFrame.data[5] = 0x0; //fixme
+	// byte 6 -- 0x0
+	chargeLimitsFrame.data[6] = 0x0;
+	// byte 7 -- 0x0
+	chargeLimitsFrame.data[7] = 0x0;
+
+    return true;
+}
+
+void enableChargeLimitsMessages() {
+	add_repeating_timer_ms(1000, sendChargeLimitsMessage, NULL, &chargeLimitsMessageTimer);
+}
+
+void disableChargeLimitsMessages() {
+	//
+}
+
+
+//// ---- receive message handlers
+
+struct can_frame mainCANInbound;
+
+void handleMainCANMessages() {
+	extern MCP2515 mainCAN;
+	if(mainCAN.readMessage(&mainCANInbound) == MCP2515::ERROR_OK) {
+        if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_WH ) {
+        	// process Wh data
+        } else if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_AH ) {
+        	// process Ah data
+        }
+        // ...
+    }
+}
+
+struct can_frame batteryCANInbound;
+
+void handleBatteryCANMessages() {
+	extern Battery battery;
+	for ( int p = 0; p < NUM_PACKS; p++ ) {
+		if ( battery.packs[p]->CAN.readMessage(&batteryCANInbound) == MCP2515::ERROR_OK ) {
+			//
+		}
+	}
+}
+
+
+
+
+

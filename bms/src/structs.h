@@ -28,7 +28,7 @@ struct BatteryPack {
 
 struct BatteryModule {
 	float cellVoltage[CELLS_PER_MODULE];     // Voltages of each cell
-	float cellTemperature[CELLS_PER_MODULE]; // Temperatures of each cell
+	float cellTemperature[TEMPS_PER_MODULE]; // Temperatures of each cell
 	struct BatteryPack *pack;                        // The parent BatteryPack the contains this module
 	uint8_t msgcycle;
 	uint8_t nextmsg;

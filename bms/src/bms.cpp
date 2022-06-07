@@ -27,6 +27,7 @@ SPIO15 (20) SPI0 CS1 - to CS on mcp2515 board 1 (vai level converter)
 #include "update.h"
 #include "bms.h"
 #include "statemachine.h"
+#include "comms.h"
 
 
 #define SPI_PORT      spi0
@@ -214,6 +215,15 @@ int main() {
         }
     }
     */
+
+    // 
+    enableModulePolling();
+
+    while(true) {
+        // process inbound messages
+        // send outbound messages
+        // send status message out on main CAN port
+    }
 
     return 0;
 }

@@ -78,3 +78,6 @@ State=unknownFault
    this, contactors will not be allowed to close.
 4. minChargeTemp - disallow charging at or below this temperature.
 
+## To Do
+
+- [ ] Fetch SoC from shunt and store in memory
