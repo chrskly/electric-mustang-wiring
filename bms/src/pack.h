@@ -1,3 +1,21 @@
+/*
+ * This file is part of the ev mustang bms project.
+ *
+ * Copyright (C) 2022 Christian Kelly <chrskly@chrskly.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "hardware/timer.h"
 #include "mcp2515/mcp2515.h"
@@ -5,17 +23,19 @@
 #include "structs.h"
 
 void initialisePack(BatteryPack *pack);
-
 bool packIsAlive(BatteryPack *pack);
 
-float getPackVoltage(BatteryPack *pack);
-void updatePackVoltage(BatteryPack *pack);
-float getPackLowestCellVoltage(BatteryPack *pack);
-float getPackHighestCellVoltage(BatteryPack *pack);
-void updatePackCellVoltage(BatteryPack *pack, int moduleIndex, int cellIndex, float newCellVoltage);
-float getPackLowestTemperature(BatteryPack *pack);
-float getPackHighestTemperature(BatteryPack *pack);
-bool packHasCellOverTemp(BatteryPack *pack);
+// Voltage
+float getVoltage(BatteryPack *pack);
+void updateVoltage(BatteryPack *pack);
+float getLowestCellVoltage(BatteryPack *pack);
+float getHighestCellVoltage(BatteryPack *pack);
+void updateCellVoltage(BatteryPack *pack, int moduleIndex, int cellIndex, float newCellVoltage);
 
-int packGetMaxChargingCurrent(BatteryPack *pack);
-bool packHasCellOverVoltage(BatteryPack *pack);
+
+float getLowestTemperature(BatteryPack *pack);
+float getHighestTemperature(BatteryPack *pack);
+bool hasCellOverTemp(BatteryPack *pack);
+
+int getMaxChargingCurrent(BatteryPack *pack);
+bool hasCellOverVoltage(BatteryPack *pack);

@@ -17,5 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// The possible states for the BMS to be in
-//enum State { standby, drive, chargeInitialise, chargeInProgress, overTempFault, underVoltageFault, unknownFault };
+
+bool closeContactors(Battery battery) {
+
+	// Check that the voltage difference between the packs in the battery is
+	// a small, safe value.
+	if ( voltageDeltaBetweenPacks() < SAFE_VOLTAGE_DELTA_BETWEEN_PACKS ) {
+		// OK to close the contactors
+	}
+
+	// The pack voltages differ too much. We can only use one pack. Figure out
+	// which pack is fuller (has higher voltage) and close the contactors for
+	// just that pack.
+	else {
+
+		BatteryPack preferredPack = getPackWithHighestVoltage(Battery battery);
+		closeContactors(preferredPack);
+	}
+}
+
+bool openContactors() {
+	// wait?
+}
