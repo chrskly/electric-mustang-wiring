@@ -32,6 +32,7 @@ void batteryOpenContactors(Battery *battery) {
 	return;
 }
 
+
 //// ----
 //
 // Voltage
@@ -98,9 +99,38 @@ bool hasCellOverVoltage(Battery *battery) {
 	return false;
 }
 
+// Return the largest voltage difference between any two packs in this battery.
+float voltageDeltaBetweenPacks(Battery *battery) {
+	float highestPackVoltage = -10000;
+	float lowestPackVoltage = 10000;
+	for ( int p = 0; p < NUM_PACKS; p++ ) {
+		float packVoltage = getVoltage(battery->packs[p]);
+		if ( packVoltage > highestPackVoltage ) {
+			highestPackVoltage = packVoltage;
+		}
+		if ( packVoltage < lowestPackVoltage ) {
+			lowestPackVoltage = packVoltage;
+		}
+	}
+	return highestPackVoltage - lowestPackVoltage;
+}
+
+BatteryPack* getPackWithHighestVoltage(Battery *battery) {
+	BatteryPack* pack = battery->packs[0];
+	for ( int p = 1; p < NUM_PACKS; p++ ) {
+		if ( battery->packs[p]->voltage > pack->voltage ) {
+			pack = battery->packs[p];
+		}
+	}
+	return pack;
+}
 
 
+//// ----
+//
 // Temperature
+//
+//// ----
 
 bool hasCellOverTemp(Battery *battery) {
 	for ( int i = 0; i < NUM_PACKS; i++ ) {
@@ -120,4 +150,37 @@ int getMaxChargingCurrent(Battery *battery) {
 		}
 	}
 	return maxChargeCurrent;
+}
+
+
+//// ----
+//
+// Contactor control
+//
+//// ----
+
+void closeContactors(Battery *battery) {
+
+	// Check that the voltage difference between the packs in the battery is
+	// a small, safe value.
+	if ( voltageDeltaBetweenPacks(battery) < SAFE_VOLTAGE_DELTA_BETWEEN_PACKS ) {
+		for ( int p = 0; p < NUM_PACKS; p++ ) {
+			closeContactors(battery->packs[p]);
+		}
+	}
+
+	// The pack voltages differ too much. We can only use one pack. Figure out
+	// which pack is fuller (has higher voltage) and close the contactors for
+	// just that pack.
+	else {
+		closeContactors(getPackWithHighestVoltage(battery));
+	}
+
+}
+
+void openContactors(Battery *battery) {
+	// wait?
+	for ( int p = 0; p < NUM_PACKS; p++ ) {
+		openContactors(battery->packs[p]);
+	}
 }

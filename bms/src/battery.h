@@ -32,3 +32,6 @@ bool hasCellOverTemp(Battery *battery);
 
 int getMaxChargingCurrent(Battery *battery);
 bool hasCellOverVoltage(Battery *battery);
+
+void closeContactors(Battery *battery);
+void openContactors(Battery *battery);

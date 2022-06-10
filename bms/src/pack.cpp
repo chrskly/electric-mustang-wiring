@@ -20,13 +20,18 @@
 #include "pack.h"
 #include "module.h"
 
+
 void initialisePack(BatteryPack *pack) {
 	// Create the modules
-	for ( int i = 0; i < 16; i++ ) {
+	for ( int m = 0; m < 16; m++ ) {
 		BatteryModule module;
 		initialiseModule(&module, pack);
-		pack->modules[i] = &module;
+		pack->modules[m] = &module;
 	}
+	// Set up contactor control. Default to contactors open.
+	gpio_init(pack->contactorPin);
+	gpio_set_dir(pack->contactorPin, GPIO_OUT);
+    gpio_put(pack->contactorPin, 0);
 }
 
 bool packIsAlive(BatteryPack *pack) {
@@ -123,5 +128,23 @@ int getMaxChargingCurrent(BatteryPack *pack) {
 	}
 	return maxChargeCurrent;
 }
+
+
+//// ----
+//
+// Contactors
+//
+//// ----
+
+bool closeContactors(BatteryPack *pack) {
+	gpio_put(pack->contactorPin, 1);
+	return true;
+}
+
+bool openContactors(BatteryPack *pack) {
+	gpio_put(pack->contactorPin, 0);
+	return true;
+}
+
 
 

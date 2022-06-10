@@ -41,7 +41,8 @@ struct BatteryPack {
 	struct Battery *battery;            // The parent Battery that contains this BatteryPack
 	float voltage;              // Voltage of the total pack
 	bool interrupt;             //
-	bool contactorsClosed;      // 
+	bool contactorsClosed;      //
+	int contactorPin;           // Pin which controls contactors for this pack
 };
 
 struct BatteryModule {

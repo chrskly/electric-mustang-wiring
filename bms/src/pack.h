@@ -39,3 +39,6 @@ bool hasCellOverTemp(BatteryPack *pack);
 
 int getMaxChargingCurrent(BatteryPack *pack);
 bool hasCellOverVoltage(BatteryPack *pack);
+
+bool closeContactors(BatteryPack *pack);
+bool openContactors(BatteryPack *pack);
