@@ -43,15 +43,22 @@ void state_standby(Event event) {
 			}
 			break;
 		case E_IGNITION_ON:
-		    // check for large voltage difference between packs
-		    // close contactors
+		    closeContactors(&battery);
+		    state = state_drive;
 		    break;
 		case E_CHARGING_INITIATED:
-			// check for large voltage difference between packs
-			// close contactors
+		    // Is it warm enough to charge?
+		    if ( tooColdToCharge() ) {
+		    	// Tell charger to shut down
+		    	// open contactors
+		    	state = state_standby;
+		    	break;
+		    }
+			closeContactors(&battery);
 			state = state_charging;
 			break;
 		case E_EMERGENCY_SHUTDOWN:
+		    openContactors(&battery);
 		    break;
 		default:
 		    printf("Received unknown event");
@@ -73,7 +80,7 @@ void state_drive(Event event) {
 		case E_TEMPERATURE_UPDATE:
 			if ( hasCellOverTemp(&battery) ) {
 				// Tell inverter to shut down + short sleep
-				batteryOpenContactors(&battery);
+				openContactors(&battery);
 				state = state_overTempFault;
 			}
 			break;
@@ -85,8 +92,11 @@ void state_drive(Event event) {
 			break;
 		case E_IGNITION_OFF:
 			// Tell inverter to shut down + short sleep
-			batteryOpenContactors(&battery);
+			openContactors(&battery);
 			break;
+		case E_EMERGENCY_SHUTDOWN:
+		    openContactors(&battery);
+		    break;
 	}
 
 }
@@ -103,26 +113,33 @@ void state_charging(Event event) {
 		case E_TEMPERATURE_UPDATE:
 		    // Switch to error state if any cell is too hot
 			if ( hasCellOverTemp(&battery) ) {
+				// Tell charger to shut down
+				// open contactors
 			    state = state_overTempFault;
 		    }
-		    // open contactors?
+		    // Is it too cold to continue charging?
+		    if ( tooColdToCharge() ) {
+		    	// Tell charger to shut down
+		    	// open contactors
+		    	state = state_standby;
+		    }
 		    break;
 		case E_CELL_VOLTAGE_UPDATE:
 			if ( hasCellOverVoltage(&battery) ) {
+				// Tell charger to shut down
+				// open contactors
 				state = state_overVoltageFault;
 			}
-			// open contactors
 			break;
 		case E_IGNITION_ON:
-		    // check for large voltage difference between packs
-		    // close contactors
+		    // Since we're already charging, then contactors are already closed.
+		    // Nothing to do.
 		    break;
 		case E_CHARGING_INITIATED:
-			// check for large voltage difference between packs
-			// close contactors
-			state = state_charging;
+			// We're already charging. Nothing to do.
 			break;
 		case E_EMERGENCY_SHUTDOWN:
+		    openContactors(&battery);
 		    break;
 		default:
 		    printf("Received unknown event");
@@ -133,14 +150,68 @@ void state_charging(Event event) {
     State = overTempFault
 */
 void state_overTempFault(Event event) {
-	//
+
+	extern Battery battery;
+	extern State state;
+
+	// Only allow escape from overTempFault when the temperature has fallen to
+	// an acceptable level. All other events will be ignored.
+
+	switch (event) {
+		case E_TEMPERATURE_UPDATE:
+			if ( ! hasCellOverTemp(&battery) ) {
+			    state = state_standby;
+		    }
+		    break;
+		case E_CELL_VOLTAGE_UPDATE:
+			break;
+		case E_IGNITION_ON:
+		    break;
+		case E_CHARGING_INITIATED:
+			break;
+		case E_EMERGENCY_SHUTDOWN:
+		    break;
+		default:
+		    printf("Received unknown event");
+	}
 }
 
 /*
     State = overVoltageFault
 */
 void state_overVoltageFault(Event event) {
-	//
+
+	extern Battery battery;
+	extern State state;
+
+	switch (event) {
+		case E_TEMPERATURE_UPDATE:
+		    // overTempFault beats overVoltageFault, so if a cell is too hot
+		    // then switch to overTempFault state.
+			if ( hasCellOverTemp(&battery) ) {
+			    state = state_overTempFault;
+		    }
+		    break;
+		case E_CELL_VOLTAGE_UPDATE:
+			if ( ! hasCellOverVoltage(&battery) ) {
+				state = state_standby;
+			}
+			break;
+		case E_IGNITION_ON:
+		    // Allow the car to drive off the excess charge which triggered an
+		    // overVoltageFault.
+		    // FIXME - can we tell the inverter to disable regen?
+		    closeContactors(&battery);
+		    state = state_drive;
+		    break;
+		case E_CHARGING_INITIATED:
+			// Disallow charging when in overVoltageFault state.
+			break;
+		case E_EMERGENCY_SHUTDOWN:
+		    break;
+		default:
+		    printf("Received unknown event");
+	}
 }
 
 /*

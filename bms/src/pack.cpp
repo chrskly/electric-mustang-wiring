@@ -129,6 +129,16 @@ int getMaxChargingCurrent(BatteryPack *pack) {
 	return maxChargeCurrent;
 }
 
+float getLowestTemperature(BatteryPack *pack) {
+	float lowestModuleTemperature = 1000;
+	for ( int m = 0; m < MODULES_PER_PACK; m++ ) {
+		if ( getLowestTemperature(pack->modules[m]) < lowestModuleTemperature ) {
+			lowestModuleTemperature = getLowestTemperature(pack->modules[m]);
+		}
+	}
+	return lowestModuleTemperature;
+}
+
 
 //// ----
 //

@@ -28,10 +28,6 @@ void initialiseBattery(Battery *battery) {
 	}
 }
 
-void batteryOpenContactors(Battery *battery) {
-	return;
-}
-
 
 //// ----
 //
@@ -150,6 +146,23 @@ int getMaxChargingCurrent(Battery *battery) {
 		}
 	}
 	return maxChargeCurrent;
+}
+
+float getLowestTemperature(Battery *battery) {
+	float lowestTemperature = 1000;
+	for ( int p = 0; p < NUM_PACKS; p++ ) {
+		if ( getLowestTemperature(battery->packs[p]) < lowestTemperature ) {
+			lowestTemperature = getLowestTemperature(battery->packs[p]);
+		}
+	}
+	return lowestTemperature;
+}
+
+bool tooColdToCharge(Battery *battery) {
+	if ( getLowestTemperature(battery) < CELL_UNDER_TEMPERATURE_FAULT_THRESHOLD ) {
+		return true;
+	}
+	return false;
 }
 
 

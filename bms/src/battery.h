@@ -20,7 +20,6 @@
 #include "structs.h"
 
 void initialiseBattery(Battery *battery);
-void batteryOpenContactors(Battery *battery);
 
 float getVoltage(Battery *battery);
 float getLowestCellVoltage(Battery *battery);

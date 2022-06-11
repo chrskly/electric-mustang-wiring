@@ -91,15 +91,26 @@ bool hasCellOverVoltage(BatteryModule *module) {
 //// ----
 
 // Return the temperature of the hottest sensor in the module
-float getHighestCellTemperature(BatteryModule *module) {
-	float highestCellTemperature;
-	highestCellTemperature = module->cellTemperature[0];
+float getHighestTemperature(BatteryModule *module) {
+	float highestTemperature;
+	highestTemperature = module->cellTemperature[0];
 	for ( int t = 1; t < TEMPS_PER_MODULE; t++ ) {
-		if ( module->cellTemperature[t] > highestCellTemperature ) {
-			highestCellTemperature = module->cellTemperature[t];
+		if ( module->cellTemperature[t] > highestTemperature ) {
+			highestTemperature = module->cellTemperature[t];
 		}
 	}
-	return highestCellTemperature;
+	return highestTemperature;
+}
+
+// Return the temperature of the coldest sensor in the module
+float getLowestTemperature(BatteryModule *module) {
+	float lowestTemperature = 1000;
+	for ( int t = 0; t < TEMPS_PER_MODULE; t++ ) {
+		if ( module->cellTemperature[t] < lowestTemperature ) {
+			lowestTemperature = module->cellTemperature[t];
+		}
+	}
+	return lowestTemperature;
 }
 
 
@@ -115,7 +126,7 @@ bool temperatureAtWarningLevel(BatteryModule *module) {
 	return false;
 }
 
-// 
+/*
 bool temperatureDisalllowsDriving(BatteryModule *module) {
 	for ( int i = 0; i < CELLS_PER_MODULE; i++ ) {
 		if ( module->cellTemperature[i] >= CELL_OVER_TEMPERATURE_FAULT_THRESHOLD ) {
@@ -133,6 +144,7 @@ bool temperatureDisallowsCharging(BatteryModule *module) {
 	}
 	return false;
 }
+*/
 
 
 //// ----
@@ -143,9 +155,9 @@ bool temperatureDisallowsCharging(BatteryModule *module) {
 
 // Return the maximum current the charger may push into the module
 int getMaxChargingCurrent(BatteryModule *module) {
-    float highestCellTemperature = getHighestCellTemperature(module);
-    if ( highestCellTemperature > CHARGE_THROTTLE_TEMP_LOW ) {
-    	float degreesOver = highestCellTemperature - CHARGE_THROTTLE_TEMP_LOW;
+    float highestTemperature = getHighestTemperature(module);
+    if ( highestTemperature > CHARGE_THROTTLE_TEMP_LOW ) {
+    	float degreesOver = highestTemperature - CHARGE_THROTTLE_TEMP_LOW;
     	float scaleFactor = 1 - ( degreesOver / ( CHARGE_THROTTLE_TEMP_HIGH - CHARGE_THROTTLE_TEMP_LOW ) );
     	float chargeCurrent = ( scaleFactor * ( CHARGE_CURRENT_MAX - CHARGE_CURRENT_MIN ) ) + CHARGE_CURRENT_MIN;
     	return (int)chargeCurrent;
