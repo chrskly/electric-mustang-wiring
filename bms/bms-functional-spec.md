@@ -77,3 +77,11 @@ BMS will have states of : standby, drive, and charge.
 ## To Do
 
 - [ ] Fetch SoC from shunt and store in memory
+
+## Credits
+
+This project uses the [adamczykpiotr/pico-mcp2515](https://github.com/adamczykpiotr/pico-mcp2515) 
+library for CAN communication.
+
+The [Tom-evnut/BMWPhevBMS](https://github.com/Tom-evnut/BMWPhevBMS) project was
+used as a reference for how to communicate with this battery pack.
