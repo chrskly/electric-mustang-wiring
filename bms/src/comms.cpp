@@ -24,6 +24,7 @@
 #include "comms.h"
 #include "statemachine.h"
 #include "battery.h"
+#include "pack.h"
 #include "structs.h"
 
 /*
@@ -194,17 +195,23 @@ void disableChargeLimitsMessages() {
 }
 
 
-//// ---- receive message handlers
+//// ----
+//
+// Inbound message handlers
+//
+//// ----
 
 struct can_frame mainCANInbound;
 
 void handleMainCANMessages() {
-	extern MCP2515 mainCAN;
-	if(mainCAN.readMessage(&mainCANInbound) == MCP2515::ERROR_OK) {
+
+	  extern MCP2515 mainCAN;
+
+	  if ( mainCAN.readMessage(&mainCANInbound) == MCP2515::ERROR_OK ) {
         if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_WH ) {
-        	// process Wh data
+          	// process Wh data
         } else if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_AH ) {
-        	// process Ah data
+        	  // process Ah data
         }
         // ...
     }
@@ -212,13 +219,26 @@ void handleMainCANMessages() {
 
 struct can_frame batteryCANInbound;
 
+// 
 void handleBatteryCANMessages() {
-	extern Battery battery;
-	for ( int p = 0; p < NUM_PACKS; p++ ) {
-		if ( battery.packs[p]->CAN.readMessage(&batteryCANInbound) == MCP2515::ERROR_OK ) {
-			//
-		}
-	}
+
+	  extern Battery battery;
+
+	  for ( int p = 0; p < NUM_PACKS; p++ ) {
+	    	if ( battery.packs[p]->CAN.readMessage(&batteryCANInbound) == MCP2515::ERROR_OK ) {
+
+	    		  // Temperature messages
+	    		  if ( ( batteryCANInbound.can_id & 0xFF0 ) == 0x180 ) {
+	    		  	  decodeTemperatures(battery.packs[p], &batteryCANInbound);
+	    		  }
+
+	    		  // Voltage messages
+	    		  else if (batteryCANInbound.can_id > 0x99 && batteryCANInbound.can_id < 0x180) {
+	    		  	  decodeVoltages(battery.packs[p], batteryCANInbound);
+	    		  }
+
+	    	}
+  	}
 }
 
 

@@ -75,6 +75,16 @@ float getLowestCellVoltage(BatteryPack *pack) {
 	return lowestCellVoltage;
 }
 
+// Return true if any cell in the pack is under min voltage
+bool hasCellUnderVoltage(BatteryPack *pack) {
+	for ( int m = 0; m < MODULES_PER_PACK; m++ ){
+		if ( hasCellUnderVoltage(pack->modules[m]) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
 // Return the voltage of the highest cell in the pack
 float getHighestCellVoltage(BatteryPack *pack) {
 	float highestCellVoltage = getHighestCellVoltage(pack->modules[0]);
@@ -97,8 +107,51 @@ bool hasCellOverVoltage(BatteryPack *pack) {
 }
 
 // Update the value for the voltage of an individual cell in a pack
-void updateCellVoltage(BatteryPack *pack, int moduleIndex, int cellIndex, float newCellVoltage) {
-	updateCellVoltage(pack->modules[moduleIndex], cellIndex, newCellVoltage);
+void updateCellVoltage(BatteryPack *pack, int moduleId, int cellIndex, float newCellVoltage) {
+	updateCellVoltage(pack->modules[moduleId], cellIndex, newCellVoltage);
+}
+
+void decodeVoltages(BatteryPack *pack, can_frame voltageFrame) {
+	int messageId = (voltageFrame.can_id & 0x0F0);
+	int moduleId = (voltageFrame.can_id & 0x00F) + 1;
+
+	switch (messageId) {
+	    case 0x000:
+	        //error = voltageFrame.data[0] + (voltageFrame.data[1] << 8) + (voltageFrame.data[2] << 16) + (voltageFrame.data[3] << 24);
+	        //balstat = (voltageFrame.data[5]<< 8) + voltageFrame.data[4];
+	        break;
+		case 0x020:
+		    updateCellVoltage(pack, moduleId, 0, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 1, float(voltageFrame.data[2] + (voltageFrame.data[3] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 2, float(voltageFrame.data[4] + (voltageFrame.data[5] & 0x3F) * 256) / 1000);
+		    break;
+	    case 0x30:
+		    updateCellVoltage(pack, moduleId, 3, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 4, float(voltageFrame.data[2] + (voltageFrame.data[3] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 5, float(voltageFrame.data[4] + (voltageFrame.data[5] & 0x3F) * 256) / 1000);
+	        break;
+	    case 0x40:
+		    updateCellVoltage(pack, moduleId, 6, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 7, float(voltageFrame.data[2] + (voltageFrame.data[3] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 8, float(voltageFrame.data[4] + (voltageFrame.data[5] & 0x3F) * 256) / 1000);
+	        break;
+	    case 0x50:
+		    updateCellVoltage(pack, moduleId, 9, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 10, float(voltageFrame.data[2] + (voltageFrame.data[3] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 11, float(voltageFrame.data[4] + (voltageFrame.data[5] & 0x3F) * 256) / 1000);
+	        break;
+	    case 0x60:
+		    updateCellVoltage(pack, moduleId, 12, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 13, float(voltageFrame.data[2] + (voltageFrame.data[3] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 14, float(voltageFrame.data[4] + (voltageFrame.data[5] & 0x3F) * 256) / 1000);
+	        break;
+	    case 0x70:
+		    updateCellVoltage(pack, moduleId, 15, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
+	        break;
+	    default:
+	        break;
+	}
+
 }
 
 
@@ -137,6 +190,13 @@ float getLowestTemperature(BatteryPack *pack) {
 		}
 	}
 	return lowestModuleTemperature;
+}
+
+void decodeTemperatures(BatteryPack *pack, can_frame *temperatureMessageFrame) {
+	int moduleId = (temperatureMessageFrame->can_id & 0x00F) + 1;
+	for ( int t = 0; t < TEMPS_PER_MODULE; t++ ) {
+		updateTemperature(pack->modules[moduleId], t, temperatureMessageFrame->data[t] - 40);
+	}
 }
 
 

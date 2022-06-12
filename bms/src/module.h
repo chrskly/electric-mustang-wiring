@@ -25,12 +25,14 @@ void initialiseModule(BatteryModule *module, BatteryPack *pack);
 // Voltage
 float getVoltage(BatteryModule *module);
 float getLowestCellVoltage(BatteryModule *module);
+bool hasCellUnderVoltage(BatteryModule *module);
 float getHighestCellVoltage(BatteryModule *module);
 void updateCellVoltage(BatteryModule *module, int cellIndex, float newCellVoltage);
 bool hasCellOverVoltage(BatteryModule *module);
 
-float getLowestTemperature(BatteryModule *module);
+void updateTemperature(BatteryModule *module, int tempSensorId, float newTemperature);
 float getHighestTemperature(BatteryModule *module);
+float getLowestTemperature(BatteryModule *module);
 bool hasCellOverTemp(BatteryModule *module);
 
 int getMaxChargingCurrent(BatteryModule *module);

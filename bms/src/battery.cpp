@@ -22,7 +22,7 @@
 
 void initialiseBattery(Battery *battery) {
 	// Create the packs
-	for ( int i = 0; i < 2; i++ ) {
+	for ( int i = 0; i < NUM_PACKS; i++ ) {
 		BatteryPack pack;
 		pack.battery = battery;
 	}
@@ -40,6 +40,7 @@ float getVoltage(Battery *battery) {
 	return battery->voltage;
 }
 
+// Recompute and store the battery voltage based on current cell voltages
 void updateVoltage(Battery *battery) {
 	float voltage = getVoltage(battery->packs[0]);
 	for ( int i = 1; i < NUM_PACKS; i++ ) {
@@ -50,42 +51,58 @@ void updateVoltage(Battery *battery) {
 	battery->voltage = voltage;
 }
 
+// Update the value we have stored for an individual cell in the pack
 void updateCellVoltage(Battery *battery, int packIndex, int moduleIndex, int cellIndex, float newCellVoltage) {
 	updateCellVoltage(battery->packs[packIndex], moduleIndex, cellIndex, newCellVoltage);
 }
 
 // Low cells
 
+// Return the voltage of the lowest cell in the battery
 float getLowestCellVoltage(Battery *battery) {
 	return battery->lowestCellVoltage;
 }
 
+// Recompute the lowest cell voltage
 void updateLowestCellVoltage(Battery *battery) {
 	float lowestCellVoltage = getLowestCellVoltage(battery->packs[0]);
-	for ( int i = 0; i < 2; i++ ) {
-		if ( getLowestCellVoltage(battery->packs[i]) < lowestCellVoltage ) {
-			lowestCellVoltage = getLowestCellVoltage(battery->packs[i]);
+	for ( int p = 1; p < NUM_PACKS; p++ ) {
+		if ( getLowestCellVoltage(battery->packs[p]) < lowestCellVoltage ) {
+			lowestCellVoltage = getLowestCellVoltage(battery->packs[p]);
 		}
 	}
 	battery->lowestCellVoltage = lowestCellVoltage;
 }
 
+// Return true if any cell in the battery is below the minimum voltage level
+bool hasCellUnderVoltage(Battery *battery) {
+	for ( int p = 0; p < NUM_PACKS; p++ ) {
+		if ( hasCellUnderVoltage(battery->packs[p]) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
 // High cells
 
+// Return the voltage of the highest cell in the battery
 float getHighestCellVoltage(Battery *battery) {
 	return battery->highestCellVoltage;
 }
 
+// Recompute the highest cell voltage
 void updateHighestCellVoltage(Battery *battery) {
 	float highestCellVoltage = getHighestCellVoltage(battery->packs[0]);
-	for ( int i = 0; i < 2; i++ ) {
-		if ( getHighestCellVoltage(battery->packs[i]) < highestCellVoltage ) {
-			highestCellVoltage = getHighestCellVoltage(battery->packs[i]);
+	for ( int p = 1; p < NUM_PACKS; p++ ) {
+		if ( getHighestCellVoltage(battery->packs[p]) < highestCellVoltage ) {
+			highestCellVoltage = getHighestCellVoltage(battery->packs[p]);
 		}
 	}
 	battery->highestCellVoltage = highestCellVoltage;
 }
 
+// Return true if any cell in the battery is below the minimum voltage level
 bool hasCellOverVoltage(Battery *battery) {
 	for ( int p = 0; p < NUM_PACKS; p++ ) {
 		if ( hasCellOverVoltage(battery->packs[p]) ) {
@@ -164,6 +181,8 @@ bool tooColdToCharge(Battery *battery) {
 	}
 	return false;
 }
+
+
 
 
 //// ----

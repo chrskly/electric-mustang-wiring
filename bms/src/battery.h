@@ -21,16 +21,36 @@
 
 void initialiseBattery(Battery *battery);
 
+// Voltage
+
 float getVoltage(Battery *battery);
+void updateVoltage(Battery *battery);
+void updateCellVoltage(Battery *battery, int packIndex, int moduleIndex, int cellIndex, float newCellVoltage);
+
 float getLowestCellVoltage(Battery *battery);
+void updateLowestCellVoltage(Battery *battery);
+bool hasCellUnderVoltage(Battery *battery);
+
 float getHighestCellVoltage(Battery *battery);
+void updateHighestCellVoltage(Battery *battery);
+bool hasCellOverVoltage(Battery *battery);
+
+float voltageDeltaBetweenPacks(Battery *battery);
+BatteryPack* getPackWithHighestVoltage(Battery *battery);
+
+// Temperature
+
+bool hasCellOverTemp(Battery *battery);
+int getMaxChargingCurrent(Battery *battery);
 
 float getLowestTemperature(Battery *battery);
+bool tooColdToCharge(Battery *battery);
 float getHighestTemperature(Battery *battery);
 bool hasCellOverTemp(Battery *battery);
 
-int getMaxChargingCurrent(Battery *battery);
-bool hasCellOverVoltage(Battery *battery);
+
 
 void closeContactors(Battery *battery);
 void openContactors(Battery *battery);
+
+

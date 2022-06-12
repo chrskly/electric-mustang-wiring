@@ -29,11 +29,14 @@ bool packIsAlive(BatteryPack *pack);
 float getVoltage(BatteryPack *pack);
 void updateVoltage(BatteryPack *pack);
 float getLowestCellVoltage(BatteryPack *pack);
+bool hasCellUnderVoltage(BatteryPack *pack);
 float getHighestCellVoltage(BatteryPack *pack);
 void updateCellVoltage(BatteryPack *pack, int moduleIndex, int cellIndex, float newCellVoltage);
-
+void decodeVoltages(BatteryPack *pack, can_frame voltageFrame);
 
 float getLowestTemperature(BatteryPack *pack);
+void decodeTemperatures(BatteryPack *pack, can_frame *temperatureMessageFrame);
+
 float getHighestTemperature(BatteryPack *pack);
 bool hasCellOverTemp(BatteryPack *pack);
 

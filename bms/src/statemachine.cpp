@@ -24,8 +24,11 @@
 
 
 /*
-    State = standby
-*/
+ * State      : standby
+ * Ignition   : off
+ * Contactors : open
+ * Charging   : no
+ */
 void state_standby(Event event) {
 
 	extern Battery battery;
@@ -40,6 +43,11 @@ void state_standby(Event event) {
 		case E_CELL_VOLTAGE_UPDATE:
 			if ( hasCellOverVoltage(&battery) ) {
 				state = state_overVoltageFault;
+				break;
+			}
+			if ( hasCellUnderVoltage(&battery) ) {
+				state = state_underVoltageFault;
+				break;
 			}
 			break;
 		case E_IGNITION_ON:
@@ -48,10 +56,7 @@ void state_standby(Event event) {
 		    break;
 		case E_CHARGING_INITIATED:
 		    // Is it warm enough to charge?
-		    if ( tooColdToCharge() ) {
-		    	// Tell charger to shut down
-		    	// open contactors
-		    	state = state_standby;
+		    if ( tooColdToCharge(&battery) ) {
 		    	break;
 		    }
 			closeContactors(&battery);
@@ -67,11 +72,12 @@ void state_standby(Event event) {
 }
 
 /*
-    State = drive
-*/
+ * State      : drive
+ * Ignition   : on
+ * Contactors : closed
+ * Charging   : no
+ */
 void state_drive(Event event) {
-
-	// contactors closed
 
 	extern Battery battery;
 	extern State state;
@@ -86,15 +92,27 @@ void state_drive(Event event) {
 			break;
 		case E_CELL_VOLTAGE_UPDATE:
 			if ( hasCellOverVoltage(&battery) ) {
-				// Tell inverter to shut down + short sleep
-				state = state_overVoltageFault;
+				// Can we tell the inverter to turn off regen?
+				//state = state_overVoltageFault;
+			}
+			if ( hasCellUnderVoltage(&battery) ) {
+				// Battery is empty. Disallow driving.
+				// Tell inverter to shut down + short sleep.
+				openContactors(&battery);
+				state = state_underVoltageFault;
+				break;
 			}
 			break;
 		case E_IGNITION_OFF:
 			// Tell inverter to shut down + short sleep
 			openContactors(&battery);
 			break;
+		case E_CHARGING_INITIATED:
+		    // FIXME - what do we do here.
+		    // Can we check if the car is in motion?
+		    break;
 		case E_EMERGENCY_SHUTDOWN:
+		    // Tell inverter to shut down + short sleep.
 		    openContactors(&battery);
 		    break;
 	}
@@ -102,8 +120,11 @@ void state_drive(Event event) {
 }
 
 /*
-    State = charging
-*/
+ * State      : charging
+ * Ignition   : on or off
+ * Contactors : closed
+ * Charging   : yes
+ */
 void state_charging(Event event) {
 
 	extern Battery battery;
@@ -118,7 +139,7 @@ void state_charging(Event event) {
 			    state = state_overTempFault;
 		    }
 		    // Is it too cold to continue charging?
-		    if ( tooColdToCharge() ) {
+		    if ( tooColdToCharge(&battery) ) {
 		    	// Tell charger to shut down
 		    	// open contactors
 		    	state = state_standby;
@@ -147,8 +168,11 @@ void state_charging(Event event) {
 }
 
 /*
-    State = overTempFault
-*/
+ * State      : overTempFault
+ * Ignition   : off
+ * Contactors : open
+ * Charging   : no
+ */
 void state_overTempFault(Event event) {
 
 	extern Battery battery;
@@ -177,8 +201,11 @@ void state_overTempFault(Event event) {
 }
 
 /*
-    State = overVoltageFault
-*/
+ * State      : overVoltageFault
+ * Ignition   : off
+ * Contactors : open
+ * Charging   : no
+ */
 void state_overVoltageFault(Event event) {
 
 	extern Battery battery;
@@ -206,6 +233,7 @@ void state_overVoltageFault(Event event) {
 		    break;
 		case E_CHARGING_INITIATED:
 			// Disallow charging when in overVoltageFault state.
+		    // FIXME signal to charger over CAN that charging is disallowed
 			break;
 		case E_EMERGENCY_SHUTDOWN:
 		    break;
@@ -215,15 +243,52 @@ void state_overVoltageFault(Event event) {
 }
 
 /*
-    State = underVoltageFault
-*/
+ * State      : underVoltageFault
+ * Ignition   : off
+ * Contactors : open
+ * Charging   : no
+ */
 void state_underVoltageFault(Event event) {
-	//
+
+	extern Battery battery;
+	extern State state;
+
+	switch (event) {
+		case E_TEMPERATURE_UPDATE:
+			if ( hasCellOverTemp(&battery) ) {
+			    state = state_overTempFault;
+		    }
+		    break;
+		case E_CELL_VOLTAGE_UPDATE:
+		    // cell voltage might rise slightly on its own over time when at rest
+		    if ( ! hasCellUnderVoltage(&battery) ) {
+		    	state = state_standby;
+		    }
+			break;
+		case E_IGNITION_ON:
+		    // Battery is empty. Disallow driving.
+		    break;
+		case E_CHARGING_INITIATED:
+		    // Is it warm enough to charge?
+		    if ( tooColdToCharge(&battery) ) {
+		    	break;
+		    }
+			closeContactors(&battery);
+			state = state_charging;
+			break;
+		case E_EMERGENCY_SHUTDOWN:
+		    break;
+		default:
+		    printf("Received unknown event");
+	}
 }
 
 /*
-    State = unknownFault
-*/
+ * State      : unknownFault
+ * Ignition   : --
+ * Contactors : --
+ * Charging   : --
+ */
 void state_unknownFault(Event event) {
 	//
 }

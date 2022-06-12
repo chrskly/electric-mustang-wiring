@@ -57,6 +57,16 @@ float getLowestCellVoltage(BatteryModule *module) {
 	return lowestCellVoltage;
 }
 
+// Return true if any of the cells in the module are over max voltage
+bool hasCellUnderVoltage(BatteryModule *module) {
+	for ( int c = 0; c < CELLS_PER_MODULE; c++ ) {
+		if ( module->cellVoltage[c] < CELL_UNDER_VOLTAGE_FAULT_THRESHOLD ) {
+			return true;
+		}
+	}
+	return false;
+}
+
 // Return the voltage of the highest cell voltage in the module
 float getHighestCellVoltage(BatteryModule *module) {
 	float highestCellVoltage = module->cellVoltage[0];
@@ -89,6 +99,10 @@ bool hasCellOverVoltage(BatteryModule *module) {
 // Temperature
 //
 //// ----
+
+void updateTemperature(BatteryModule *module, int tempSensorId, float newTemperature) {
+	module->cellTemperature[tempSensorId] = newTemperature;
+}
 
 // Return the temperature of the hottest sensor in the module
 float getHighestTemperature(BatteryModule *module) {
