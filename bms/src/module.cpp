@@ -100,6 +100,7 @@ bool hasCellOverVoltage(BatteryModule *module) {
 //
 //// ----
 
+// Update the value for one of the temperature sensors
 void updateTemperature(BatteryModule *module, int tempSensorId, float newTemperature) {
 	module->cellTemperature[tempSensorId] = newTemperature;
 }
@@ -116,6 +117,10 @@ float getHighestTemperature(BatteryModule *module) {
 	return highestTemperature;
 }
 
+bool hasCellOverTemp(BatteryModule *module) {
+	return ( getHighestTemperature(module) > CELL_OVER_TEMPERATURE_FAULT_THRESHOLD );
+}
+
 // Return the temperature of the coldest sensor in the module
 float getLowestTemperature(BatteryModule *module) {
 	float lowestTemperature = 1000;
@@ -126,7 +131,6 @@ float getLowestTemperature(BatteryModule *module) {
 	}
 	return lowestTemperature;
 }
-
 
 // returns true when any temperature sensor in this module is over the warning
 // level, but below the critical level.
@@ -139,26 +143,6 @@ bool temperatureAtWarningLevel(BatteryModule *module) {
 	}
 	return false;
 }
-
-/*
-bool temperatureDisalllowsDriving(BatteryModule *module) {
-	for ( int i = 0; i < CELLS_PER_MODULE; i++ ) {
-		if ( module->cellTemperature[i] >= CELL_OVER_TEMPERATURE_FAULT_THRESHOLD ) {
-			return true;
-		}
-	}
-	return false;
-}
-
-bool temperatureDisallowsCharging(BatteryModule *module) {
-	for ( int i = 0; i < CELLS_PER_MODULE; i++ ) {
-		if ( module->cellTemperature[i] <= CELL_UNDER_TEMPERATURE_FAULT_THRESHOLD ) {
-			return true;
-		}
-	}
-	return false;
-}
-*/
 
 
 //// ----

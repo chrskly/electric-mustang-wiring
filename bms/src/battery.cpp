@@ -154,7 +154,6 @@ bool hasCellOverTemp(Battery *battery) {
 	return false;
 }
 
-
 int getMaxChargingCurrent(Battery *battery) {
 	int maxChargeCurrent = CHARGE_CURRENT_MAX;
 	for ( int p = 0; p < NUM_PACKS; p++ ) {

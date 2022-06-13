@@ -17,8 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//#include "pack.h"
-
 
 void initialiseModule(BatteryModule *module, BatteryPack *pack);
 
@@ -27,14 +25,17 @@ float getVoltage(BatteryModule *module);
 float getLowestCellVoltage(BatteryModule *module);
 bool hasCellUnderVoltage(BatteryModule *module);
 float getHighestCellVoltage(BatteryModule *module);
+bool hasCellOverTemp(BatteryModule *module);
 void updateCellVoltage(BatteryModule *module, int cellIndex, float newCellVoltage);
 bool hasCellOverVoltage(BatteryModule *module);
 
+// Temperature
 void updateTemperature(BatteryModule *module, int tempSensorId, float newTemperature);
 float getHighestTemperature(BatteryModule *module);
 float getLowestTemperature(BatteryModule *module);
-bool hasCellOverTemp(BatteryModule *module);
+bool temperatureAtWarningLevel(BatteryModule *module);
 
+// Charging
 int getMaxChargingCurrent(BatteryModule *module);
 
 

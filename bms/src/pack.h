@@ -31,17 +31,16 @@ void updateVoltage(BatteryPack *pack);
 float getLowestCellVoltage(BatteryPack *pack);
 bool hasCellUnderVoltage(BatteryPack *pack);
 float getHighestCellVoltage(BatteryPack *pack);
+bool hasCellOverVoltage(BatteryPack *pack);
 void updateCellVoltage(BatteryPack *pack, int moduleIndex, int cellIndex, float newCellVoltage);
 void decodeVoltages(BatteryPack *pack, can_frame voltageFrame);
 
+// Temperature
+bool hasCellOverTemp(BatteryPack *pack);
+int getMaxChargingCurrent(BatteryPack *pack);
 float getLowestTemperature(BatteryPack *pack);
 void decodeTemperatures(BatteryPack *pack, can_frame *temperatureMessageFrame);
 
-float getHighestTemperature(BatteryPack *pack);
-bool hasCellOverTemp(BatteryPack *pack);
-
-int getMaxChargingCurrent(BatteryPack *pack);
-bool hasCellOverVoltage(BatteryPack *pack);
-
+// Contactors
 bool closeContactors(BatteryPack *pack);
 bool openContactors(BatteryPack *pack);
