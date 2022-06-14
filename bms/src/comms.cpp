@@ -51,7 +51,11 @@ uint8_t getcheck(can_frame &msg, int id) {
 }
 */
 
+//// ----
+//
 // Polling the modules for voltage and temperature readings
+//
+//// ----
 
 struct can_frame pollModuleFrame;
 
@@ -72,7 +76,7 @@ struct repeating_timer pollModuleTimer;
  *   byte 7 : checksum
  */
 
-void requestModuleData(BatteryPack *pack) {
+void requestPackData(BatteryPack *pack) {
 
 	  if ( pack->pollMessageId == 6 ) {
 		    pack->pollMessageId = 0;
@@ -129,7 +133,6 @@ void requestModuleData(BatteryPack *pack) {
 
 	  pollModuleFrame.data[7] = getcheck(pollModuleFrame, pack->pollMessageId);
 
-	  //Can0.write(pollModuleFrame);
 	  pack->CAN.sendMessage(&pollModuleFrame);
 	  pack->pollMessageId++;
 
@@ -138,17 +141,23 @@ void requestModuleData(BatteryPack *pack) {
 	  //}
 }
 
-bool pollAllModulesForData(struct repeating_timer *t) {
-	//requestModuleData(battery->packs);
-	return true;
+// Send request to each pack to ask for a data update
+bool pollPacksForData(struct repeating_timer *t) {
+		for ( int p = 0; p < NUM_PACKS; p++ ) {
+			  requestPackData(battery->packs[p]);
+		}
+		return true;
 }
-
 
 void enableModulePolling() {
-    add_repeating_timer_ms(1000, pollAllModulesForData, NULL, &pollModuleTimer);
+    add_repeating_timer_ms(1000, pollPacksForData, NULL, &pollModuleTimer);
 }
 
-//// ---- status messages
+//// ----
+//
+// status messages
+//
+//// ----
 
 // CAN frame to hold status message sent out to rest of car
 // bit 0-4 = state (0=standby, 1=drive, 2=charging, 3=overTempFault, 4=underVoltageFault ) 
@@ -185,7 +194,11 @@ void enableStatusMessages() {
 }
 
 
-//// ---- send charge limits message (id = 0x102)
+//// ----
+// 
+// send charge limits message (id = 0x102)
+//
+//// ----
 
 // CAN frame to hold charge limits message
 // byte 0 = 0x0
