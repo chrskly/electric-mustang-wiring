@@ -43,6 +43,31 @@ bool packIsAlive(BatteryPack *pack) {
 	return true;
 }
 
+void setPackErrorStatus(BatteryPack *pack, int newErrorStatus) {
+	pack->errorStatus = newErrorStatus;
+}
+
+int getPackErrorStatus(BatteryPack *pack) {
+	return pack->errorStatus;
+}
+
+void setPackBalanceStatus(BatteryPack *pack, int newBalanceStatus) {
+	pack->balanceStatus = newBalanceStatus;
+}
+
+int getPackBalanceStatus(BatteryPack *pack) {
+	return pack->balanceStatus;
+}
+
+// Return true if it's time for the pack to be balanced.
+bool packIsDueToBeBalanced(BatteryPack *pack) {
+	return ( absolute_time_diff_us(get_absolute_time(), pack->nextBalanceTime) < 0 );
+}
+
+void resetBalanceTimer(BatteryPack *pack) {
+	pack->nextBalanceTime = delayed_by_us(get_absolute_time(), BALANCE_INTERVAL);
+}
+
 
 //// ----
 //
@@ -111,42 +136,44 @@ void updateCellVoltage(BatteryPack *pack, int moduleId, int cellIndex, float new
 	updateCellVoltage(pack->modules[moduleId], cellIndex, newCellVoltage);
 }
 
-void decodeVoltages(BatteryPack *pack, can_frame voltageFrame) {
-	int messageId = (voltageFrame.can_id & 0x0F0);
-	int moduleId = (voltageFrame.can_id & 0x00F) + 1;
+void decodeVoltages(BatteryPack *pack, can_frame frame) {
+	int messageId = (frame.can_id & 0x0F0);
+	int moduleId = (frame.can_id & 0x00F) + 1;
 
 	switch (messageId) {
 	    case 0x000:
-	        //error = voltageFrame.data[0] + (voltageFrame.data[1] << 8) + (voltageFrame.data[2] << 16) + (voltageFrame.data[3] << 24);
-	        //balstat = (voltageFrame.data[5]<< 8) + voltageFrame.data[4];
+	        // error = msg.buf[0] + (msg.buf[1] << 8) + (msg.buf[2] << 16) + (msg.buf[3] << 24);
+	        setPackErrorStatus(pack, frame.data[0] + (frame.data[1] << 8) + (frame.data[2] << 16) + (frame.data[3] << 24));
+	        // balstat = (frame.data[5] << 8) + frame.data[4];
+	        setPackBalanceStatus(pack, (frame.data[5] << 8) + frame.data[4]);
 	        break;
 		case 0x020:
-		    updateCellVoltage(pack, moduleId, 0, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 1, float(voltageFrame.data[2] + (voltageFrame.data[3] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 2, float(voltageFrame.data[4] + (voltageFrame.data[5] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 0, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 1, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 2, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
 		    break;
 	    case 0x30:
-		    updateCellVoltage(pack, moduleId, 3, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 4, float(voltageFrame.data[2] + (voltageFrame.data[3] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 5, float(voltageFrame.data[4] + (voltageFrame.data[5] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 3, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 4, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 5, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
 	        break;
 	    case 0x40:
-		    updateCellVoltage(pack, moduleId, 6, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 7, float(voltageFrame.data[2] + (voltageFrame.data[3] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 8, float(voltageFrame.data[4] + (voltageFrame.data[5] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 6, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 7, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 8, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
 	        break;
 	    case 0x50:
-		    updateCellVoltage(pack, moduleId, 9, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 10, float(voltageFrame.data[2] + (voltageFrame.data[3] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 11, float(voltageFrame.data[4] + (voltageFrame.data[5] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 9, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 10, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 11, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
 	        break;
 	    case 0x60:
-		    updateCellVoltage(pack, moduleId, 12, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 13, float(voltageFrame.data[2] + (voltageFrame.data[3] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 14, float(voltageFrame.data[4] + (voltageFrame.data[5] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 12, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 13, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 14, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
 	        break;
 	    case 0x70:
-		    updateCellVoltage(pack, moduleId, 15, float(voltageFrame.data[0] + (voltageFrame.data[1] & 0x3F) * 256) / 1000);
+		    updateCellVoltage(pack, moduleId, 15, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
 	        break;
 	    default:
 	        break;

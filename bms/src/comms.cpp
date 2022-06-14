@@ -31,9 +31,13 @@
 CRC8 crc8;
 uint8_t checksum;
 const uint8_t finalxor [12] = {0xCF, 0xF5, 0xBB, 0x81, 0x27, 0x1D, 0x53, 0x69, 0x02, 0x38, 0x76, 0x4C};
+*/
 
-uint8_t getcheck(CAN_message_t &msg, int id)
-{
+uint8_t getcheck(can_frame &msg, int id) {
+	  return 0x00;
+}
+
+/*
   unsigned char canmes [11];
   int meslen = msg.len + 1; //remove one for crc and add two for id bytes
   canmes [1] = msg.id;
@@ -53,50 +57,85 @@ struct can_frame pollModuleFrame;
 
 struct repeating_timer pollModuleTimer;
 
-void requestModuleData(BatteryModule *module) {
-	struct can_frame pollMsg;
+/*
+ * pollMessageId : loops from 0 to 5. Sets the Id of the CAN message.
+ * mescycle      : loops from 0 to 0xF. Incremented when pollMessageId wraps.
+ *
+ * Contents of message
+ *   byte 0 : balance data
+ *   byte 1 : balance data
+ *   byte 2 : 0x00
+ *   byte 3 : 0x00
+ *   byte 4 : 
+ *   byte 5 : 0x01
+ *   byte 6 :
+ *   byte 7 : checksum
+ */
 
-	if (module->msgcycle == 0xF) {
-		module->msgcycle = 0;
-	}
+void requestModuleData(BatteryPack *pack) {
 
-	if (module->nextmsg == 8) {
-      module->nextmsg = 0;
-      if (module->testcycle < 4)
-      {
-        module->testcycle++;
-      }
-    }
+	  if ( pack->pollMessageId == 6 ) {
+		    pack->pollMessageId = 0;
+		    pack->msgcycle++;
 
-    pollMsg.can_id = 0x080 | (module->nextmsg);
-    //pollMsg.dlc = 8;
-    pollMsg.data[0] = 0x68;
-    pollMsg.data[1] = 0x10;
-    pollMsg.data[2] = 0x00;
+		    if ( pack->testcycle < 4 ) {
+			      pack->testcycle++;
+		    }
 
-    if (module->testcycle < 3) {
-	    pollMsg.data[3] = 0x00;
-	    pollMsg.data[4] = 0x00;
-	}
-	else {
-	    pollMsg.data[3] = 0x50; // request voltage and temperature
-	    pollMsg.data[4] = 0x00;
-	}
+		    if ( pack->msgcycle == 0xF ) {
+			      pack->msgcycle = 0;
+			      if ( ! packIsDueToBeBalanced(pack) ) {
+			      	  resetBalanceTimer(pack);
+			      }
+		    }
+	  }
 
-	pollMsg.data[5] = 0x00;
-	pollMsg.data[6] = module->msgcycle << 4;
+    // Set the Id and length of the CAN frame
+	  pollModuleFrame.can_id = 0x080 | (pack->pollMessageId);
+	  pollModuleFrame.can_dlc = 8;
 
-	if (module->testcycle == 2) {
-	    pollMsg.data[6] = pollMsg.data[6] + 0x04;
-	}
+	  if ( packIsDueToBeBalanced(pack) ) {
+	  	  uint16_t lowestCellVoltage = ( uint16_t(getLowestCellVoltage(pack)) * 1000 ) + 5;
+		    pollModuleFrame.data[0] = lowestCellVoltage & 0x00FF;          // low byte
+		    pollModuleFrame.data[1] = ( lowestCellVoltage >> 8 ) & 0x00FF; // high byte
+	  }
+	  else {
+		    pollModuleFrame.data[0] = 0xC7;
+		    pollModuleFrame.data[1] = 0x10;
+	  }
 
-	//msg.buf[7] = getcheck(msg, module->nextmsg);
+	  pollModuleFrame.data[2] = 0x00; // balancing bits
+	  pollModuleFrame.data[3] = 0x00; // balancing bits
 
-	module->msgcycle ++;
-	module->nextmsg ++;
+	  if (pack->testcycle < 3) {
+		    pollModuleFrame.data[4] = 0x20;
+		    pollModuleFrame.data[5] = 0x00;
+	  }
+	  else {
+		    if ( packIsDueToBeBalanced(pack) ) {
+			      pollModuleFrame.data[4] = 0x48;
+		    }
+		    else {
+			      pollModuleFrame.data[4] = 0x40;
+		    }
+		    pollModuleFrame.data[5] = 0x01;
+	  }
 
-	module->pack->CAN.sendMessage(&pollMsg);
+	  pollModuleFrame.data[6] = pack->msgcycle << 4;
 
+	  if ( pack->testcycle == 2 ) {
+		    pollModuleFrame.data[6] = pollModuleFrame.data[6] + 0x04;
+	  }
+
+	  pollModuleFrame.data[7] = getcheck(pollModuleFrame, pack->pollMessageId);
+
+	  //Can0.write(pollModuleFrame);
+	  pack->CAN.sendMessage(&pollModuleFrame);
+	  pack->pollMessageId++;
+
+	  //if (bms.checkstatus() == true) {
+		//    resetbalancedebug();
+	  //}
 }
 
 bool pollAllModulesForData(struct repeating_timer *t) {

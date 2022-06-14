@@ -24,6 +24,12 @@
 
 void initialisePack(BatteryPack *pack);
 bool packIsAlive(BatteryPack *pack);
+void setPackErrorStatus(BatteryPack *pack, int newErrorStatus);
+int getPackErrorStatus(BatteryPack *pack);
+void setPackBalanceStatus(BatteryPack *pack, int newBalanceStatus);
+int getPackBalanceStatus(BatteryPack *pack);
+bool packIsDueToBeBalanced(BatteryPack *pack);
+void resetBalanceTimer(BatteryPack *pack);
 
 // Voltage
 float getVoltage(BatteryPack *pack);

@@ -52,6 +52,8 @@ const int CONTACTOR_PINS[] = { 2, 3 };
 #define CHARGE_CURRENT_MAX 125                      // ~50kw
 #define CHARGE_CURRENT_MIN 8                        // ~3.3kw
 
+#define BALANCE_INTERVAL 1200                       // number of seconds between balancing sessions
+
 
 
 //// ---- CAN message IDs

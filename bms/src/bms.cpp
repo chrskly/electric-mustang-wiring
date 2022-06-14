@@ -73,6 +73,8 @@ SPIO15 (20) SPI0 CS1 - to CS on mcp2515 board 1 (vai level converter)
 #define UART_TX_PIN      0 // pin 1
 #define UART_RX_PIN      1 // pin 2
 
+#define CAN_CLK_PIN     21 // pin 27
+
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
 // CAN interfaces
@@ -199,14 +201,14 @@ int main() {
     uart_puts(UART_ID, "BMS starting up...\n");
 
     // 8MHz clock for CAN
-    clock_gpio_init(CAN_CLK_PIN, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS, 10);
+    //clock_gpio_init(CAN_CLK_PIN, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS, 10);
 
     setupCAN();
 
     // interrupt for mainCAN, batt1CAN, and batt2CAN
-    gpio_set_irq_enabled_with_callback(MAIN_CAN_INT, GPIO_IRQ_LEVEL_LOW, true, &handleMainCANInterrupt);
-    gpio_set_irq_enabled_with_callback(BATT1_CAN_INT, GPIO_IRQ_LEVEL_LOW, true, &handleBatt1CANInterrupt);
-    gpio_set_irq_enabled_with_callback(BATT2_CAN_INT, GPIO_IRQ_LEVEL_LOW, true, &handleBatt2CANInterrupt);
+    //gpio_set_irq_enabled_with_callback(MAIN_CAN_INT, GPIO_IRQ_LEVEL_LOW, true, &handleMainCANInterrupt);
+    //gpio_set_irq_enabled_with_callback(BATT1_CAN_INT, GPIO_IRQ_LEVEL_LOW, true, &handleBatt1CANInterrupt);
+    //gpio_set_irq_enabled_with_callback(BATT2_CAN_INT, GPIO_IRQ_LEVEL_LOW, true, &handleBatt2CANInterrupt);
 
     for ( int p = 0; p < NUM_PACKS; p++ ) {
         struct BatteryPack pack;
