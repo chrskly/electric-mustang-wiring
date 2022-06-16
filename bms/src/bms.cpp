@@ -241,7 +241,7 @@ int main() {
     
 
     // 
-    enableModulePolling();
+    enable_module_polling();
 
     while(true) {
         // process inbound messages
