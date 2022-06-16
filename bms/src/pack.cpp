@@ -209,6 +209,7 @@ int get_max_charging_current(BatteryPack *pack) {
 	return maxChargeCurrent;
 }
 
+// return the temperature of the lowest sensor in the pack
 float get_lowest_temperature(BatteryPack *pack) {
 	float lowestModuleTemperature = 1000;
 	for ( int m = 0; m < MODULES_PER_PACK; m++ ) {
@@ -219,6 +220,7 @@ float get_lowest_temperature(BatteryPack *pack) {
 	return lowestModuleTemperature;
 }
 
+// Extract temperature sensor readings from CAN frame and update stored values
 void decode_temperatures(BatteryPack *pack, can_frame *temperatureMessageFrame) {
 	int moduleId = (temperatureMessageFrame->can_id & 0x00F) + 1;
 	for ( int t = 0; t < TEMPS_PER_MODULE; t++ ) {
@@ -232,6 +234,7 @@ void decode_temperatures(BatteryPack *pack, can_frame *temperatureMessageFrame) 
 // Contactors
 //
 //// ----
+
 
 bool close_contactors(BatteryPack *pack) {
 	gpio_put(pack->contactorPin, 1);
