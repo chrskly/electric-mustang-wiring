@@ -25,7 +25,7 @@ float get_voltage(BatteryModule *module);
 float get_lowest_cell_voltage(BatteryModule *module);
 bool has_cell_under_voltage(BatteryModule *module);
 float get_highest_cell_voltage(BatteryModule *module);
-bool has_cell_over_temp(BatteryModule *module);
+bool has_temperature_sensor_over_max(BatteryModule *module);
 void update_cell_voltage(BatteryModule *module, int cellIndex, float newCellVoltage);
 bool has_cell_over_voltage(BatteryModule *module);
 

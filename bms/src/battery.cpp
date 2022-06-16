@@ -128,6 +128,7 @@ float voltage_delta_between_packs(Battery *battery) {
 	return highestPackVoltage - lowestPackVoltage;
 }
 
+// return the battery pack which has the highest voltage
 BatteryPack* get_pack_with_highest_voltage(Battery *battery) {
 	BatteryPack* pack = battery->packs[0];
 	for ( int p = 1; p < NUM_PACKS; p++ ) {
@@ -145,9 +146,10 @@ BatteryPack* get_pack_with_highest_voltage(Battery *battery) {
 //
 //// ----
 
-bool has_cell_over_temp(Battery *battery) {
+// Return true if any sensor in the pack is over the max temperature
+bool has_temperature_sensor_over_max(Battery *battery) {
 	for ( int i = 0; i < NUM_PACKS; i++ ) {
-		if ( has_cell_over_temp(battery->packs[i]) ){
+		if ( has_temperature_sensor_over_max(battery->packs[i]) ){
 			return true;
 		}
 	}

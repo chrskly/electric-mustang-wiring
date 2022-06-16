@@ -42,7 +42,7 @@ void update_cell_voltage(BatteryPack *pack, int moduleIndex, int cellIndex, floa
 void decode_voltages(BatteryPack *pack, can_frame voltageFrame);
 
 // Temperature
-bool has_cell_over_temp(BatteryPack *pack);
+bool has_temperature_sensor_over_max(BatteryPack *pack);
 int get_max_charging_current(BatteryPack *pack);
 float get_lowest_temperature(BatteryPack *pack);
 void decode_temperatures(BatteryPack *pack, can_frame *temperatureMessageFrame);

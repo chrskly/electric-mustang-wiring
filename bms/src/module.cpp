@@ -118,7 +118,7 @@ float get_highest_temperature(BatteryModule *module) {
 }
 
 // Return true if any temperature sensor is over the max temperature
-bool has_cell_over_temp(BatteryModule *module) {
+bool has_temperature_sensor_over_max(BatteryModule *module) {
 	return ( get_highest_temperature(module) > CELL_OVER_TEMPERATURE_FAULT_THRESHOLD );
 }
 

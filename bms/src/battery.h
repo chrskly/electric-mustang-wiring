@@ -35,7 +35,7 @@ float voltage_delta_between_packs(Battery *battery);
 BatteryPack* get_pack_with_highest_voltage(Battery *battery);
 
 // Temperature
-bool has_cell_over_temp(Battery *battery);
+bool has_temperature_sensor_over_max(Battery *battery);
 int get_max_charging_current(Battery *battery);
 float get_lowest_temperature(Battery *battery);
 bool too_cold_to_charge(Battery *battery);

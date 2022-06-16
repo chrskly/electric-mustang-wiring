@@ -189,9 +189,9 @@ void decode_voltages(BatteryPack *pack, can_frame frame) {
 //// ----
 
 // Return true if any cell in the pack is over max temperature
-bool has_cell_over_temp(BatteryPack *pack) {
+bool has_temperature_sensor_over_max(BatteryPack *pack) {
 	for ( int i = 0; i < MODULES_PER_PACK; i++ ) {
-		if ( has_cell_over_temp(pack->modules[i]) ) {
+		if ( has_temperature_sensor_over_max(pack->modules[i]) ) {
 			return true;
 		}
 	}

@@ -36,7 +36,7 @@ void state_standby(Event event) {
 
 	switch (event) {
 		case E_TEMPERATURE_UPDATE:
-			if ( has_cell_over_temp(&battery) ) {
+			if ( has_temperature_sensor_over_max(&battery) ) {
 			    state = state_overTempFault;
 		    }
 		    break;
@@ -84,7 +84,7 @@ void state_drive(Event event) {
 
 	switch (event) {
 		case E_TEMPERATURE_UPDATE:
-			if ( has_cell_over_temp(&battery) ) {
+			if ( has_temperature_sensor_over_max(&battery) ) {
 				// Tell inverter to shut down + short sleep
 				open_contactors(&battery);
 				state = state_overTempFault;
@@ -133,7 +133,7 @@ void state_charging(Event event) {
 	switch (event) {
 		case E_TEMPERATURE_UPDATE:
 		    // Switch to error state if any cell is too hot
-			if ( has_cell_over_temp(&battery) ) {
+			if ( has_temperature_sensor_over_max(&battery) ) {
 				// Tell charger to shut down
 				// open contactors
 			    state = state_overTempFault;
@@ -183,7 +183,7 @@ void state_overTempFault(Event event) {
 
 	switch (event) {
 		case E_TEMPERATURE_UPDATE:
-			if ( ! has_cell_over_temp(&battery) ) {
+			if ( ! has_temperature_sensor_over_max(&battery) ) {
 			    state = state_standby;
 		    }
 		    break;
@@ -215,7 +215,7 @@ void state_overVoltageFault(Event event) {
 		case E_TEMPERATURE_UPDATE:
 		    // overTempFault beats overVoltageFault, so if a cell is too hot
 		    // then switch to overTempFault state.
-			if ( has_cell_over_temp(&battery) ) {
+			if ( has_temperature_sensor_over_max(&battery) ) {
 			    state = state_overTempFault;
 		    }
 		    break;
@@ -255,7 +255,7 @@ void state_underVoltageFault(Event event) {
 
 	switch (event) {
 		case E_TEMPERATURE_UPDATE:
-			if ( has_cell_over_temp(&battery) ) {
+			if ( has_temperature_sensor_over_max(&battery) ) {
 			    state = state_overTempFault;
 		    }
 		    break;
