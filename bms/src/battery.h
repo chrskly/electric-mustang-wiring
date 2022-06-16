@@ -19,29 +19,29 @@
 
 #include "structs.h"
 
-void initialiseBattery(Battery *battery);
+void initialise_battery(Battery *battery);
 
 // Voltage
-float getVoltage(Battery *battery);
-void updateVoltage(Battery *battery);
-void updateCellVoltage(Battery *battery, int packIndex, int moduleIndex, int cellIndex, float newCellVoltage);
-float getLowestCellVoltage(Battery *battery);
-void updateLowestCellVoltage(Battery *battery);
-bool hasCellUnderVoltage(Battery *battery);
-float getHighestCellVoltage(Battery *battery);
-void updateHighestCellVoltage(Battery *battery);
-bool hasCellOverVoltage(Battery *battery);
-float voltageDeltaBetweenPacks(Battery *battery);
-BatteryPack* getPackWithHighestVoltage(Battery *battery);
+float get_voltage(Battery *battery);
+void update_voltage(Battery *battery);
+void update_cell_voltage(Battery *battery, int packIndex, int moduleIndex, int cellIndex, float newCellVoltage);
+float get_lowest_cell_voltage(Battery *battery);
+void update_lowest_cell_voltage(Battery *battery);
+bool has_cell_under_voltage(Battery *battery);
+float get_highest_cell_voltage(Battery *battery);
+void update_highest_cell_voltage(Battery *battery);
+bool has_cell_over_voltage(Battery *battery);
+float voltage_delta_between_packs(Battery *battery);
+BatteryPack* get_pack_with_highest_voltage(Battery *battery);
 
 // Temperature
-bool hasCellOverTemp(Battery *battery);
-int getMaxChargingCurrent(Battery *battery);
-float getLowestTemperature(Battery *battery);
-bool tooColdToCharge(Battery *battery);
+bool has_cell_over_temp(Battery *battery);
+int get_max_charging_current(Battery *battery);
+float get_lowest_temperature(Battery *battery);
+bool too_cold_to_charge(Battery *battery);
 
 // Contactors
-void closeContactors(Battery *battery);
-void openContactors(Battery *battery);
+void close_contactors(Battery *battery);
+void open_contactors(Battery *battery);
 
 

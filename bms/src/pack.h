@@ -22,31 +22,31 @@
 
 #include "structs.h"
 
-void initialisePack(BatteryPack *pack);
-bool packIsAlive(BatteryPack *pack);
-void setPackErrorStatus(BatteryPack *pack, int newErrorStatus);
-int getPackErrorStatus(BatteryPack *pack);
-void setPackBalanceStatus(BatteryPack *pack, int newBalanceStatus);
-int getPackBalanceStatus(BatteryPack *pack);
-bool packIsDueToBeBalanced(BatteryPack *pack);
-void resetBalanceTimer(BatteryPack *pack);
+void initialise_pack(BatteryPack *pack);
+bool pack_is_alive(BatteryPack *pack);
+void set_pack_error_status(BatteryPack *pack, int newErrorStatus);
+int get_pack_error_status(BatteryPack *pack);
+void set_pack_balance_status(BatteryPack *pack, int newBalanceStatus);
+int get_pack_balance_status(BatteryPack *pack);
+bool pack_is_due_to_be_balanced(BatteryPack *pack);
+void reset_balance_timer(BatteryPack *pack);
 
 // Voltage
-float getVoltage(BatteryPack *pack);
-void updateVoltage(BatteryPack *pack);
-float getLowestCellVoltage(BatteryPack *pack);
-bool hasCellUnderVoltage(BatteryPack *pack);
-float getHighestCellVoltage(BatteryPack *pack);
-bool hasCellOverVoltage(BatteryPack *pack);
-void updateCellVoltage(BatteryPack *pack, int moduleIndex, int cellIndex, float newCellVoltage);
-void decodeVoltages(BatteryPack *pack, can_frame voltageFrame);
+float get_voltage(BatteryPack *pack);
+void update_voltage(BatteryPack *pack);
+float get_lowest_cell_voltage(BatteryPack *pack);
+bool has_cell_under_voltage(BatteryPack *pack);
+float get_highest_cell_voltage(BatteryPack *pack);
+bool has_cell_over_voltage(BatteryPack *pack);
+void update_cell_voltage(BatteryPack *pack, int moduleIndex, int cellIndex, float newCellVoltage);
+void decode_voltages(BatteryPack *pack, can_frame voltageFrame);
 
 // Temperature
-bool hasCellOverTemp(BatteryPack *pack);
-int getMaxChargingCurrent(BatteryPack *pack);
-float getLowestTemperature(BatteryPack *pack);
-void decodeTemperatures(BatteryPack *pack, can_frame *temperatureMessageFrame);
+bool has_cell_over_temp(BatteryPack *pack);
+int get_max_charging_current(BatteryPack *pack);
+float get_lowest_temperature(BatteryPack *pack);
+void decode_temperatures(BatteryPack *pack, can_frame *temperatureMessageFrame);
 
 // Contactors
-bool closeContactors(BatteryPack *pack);
-bool openContactors(BatteryPack *pack);
+bool close_contactors(BatteryPack *pack);
+bool open_contactors(BatteryPack *pack);

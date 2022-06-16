@@ -20,7 +20,7 @@
 #include "battery.h"
 #include "pack.h"
 
-void initialiseBattery(Battery *battery) {
+void initialise_battery(Battery *battery) {
 	// Create the packs
 	for ( int i = 0; i < NUM_PACKS; i++ ) {
 		BatteryPack pack;
@@ -36,48 +36,48 @@ void initialiseBattery(Battery *battery) {
 //// ----
 
 // Return the voltage of the whole battery
-float getVoltage(Battery *battery) {
+float get_voltage(Battery *battery) {
 	return battery->voltage;
 }
 
 // Recompute and store the battery voltage based on current cell voltages
-void updateVoltage(Battery *battery) {
-	float voltage = getVoltage(battery->packs[0]);
+void update_voltage(Battery *battery) {
+	float voltage = get_voltage(battery->packs[0]);
 	for ( int i = 1; i < NUM_PACKS; i++ ) {
-		if ( getVoltage(battery->packs[i]) > voltage ) {
-			voltage = getVoltage(battery->packs[i]);
+		if ( get_voltage(battery->packs[i]) > voltage ) {
+			voltage = get_voltage(battery->packs[i]);
 		}
 	}
 	battery->voltage = voltage;
 }
 
 // Update the value we have stored for an individual cell in the pack
-void updateCellVoltage(Battery *battery, int packIndex, int moduleIndex, int cellIndex, float newCellVoltage) {
-	updateCellVoltage(battery->packs[packIndex], moduleIndex, cellIndex, newCellVoltage);
+void update_cell_voltage(Battery *battery, int packIndex, int moduleIndex, int cellIndex, float newCellVoltage) {
+	update_cell_voltage(battery->packs[packIndex], moduleIndex, cellIndex, newCellVoltage);
 }
 
 // Low cells
 
 // Return the voltage of the lowest cell in the battery
-float getLowestCellVoltage(Battery *battery) {
+float get_lowest_cell_voltage(Battery *battery) {
 	return battery->lowestCellVoltage;
 }
 
 // Recompute the lowest cell voltage
-void updateLowestCellVoltage(Battery *battery) {
-	float lowestCellVoltage = getLowestCellVoltage(battery->packs[0]);
+void update_lowest_cell_voltage(Battery *battery) {
+	float lowestCellVoltage = get_lowest_cell_voltage(battery->packs[0]);
 	for ( int p = 1; p < NUM_PACKS; p++ ) {
-		if ( getLowestCellVoltage(battery->packs[p]) < lowestCellVoltage ) {
-			lowestCellVoltage = getLowestCellVoltage(battery->packs[p]);
+		if ( get_lowest_cell_voltage(battery->packs[p]) < lowestCellVoltage ) {
+			lowestCellVoltage = get_lowest_cell_voltage(battery->packs[p]);
 		}
 	}
 	battery->lowestCellVoltage = lowestCellVoltage;
 }
 
 // Return true if any cell in the battery is below the minimum voltage level
-bool hasCellUnderVoltage(Battery *battery) {
+bool has_cell_under_voltage(Battery *battery) {
 	for ( int p = 0; p < NUM_PACKS; p++ ) {
-		if ( hasCellUnderVoltage(battery->packs[p]) ) {
+		if ( has_cell_under_voltage(battery->packs[p]) ) {
 			return true;
 		}
 	}
@@ -87,25 +87,25 @@ bool hasCellUnderVoltage(Battery *battery) {
 // High cells
 
 // Return the voltage of the highest cell in the battery
-float getHighestCellVoltage(Battery *battery) {
+float get_highest_cell_voltage(Battery *battery) {
 	return battery->highestCellVoltage;
 }
 
 // Recompute the highest cell voltage
-void updateHighestCellVoltage(Battery *battery) {
-	float highestCellVoltage = getHighestCellVoltage(battery->packs[0]);
+void update_highest_cell_voltage(Battery *battery) {
+	float highestCellVoltage = get_highest_cell_voltage(battery->packs[0]);
 	for ( int p = 1; p < NUM_PACKS; p++ ) {
-		if ( getHighestCellVoltage(battery->packs[p]) < highestCellVoltage ) {
-			highestCellVoltage = getHighestCellVoltage(battery->packs[p]);
+		if ( get_highest_cell_voltage(battery->packs[p]) < highestCellVoltage ) {
+			highestCellVoltage = get_highest_cell_voltage(battery->packs[p]);
 		}
 	}
 	battery->highestCellVoltage = highestCellVoltage;
 }
 
 // Return true if any cell in the battery is below the minimum voltage level
-bool hasCellOverVoltage(Battery *battery) {
+bool has_cell_over_voltage(Battery *battery) {
 	for ( int p = 0; p < NUM_PACKS; p++ ) {
-		if ( hasCellOverVoltage(battery->packs[p]) ) {
+		if ( has_cell_over_voltage(battery->packs[p]) ) {
 			return true;
 		}
 	}
@@ -113,11 +113,11 @@ bool hasCellOverVoltage(Battery *battery) {
 }
 
 // Return the largest voltage difference between any two packs in this battery.
-float voltageDeltaBetweenPacks(Battery *battery) {
+float voltage_delta_between_packs(Battery *battery) {
 	float highestPackVoltage = -10000;
 	float lowestPackVoltage = 10000;
 	for ( int p = 0; p < NUM_PACKS; p++ ) {
-		float packVoltage = getVoltage(battery->packs[p]);
+		float packVoltage = get_voltage(battery->packs[p]);
 		if ( packVoltage > highestPackVoltage ) {
 			highestPackVoltage = packVoltage;
 		}
@@ -128,7 +128,7 @@ float voltageDeltaBetweenPacks(Battery *battery) {
 	return highestPackVoltage - lowestPackVoltage;
 }
 
-BatteryPack* getPackWithHighestVoltage(Battery *battery) {
+BatteryPack* get_pack_with_highest_voltage(Battery *battery) {
 	BatteryPack* pack = battery->packs[0];
 	for ( int p = 1; p < NUM_PACKS; p++ ) {
 		if ( battery->packs[p]->voltage > pack->voltage ) {
@@ -145,37 +145,37 @@ BatteryPack* getPackWithHighestVoltage(Battery *battery) {
 //
 //// ----
 
-bool hasCellOverTemp(Battery *battery) {
+bool has_cell_over_temp(Battery *battery) {
 	for ( int i = 0; i < NUM_PACKS; i++ ) {
-		if ( hasCellOverTemp(battery->packs[i]) ){
+		if ( has_cell_over_temp(battery->packs[i]) ){
 			return true;
 		}
 	}
 	return false;
 }
 
-int getMaxChargingCurrent(Battery *battery) {
+int get_max_charging_current(Battery *battery) {
 	int maxChargeCurrent = CHARGE_CURRENT_MAX;
 	for ( int p = 0; p < NUM_PACKS; p++ ) {
-		if ( getMaxChargingCurrent(battery->packs[p]) < maxChargeCurrent ) {
-			maxChargeCurrent = getMaxChargingCurrent(battery->packs[p]);
+		if ( get_max_charging_current(battery->packs[p]) < maxChargeCurrent ) {
+			maxChargeCurrent = get_max_charging_current(battery->packs[p]);
 		}
 	}
 	return maxChargeCurrent;
 }
 
-float getLowestTemperature(Battery *battery) {
+float get_lowest_temperature(Battery *battery) {
 	float lowestTemperature = 1000;
 	for ( int p = 0; p < NUM_PACKS; p++ ) {
-		if ( getLowestTemperature(battery->packs[p]) < lowestTemperature ) {
-			lowestTemperature = getLowestTemperature(battery->packs[p]);
+		if ( get_lowest_temperature(battery->packs[p]) < lowestTemperature ) {
+			lowestTemperature = get_lowest_temperature(battery->packs[p]);
 		}
 	}
 	return lowestTemperature;
 }
 
-bool tooColdToCharge(Battery *battery) {
-	if ( getLowestTemperature(battery) < CELL_UNDER_TEMPERATURE_FAULT_THRESHOLD ) {
+bool too_cold_to_charge(Battery *battery) {
+	if ( get_lowest_temperature(battery) < CELL_UNDER_TEMPERATURE_FAULT_THRESHOLD ) {
 		return true;
 	}
 	return false;
@@ -190,13 +190,13 @@ bool tooColdToCharge(Battery *battery) {
 //
 //// ----
 
-void closeContactors(Battery *battery) {
+void close_contactors(Battery *battery) {
 
 	// Check that the voltage difference between the packs in the battery is
 	// a small, safe value.
-	if ( voltageDeltaBetweenPacks(battery) < SAFE_VOLTAGE_DELTA_BETWEEN_PACKS ) {
+	if ( voltage_delta_between_packs(battery) < SAFE_VOLTAGE_DELTA_BETWEEN_PACKS ) {
 		for ( int p = 0; p < NUM_PACKS; p++ ) {
-			closeContactors(battery->packs[p]);
+			close_contactors(battery->packs[p]);
 		}
 	}
 
@@ -204,14 +204,14 @@ void closeContactors(Battery *battery) {
 	// which pack is fuller (has higher voltage) and close the contactors for
 	// just that pack.
 	else {
-		closeContactors(getPackWithHighestVoltage(battery));
+		close_contactors(get_pack_with_highest_voltage(battery));
 	}
 
 }
 
-void openContactors(Battery *battery) {
+void open_contactors(Battery *battery) {
 	// wait?
 	for ( int p = 0; p < NUM_PACKS; p++ ) {
-		openContactors(battery->packs[p]);
+		open_contactors(battery->packs[p]);
 	}
 }

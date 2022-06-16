@@ -76,7 +76,7 @@ struct repeating_timer pollModuleTimer;
  *   byte 7 : checksum
  */
 
-void requestPackData(BatteryPack *pack) {
+void request_pack_data(BatteryPack *pack) {
 
 	  if ( pack->pollMessageId == 6 ) {
 		    pack->pollMessageId = 0;
@@ -88,8 +88,8 @@ void requestPackData(BatteryPack *pack) {
 
 		    if ( pack->msgcycle == 0xF ) {
 			      pack->msgcycle = 0;
-			      if ( ! packIsDueToBeBalanced(pack) ) {
-			      	  resetBalanceTimer(pack);
+			      if ( ! pack_is_due_to_be_balanced(pack) ) {
+			      	  reset_balance_timer(pack);
 			      }
 		    }
 	  }
@@ -98,8 +98,8 @@ void requestPackData(BatteryPack *pack) {
 	  pollModuleFrame.can_id = 0x080 | (pack->pollMessageId);
 	  pollModuleFrame.can_dlc = 8;
 
-	  if ( packIsDueToBeBalanced(pack) ) {
-	  	  uint16_t lowestCellVoltage = ( uint16_t(getLowestCellVoltage(pack)) * 1000 ) + 5;
+	  if ( pack_is_due_to_be_balanced(pack) ) {
+	  	  uint16_t lowestCellVoltage = ( uint16_t(get_lowest_cell_voltage(pack)) * 1000 ) + 5;
 		    pollModuleFrame.data[0] = lowestCellVoltage & 0x00FF;          // low byte
 		    pollModuleFrame.data[1] = ( lowestCellVoltage >> 8 ) & 0x00FF; // high byte
 	  }
@@ -116,7 +116,7 @@ void requestPackData(BatteryPack *pack) {
 		    pollModuleFrame.data[5] = 0x00;
 	  }
 	  else {
-		    if ( packIsDueToBeBalanced(pack) ) {
+		    if ( pack_is_due_to_be_balanced(pack) ) {
 			      pollModuleFrame.data[4] = 0x48;
 		    }
 		    else {
@@ -142,15 +142,16 @@ void requestPackData(BatteryPack *pack) {
 }
 
 // Send request to each pack to ask for a data update
-bool pollPacksForData(struct repeating_timer *t) {
+bool poll_packs_for_data(struct repeating_timer *t) {
+	  extern Battery *battery;
 		for ( int p = 0; p < NUM_PACKS; p++ ) {
-			  requestPackData(battery->packs[p]);
+			  request_pack_data(battery->packs[p]);
 		}
 		return true;
 }
 
-void enableModulePolling() {
-    add_repeating_timer_ms(1000, pollPacksForData, NULL, &pollModuleTimer);
+void enable_module_polling() {
+    add_repeating_timer_ms(1000, poll_packs_for_data, NULL, &pollModuleTimer);
 }
 
 //// ----
@@ -165,7 +166,7 @@ struct can_frame statusFrame;
 
 struct repeating_timer statusMessageTimer;
 
-bool sendStatusMessage(struct repeating_timer *t) {
+bool send_status_message(struct repeating_timer *t) {
 	extern State state;
 	extern MCP2515 mainCAN;
 	statusFrame.can_id = STATUS_MSG_ID;
@@ -189,8 +190,8 @@ bool sendStatusMessage(struct repeating_timer *t) {
 	return true;
 }
 
-void enableStatusMessages() {
-	add_repeating_timer_ms(1000, sendStatusMessage, NULL, &statusMessageTimer);
+void enable_status_messages() {
+	add_repeating_timer_ms(1000, send_status_message, NULL, &statusMessageTimer);
 }
 
 
@@ -214,36 +215,39 @@ struct can_frame chargeLimitsFrame;
 
 struct repeating_timer chargeLimitsMessageTimer;
 
-bool sendChargeLimitsMessage(struct repeating_timer *t) {
-	extern Battery battery;
-	chargeLimitsFrame.can_id = 0x102;
-	chargeLimitsFrame.can_dlc = 8;
-	// byte 0
-	chargeLimitsFrame.data[0] = 0x0;
-	// byte 1 -- DC voltage limit MSB
-	chargeLimitsFrame.data[1] = 0x0; //fixme
-	// byte 2 -- DC voltage limit LSB
-	chargeLimitsFrame.data[2] = 0x0; //fixme
-	// byte 3 -- DC current set point
-	chargeLimitsFrame.data[3] = (__u8)getMaxChargingCurrent(&battery);
-	// byte 4 -- 1 == enable charging
-	chargeLimitsFrame.data[4] = 0x0; //fixme
-	// byte 5 -- SoC
-	chargeLimitsFrame.data[5] = 0x0; //fixme
-	// byte 6 -- 0x0
-	chargeLimitsFrame.data[6] = 0x0;
-	// byte 7 -- 0x0
-	chargeLimitsFrame.data[7] = 0x0;
+bool send_charge_limits_message(struct repeating_timer *t) {
 
-    return true;
+		extern Battery battery;
+
+		chargeLimitsFrame.can_id = 0x102;
+		chargeLimitsFrame.can_dlc = 8;
+
+		// byte 0
+		chargeLimitsFrame.data[0] = 0x0;
+		// byte 1 -- DC voltage limit MSB
+		chargeLimitsFrame.data[1] = 0x0; //fixme
+		// byte 2 -- DC voltage limit LSB
+		chargeLimitsFrame.data[2] = 0x0; //fixme
+		// byte 3 -- DC current set point
+		chargeLimitsFrame.data[3] = (__u8)get_max_charging_current(&battery);
+		// byte 4 -- 1 == enable charging
+		chargeLimitsFrame.data[4] = 0x0; //fixme
+		// byte 5 -- SoC
+		chargeLimitsFrame.data[5] = 0x0; //fixme
+		// byte 6 -- 0x0
+		chargeLimitsFrame.data[6] = 0x0;
+		// byte 7 -- 0x0
+		chargeLimitsFrame.data[7] = 0x0;
+
+	  return true;
 }
 
-void enableChargeLimitsMessages() {
-	add_repeating_timer_ms(1000, sendChargeLimitsMessage, NULL, &chargeLimitsMessageTimer);
+void enable_charge_limits_messages() {
+	  add_repeating_timer_ms(1000, send_charge_limits_message, NULL, &chargeLimitsMessageTimer);
 }
 
-void disableChargeLimitsMessages() {
-	//
+void disable_charge_limits_messages() {
+	  //
 }
 
 
@@ -255,7 +259,7 @@ void disableChargeLimitsMessages() {
 
 struct can_frame mainCANInbound;
 
-void handleMainCANMessages() {
+void handle_main_CAN_messages() {
 
 	  extern MCP2515 mainCAN;
 
@@ -272,7 +276,7 @@ void handleMainCANMessages() {
 struct can_frame batteryCANInbound;
 
 // 
-void handleBatteryCANMessages() {
+void handle_battery_CAN_messages() {
 
 	  extern Battery battery;
 
@@ -281,12 +285,12 @@ void handleBatteryCANMessages() {
 
 	    		  // Temperature messages
 	    		  if ( ( batteryCANInbound.can_id & 0xFF0 ) == 0x180 ) {
-	    		  	  decodeTemperatures(battery.packs[p], &batteryCANInbound);
+	    		  	  decode_temperatures(battery.packs[p], &batteryCANInbound);
 	    		  }
 
 	    		  // Voltage messages
 	    		  else if (batteryCANInbound.can_id > 0x99 && batteryCANInbound.can_id < 0x180) {
-	    		  	  decodeVoltages(battery.packs[p], batteryCANInbound);
+	    		  	  decode_voltages(battery.packs[p], batteryCANInbound);
 	    		  }
 
 	    	}

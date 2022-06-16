@@ -18,24 +18,24 @@
  */
 
 
-void initialiseModule(BatteryModule *module, BatteryPack *pack);
+void initialise_module(BatteryModule *module, BatteryPack *pack);
 
 // Voltage
-float getVoltage(BatteryModule *module);
-float getLowestCellVoltage(BatteryModule *module);
-bool hasCellUnderVoltage(BatteryModule *module);
-float getHighestCellVoltage(BatteryModule *module);
-bool hasCellOverTemp(BatteryModule *module);
-void updateCellVoltage(BatteryModule *module, int cellIndex, float newCellVoltage);
-bool hasCellOverVoltage(BatteryModule *module);
+float get_voltage(BatteryModule *module);
+float get_lowest_cell_voltage(BatteryModule *module);
+bool has_cell_under_voltage(BatteryModule *module);
+float get_highest_cell_voltage(BatteryModule *module);
+bool has_cell_over_temp(BatteryModule *module);
+void update_cell_voltage(BatteryModule *module, int cellIndex, float newCellVoltage);
+bool has_cell_over_voltage(BatteryModule *module);
 
 // Temperature
-void updateTemperature(BatteryModule *module, int tempSensorId, float newTemperature);
-float getHighestTemperature(BatteryModule *module);
-float getLowestTemperature(BatteryModule *module);
-bool temperatureAtWarningLevel(BatteryModule *module);
+void update_temperature(BatteryModule *module, int tempSensorId, float newTemperature);
+float get_highest_temperature(BatteryModule *module);
+float get_lowest_temperature(BatteryModule *module);
+bool temperature_at_warning_level(BatteryModule *module);
 
 // Charging
-int getMaxChargingCurrent(BatteryModule *module);
+int get_max_charging_current(BatteryModule *module);
 
 

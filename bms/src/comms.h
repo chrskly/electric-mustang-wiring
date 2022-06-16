@@ -19,11 +19,11 @@
 
 #include "structs.h"
 
-void requestModuleData(BatteryModule *module);
-bool pollAllModulesForData(struct repeating_timer *t);
-void enableModulePolling();
-bool sendStatusMessage();
-void enableStatusMessages();
-bool sendChargeLimitsMessage();
-void enableChargeLimitsMessages();
-void disableChargeLimitsMessages();
+void request_module_data(BatteryModule *module);
+bool poll_all_modules_for_data(struct repeating_timer *t);
+void enable_module_polling();
+bool send_status_message();
+void enable_status_messages();
+bool send_charge_limits_message();
+void enable_charge_limits_messages();
+void disable_charge_limits_messages();

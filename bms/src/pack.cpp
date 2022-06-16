@@ -21,11 +21,11 @@
 #include "module.h"
 
 
-void initialisePack(BatteryPack *pack) {
+void initialise_pack(BatteryPack *pack) {
 	// Create the modules
 	for ( int m = 0; m < 16; m++ ) {
 		BatteryModule module;
-		initialiseModule(&module, pack);
+		initialise_module(&module, pack);
 		pack->modules[m] = &module;
 	}
 	// Set up contactor control. Default to contactors open.
@@ -34,7 +34,7 @@ void initialisePack(BatteryPack *pack) {
     gpio_put(pack->contactorPin, 0);
 }
 
-bool packIsAlive(BatteryPack *pack) {
+bool pack_is_alive(BatteryPack *pack) {
 	absolute_time_t now = get_absolute_time();
 	int64_t timeSinceLastUpdate = absolute_time_diff_us(pack->lastUpdate, now);
 	if ( timeSinceLastUpdate >= PACK_ALIVE_TIMEOUT ) {
@@ -43,28 +43,28 @@ bool packIsAlive(BatteryPack *pack) {
 	return true;
 }
 
-void setPackErrorStatus(BatteryPack *pack, int newErrorStatus) {
+void set_pack_error_status(BatteryPack *pack, int newErrorStatus) {
 	pack->errorStatus = newErrorStatus;
 }
 
-int getPackErrorStatus(BatteryPack *pack) {
+int get_pack_error_status(BatteryPack *pack) {
 	return pack->errorStatus;
 }
 
-void setPackBalanceStatus(BatteryPack *pack, int newBalanceStatus) {
+void set_pack_balance_status(BatteryPack *pack, int newBalanceStatus) {
 	pack->balanceStatus = newBalanceStatus;
 }
 
-int getPackBalanceStatus(BatteryPack *pack) {
+int get_pack_balance_status(BatteryPack *pack) {
 	return pack->balanceStatus;
 }
 
 // Return true if it's time for the pack to be balanced.
-bool packIsDueToBeBalanced(BatteryPack *pack) {
+bool pack_is_due_to_be_balanced(BatteryPack *pack) {
 	return ( absolute_time_diff_us(get_absolute_time(), pack->nextBalanceTime) < 0 );
 }
 
-void resetBalanceTimer(BatteryPack *pack) {
+void reset_balance_timer(BatteryPack *pack) {
 	pack->nextBalanceTime = delayed_by_us(get_absolute_time(), BALANCE_INTERVAL);
 }
 
@@ -76,34 +76,34 @@ void resetBalanceTimer(BatteryPack *pack) {
 //// ----
 
 // Return the voltage of the whole pack
-float getVoltage(BatteryPack *pack) {
+float get_voltage(BatteryPack *pack) {
 	return pack->voltage;
 }
 
 // Update the pack voltage value by summing all of the cell voltages
-void updateVoltage(BatteryPack *pack) {
-	float voltage = getVoltage(pack->modules[0]);
+void update_voltage(BatteryPack *pack) {
+	float voltage = get_voltage(pack->modules[0]);
 	for ( int i = 1; i < MODULES_PER_PACK; i++ ) {
-		voltage += getVoltage(pack->modules[i]);
+		voltage += get_voltage(pack->modules[i]);
 	}
 	pack->voltage = voltage;
 }
 
 // Return the voltage of the lowest cell in the pack
-float getLowestCellVoltage(BatteryPack *pack) {
-	float lowestCellVoltage = getLowestCellVoltage(pack->modules[0]);
+float get_lowest_cell_voltage(BatteryPack *pack) {
+	float lowestCellVoltage = get_lowest_cell_voltage(pack->modules[0]);
 	for ( int m = 1; m < MODULES_PER_PACK; m++ ) {
-		if ( getLowestCellVoltage(pack->modules[m]) < lowestCellVoltage ) {
-			lowestCellVoltage = getLowestCellVoltage(pack->modules[m]);
+		if ( get_lowest_cell_voltage(pack->modules[m]) < lowestCellVoltage ) {
+			lowestCellVoltage = get_lowest_cell_voltage(pack->modules[m]);
 		}
 	}
 	return lowestCellVoltage;
 }
 
 // Return true if any cell in the pack is under min voltage
-bool hasCellUnderVoltage(BatteryPack *pack) {
+bool has_cell_under_voltage(BatteryPack *pack) {
 	for ( int m = 0; m < MODULES_PER_PACK; m++ ){
-		if ( hasCellUnderVoltage(pack->modules[m]) ) {
+		if ( has_cell_under_voltage(pack->modules[m]) ) {
 			return true;
 		}
 	}
@@ -111,20 +111,20 @@ bool hasCellUnderVoltage(BatteryPack *pack) {
 }
 
 // Return the voltage of the highest cell in the pack
-float getHighestCellVoltage(BatteryPack *pack) {
-	float highestCellVoltage = getHighestCellVoltage(pack->modules[0]);
+float get_highest_cell_voltage(BatteryPack *pack) {
+	float highestCellVoltage = get_highest_cell_voltage(pack->modules[0]);
 	for ( int i = 1; i < MODULES_PER_PACK; i++ ) {
-		if ( getHighestCellVoltage(pack->modules[i]) < highestCellVoltage ) {
-			highestCellVoltage = getHighestCellVoltage(pack->modules[i]);
+		if ( get_highest_cell_voltage(pack->modules[i]) < highestCellVoltage ) {
+			highestCellVoltage = get_highest_cell_voltage(pack->modules[i]);
 		}
 	}
 	return highestCellVoltage;
 }
 
 // Return true if any cell in the pack is over max voltage
-bool hasCellOverVoltage(BatteryPack *pack) {
+bool has_cell_over_voltage(BatteryPack *pack) {
 	for ( int m = 0; m < MODULES_PER_PACK; m++ ){
-		if ( hasCellOverVoltage(pack->modules[m]) ) {
+		if ( has_cell_over_voltage(pack->modules[m]) ) {
 			return true;
 		}
 	}
@@ -132,48 +132,48 @@ bool hasCellOverVoltage(BatteryPack *pack) {
 }
 
 // Update the value for the voltage of an individual cell in a pack
-void updateCellVoltage(BatteryPack *pack, int moduleId, int cellIndex, float newCellVoltage) {
-	updateCellVoltage(pack->modules[moduleId], cellIndex, newCellVoltage);
+void update_cell_voltage(BatteryPack *pack, int moduleId, int cellIndex, float newCellVoltage) {
+	update_cell_voltage(pack->modules[moduleId], cellIndex, newCellVoltage);
 }
 
-void decodeVoltages(BatteryPack *pack, can_frame frame) {
+void decode_voltages(BatteryPack *pack, can_frame frame) {
 	int messageId = (frame.can_id & 0x0F0);
 	int moduleId = (frame.can_id & 0x00F) + 1;
 
 	switch (messageId) {
 	    case 0x000:
 	        // error = msg.buf[0] + (msg.buf[1] << 8) + (msg.buf[2] << 16) + (msg.buf[3] << 24);
-	        setPackErrorStatus(pack, frame.data[0] + (frame.data[1] << 8) + (frame.data[2] << 16) + (frame.data[3] << 24));
+	        set_pack_error_status(pack, frame.data[0] + (frame.data[1] << 8) + (frame.data[2] << 16) + (frame.data[3] << 24));
 	        // balstat = (frame.data[5] << 8) + frame.data[4];
-	        setPackBalanceStatus(pack, (frame.data[5] << 8) + frame.data[4]);
+	        set_pack_balance_status(pack, (frame.data[5] << 8) + frame.data[4]);
 	        break;
 		case 0x020:
-		    updateCellVoltage(pack, moduleId, 0, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 1, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 2, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 0, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 1, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 2, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
 		    break;
 	    case 0x30:
-		    updateCellVoltage(pack, moduleId, 3, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 4, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 5, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 3, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 4, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 5, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
 	        break;
 	    case 0x40:
-		    updateCellVoltage(pack, moduleId, 6, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 7, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 8, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 6, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 7, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 8, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
 	        break;
 	    case 0x50:
-		    updateCellVoltage(pack, moduleId, 9, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 10, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 11, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 9, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 10, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 11, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
 	        break;
 	    case 0x60:
-		    updateCellVoltage(pack, moduleId, 12, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 13, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
-		    updateCellVoltage(pack, moduleId, 14, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 12, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 13, float(frame.data[2] + (frame.data[3] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 14, float(frame.data[4] + (frame.data[5] & 0x3F) * 256) / 1000);
 	        break;
 	    case 0x70:
-		    updateCellVoltage(pack, moduleId, 15, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
+		    update_cell_voltage(pack, moduleId, 15, float(frame.data[0] + (frame.data[1] & 0x3F) * 256) / 1000);
 	        break;
 	    default:
 	        break;
@@ -189,9 +189,9 @@ void decodeVoltages(BatteryPack *pack, can_frame frame) {
 //// ----
 
 // Return true if any cell in the pack is over max temperature
-bool hasCellOverTemp(BatteryPack *pack) {
+bool has_cell_over_temp(BatteryPack *pack) {
 	for ( int i = 0; i < MODULES_PER_PACK; i++ ) {
-		if ( hasCellOverTemp(pack->modules[i]) ) {
+		if ( has_cell_over_temp(pack->modules[i]) ) {
 			return true;
 		}
 	}
@@ -199,30 +199,30 @@ bool hasCellOverTemp(BatteryPack *pack) {
 }
 
 // Return the maximum current we can charge the pack with.
-int getMaxChargingCurrent(BatteryPack *pack) {
-	int maxChargeCurrent = getMaxChargingCurrent(pack->modules[0]);
+int get_max_charging_current(BatteryPack *pack) {
+	int maxChargeCurrent = get_max_charging_current(pack->modules[0]);
 	for ( int m = 1; m < MODULES_PER_PACK; m++ ) {
-		if ( getMaxChargingCurrent(pack->modules[m]) < maxChargeCurrent ) {
-			maxChargeCurrent = getMaxChargingCurrent(pack->modules[m]);
+		if ( get_max_charging_current(pack->modules[m]) < maxChargeCurrent ) {
+			maxChargeCurrent = get_max_charging_current(pack->modules[m]);
 		}
 	}
 	return maxChargeCurrent;
 }
 
-float getLowestTemperature(BatteryPack *pack) {
+float get_lowest_temperature(BatteryPack *pack) {
 	float lowestModuleTemperature = 1000;
 	for ( int m = 0; m < MODULES_PER_PACK; m++ ) {
-		if ( getLowestTemperature(pack->modules[m]) < lowestModuleTemperature ) {
-			lowestModuleTemperature = getLowestTemperature(pack->modules[m]);
+		if ( get_lowest_temperature(pack->modules[m]) < lowestModuleTemperature ) {
+			lowestModuleTemperature = get_lowest_temperature(pack->modules[m]);
 		}
 	}
 	return lowestModuleTemperature;
 }
 
-void decodeTemperatures(BatteryPack *pack, can_frame *temperatureMessageFrame) {
+void decode_temperatures(BatteryPack *pack, can_frame *temperatureMessageFrame) {
 	int moduleId = (temperatureMessageFrame->can_id & 0x00F) + 1;
 	for ( int t = 0; t < TEMPS_PER_MODULE; t++ ) {
-		updateTemperature(pack->modules[moduleId], t, temperatureMessageFrame->data[t] - 40);
+		update_temperature(pack->modules[moduleId], t, temperatureMessageFrame->data[t] - 40);
 	}
 }
 
@@ -233,12 +233,12 @@ void decodeTemperatures(BatteryPack *pack, can_frame *temperatureMessageFrame) {
 //
 //// ----
 
-bool closeContactors(BatteryPack *pack) {
+bool close_contactors(BatteryPack *pack) {
 	gpio_put(pack->contactorPin, 1);
 	return true;
 }
 
-bool openContactors(BatteryPack *pack) {
+bool open_contactors(BatteryPack *pack) {
 	gpio_put(pack->contactorPin, 0);
 	return true;
 }
