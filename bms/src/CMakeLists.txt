@@ -21,6 +21,16 @@ add_executable(bms
         statemachine.h
         )
 
+add_executable(module-test
+        mcp2515/mcp2515.cpp
+	module.h
+	module.cpp
+	structs.h
+	test/module/test.cpp
+)
+
 pico_add_extra_outputs(bms)
+pico_add_extra_outputs(module-test)
 
 target_link_libraries(bms pico_stdlib hardware_spi)
+target_link_libraries(module-test pico_stdlib hardware_spi)
