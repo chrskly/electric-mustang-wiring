@@ -8560,8 +8560,8 @@
   (gr_text "C_L" (at 96.52 155.956) (layer "F.SilkS") (tstamp f3d227e8-abc9-4513-9ff9-aa6460d8c364)
     (effects (font (size 1 1) (thickness 0.25)))
   )
-  (gr_text "Electric Mustang\nBattery management system\nv2.0\n© 2022" (at 82.55 86.614) (layer "F.SilkS") (tstamp fec5668d-5346-4579-ae39-42c122d6cd84)
-    (effects (font (size 1.2 1.2) (thickness 0.1875)) (justify left))
+  (gr_text "Electric Mustang\nBattery management system\nv2.0\n© 2022" (at 82.296 87.122) (layer "F.SilkS") (tstamp fec5668d-5346-4579-ae39-42c122d6cd84)
+    (effects (font (size 1.3 1.3) (thickness 0.1875)) (justify left))
   )
 
   (segment (start 107.703 150.79) (end 107.703 152.09) (width 0.4) (layer "F.Cu") (net 1) (tstamp 0e408a8c-43de-4c8d-9978-ab18dc4e66ea))
