@@ -35,12 +35,12 @@ struct Battery {
 };
 
 struct BatteryPack {
-	MCP2515 CAN;                       // CAN bus connection to this pack
+	MCP2515 *CAN;                       // CAN bus connection to this pack
 	absolute_time_t lastUpdate;        // Time we received last update from BMS
 	struct BatteryModule *modules[16]; // The child modules that make up this BatteryPack
 	struct Battery *battery;           // The parent Battery that contains this BatteryPack
 	float voltage;                     // Voltage of the total pack
-	bool interrupt;                    //
+	//bool interrupt;                    //
 	bool contactorsClosed;             //
 	int contactorPin;                  // Pin on the pico which controls contactors for this pack
 	int errorStatus;                   //

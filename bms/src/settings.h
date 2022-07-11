@@ -20,6 +20,13 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+// Serial port
+#define UART_ID      uart0
+#define BAUD_RATE   115200
+#define UART_TX_PIN      0 // pin 1
+#define UART_RX_PIN      1 // pin 2
+
+
 #define NUM_PACKS         2                        // The total number of paralleled packs in this battery
 #define CELLS_PER_MODULE 16                        // The number of cells in each module
 #define TEMPS_PER_MODULE  4                        // The number of temperature sensors in each module

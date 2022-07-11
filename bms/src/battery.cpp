@@ -17,14 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+
 #include "battery.h"
 #include "pack.h"
 
 void initialise_battery(Battery *battery) {
 	// Create the packs
-	for ( int i = 0; i < NUM_PACKS; i++ ) {
+	for ( int p = 0; p < NUM_PACKS; p++ ) {
 		BatteryPack pack;
 		pack.battery = battery;
+		printf("Initialising battery pack %d\n", p);
+		initialise_pack(&pack, p);
 	}
 }
 

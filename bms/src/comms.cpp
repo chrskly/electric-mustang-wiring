@@ -78,6 +78,9 @@ struct repeating_timer pollModuleTimer;
 
 void request_pack_data(BatteryPack *pack) {
 
+	  printf("Inside request_pack_data\n");
+
+    /*
 	  if ( pack->pollMessageId == 6 ) {
 		    pack->pollMessageId = 0;
 		    pack->msgcycle++;
@@ -93,13 +96,20 @@ void request_pack_data(BatteryPack *pack) {
 			      }
 		    }
 	  }
+	  */
 
     // Set the Id and length of the CAN frame
+    printf("pollMessageId %d\n", (*pack).pollMessageId);
+    printf("pollMessageId %d\n", pack->pollMessageId);
 	  pollModuleFrame.can_id = 0x080 | (pack->pollMessageId);
+	  printf("pollMessageId %d\n", pack->pollMessageId);
+	  //pollModuleFrame.can_id = 0x080;
 	  pollModuleFrame.can_dlc = 8;
 
 	  if ( pack_is_due_to_be_balanced(pack) ) {
-	  	  uint16_t lowestCellVoltage = ( uint16_t(get_lowest_cell_voltage(pack)) * 1000 ) + 5;
+	  	  //uint16_t lowestCellVoltage = ( uint16_t(get_lowest_cell_voltage(pack)) * 1000 ) + 5;
+	  	  uint16_t lowestCellVoltage = get_lowest_cell_voltage(pack) * 1000;
+	  	  printf("loestCellVoltage %d\n", lowestCellVoltage);
 		    pollModuleFrame.data[0] = lowestCellVoltage & 0x00FF;          // low byte
 		    pollModuleFrame.data[1] = ( lowestCellVoltage >> 8 ) & 0x00FF; // high byte
 	  }
@@ -133,24 +143,34 @@ void request_pack_data(BatteryPack *pack) {
 
 	  pollModuleFrame.data[7] = getcheck(pollModuleFrame, pack->pollMessageId);
 
-	  pack->CAN.sendMessage(&pollModuleFrame);
-	  pack->pollMessageId++;
+    printf("Sending poll message on CAN bus\n");
+	  //pack->CAN->sendMessage(&pollModuleFrame);
+	  extern MCP2515 mainCAN;
+	  mainCAN.sendMessage(&pollModuleFrame);
+	  ++pack->pollMessageId;
 
 	  //if (bms.checkstatus() == true) {
 		//    resetbalancedebug();
 	  //}
+	  printf("request_pack_data complete\n");
 }
 
 // Send request to each pack to ask for a data update
 bool poll_packs_for_data(struct repeating_timer *t) {
 	  extern Battery *battery;
+	  //extern UART_ID;
 		for ( int p = 0; p < NUM_PACKS; p++ ) {
+			  //char str[200];
+			  //sprintf(str, "Requesting data from pack %d\n", p);
+			  //uart_puts(UART_ID, str);
+			  printf("Requesting data from pack %d\n", p);
 			  request_pack_data(battery->packs[p]);
 		}
 		return true;
 }
 
 void enable_module_polling() {
+	  printf("Enabling module polling (inner)\n");
     add_repeating_timer_ms(1000, poll_packs_for_data, NULL, &pollModuleTimer);
 }
 
@@ -281,7 +301,7 @@ void handle_battery_CAN_messages() {
 	  extern Battery battery;
 
 	  for ( int p = 0; p < NUM_PACKS; p++ ) {
-	    	if ( battery.packs[p]->CAN.readMessage(&batteryCANInbound) == MCP2515::ERROR_OK ) {
+	    	if ( battery.packs[p]->CAN->readMessage(&batteryCANInbound) == MCP2515::ERROR_OK ) {
 
 	    		  // Temperature messages
 	    		  if ( ( batteryCANInbound.can_id & 0xFF0 ) == 0x180 ) {

@@ -23,11 +23,21 @@
 
 */
 
+#include <stdio.h>
+
 #include "structs.h"
 
 
 void initialise_module(BatteryModule *module, BatteryPack *pack) {
 	module->pack = pack;
+	// voltages
+	for ( int c = 0; c < CELLS_PER_MODULE; c++ ) {
+		module->cellVoltage[c] = 0;
+	}
+	// temps
+	for ( int t = 0; t < TEMPS_PER_MODULE; t++ ) {
+		module->cellTemperature[t] = 0;
+	}
 }
 
 
@@ -48,12 +58,17 @@ float get_voltage(BatteryModule *module) {
 
 // Return the voltage of the lowest cell voltage in the module
 float get_lowest_cell_voltage(BatteryModule *module) {
-	float lowestCellVoltage = module->cellVoltage[0];
-	for ( int i = 1; i < CELLS_PER_MODULE; i++ ) {
-		if ( module->cellVoltage[i] < lowestCellVoltage ) {
-			lowestCellVoltage = module->cellVoltage[i];
+	printf("Inside get_lowest_cell_voltage (module)\n");
+	//float lowestCellVoltage = module->cellVoltage[0];
+	float lowestCellVoltage = 1000;
+	for ( int c = 0; c < CELLS_PER_MODULE; c++ ) {
+		printf("Checking cell %d\n", c);
+		if ( module->cellVoltage[c] < lowestCellVoltage ) {
+			lowestCellVoltage = module->cellVoltage[c];
 		}
+		printf("bbb\n");
 	}
+	printf("Returning lowestCellVoltage %f (module)\n", lowestCellVoltage);
 	return lowestCellVoltage;
 }
 

@@ -22,7 +22,8 @@
 
 #include "structs.h"
 
-void initialise_pack(BatteryPack *pack);
+void initialise_pack(BatteryPack *pack, int packId);
+void print_pack_status(BatteryPack *pack, int packId);
 bool pack_is_alive(BatteryPack *pack);
 void set_pack_error_status(BatteryPack *pack, int newErrorStatus);
 int get_pack_error_status(BatteryPack *pack);

@@ -17,21 +17,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+
 #include "pack.h"
 #include "module.h"
 
 
-void initialise_pack(BatteryPack *pack) {
+void initialise_pack(BatteryPack *pack, int packId) {
+
+    // Set last update time to now
+	pack->lastUpdate = get_absolute_time();
+
 	// Create the modules
+	printf("Initialising modules : ");
 	for ( int m = 0; m < 16; m++ ) {
 		BatteryModule module;
+		printf("%d, ", m);
 		initialise_module(&module, pack);
 		pack->modules[m] = &module;
 	}
+	printf("\n");
+
+	pack->voltage = 0;
+
 	// Set up contactor control. Default to contactors open.
+	printf("Setting up contactor control\n");
+	pack->contactorsClosed = false;
+	pack->contactorPin = CONTACTOR_PINS[packId];
 	gpio_init(pack->contactorPin);
 	gpio_set_dir(pack->contactorPin, GPIO_OUT);
     gpio_put(pack->contactorPin, 0);
+
+    // errorStatus not needed?
+
+    // balanceStatus not needed?
+
+    // Set next balance time to 10 seconds from now
+    pack->nextBalanceTime = delayed_by_us(get_absolute_time(), 10000);
+
+    pack->msgcycle = 0;
+    pack->nextmsg = 0;
+    pack->testcycle = 0;
+
+    // internal counters
+    pack->pollMessageId = 0;
+
+    printf("Pack %d setup complete\n", packId);
+}
+
+void print_pack_status(BatteryPack *pack, int packId) {
+	printf("--------------------------------------------------------------------------------\n");
+	printf("Pack ID                : %d\n", packId);
+	printf("Pack voltage           : %d\n", pack->voltage);
+	printf("Pack contactors closed : %d\n", pack->contactorsClosed);
+	printf("--------------------------------------------------------------------------------\n");
 }
 
 bool pack_is_alive(BatteryPack *pack) {
@@ -61,6 +100,7 @@ int get_pack_balance_status(BatteryPack *pack) {
 
 // Return true if it's time for the pack to be balanced.
 bool pack_is_due_to_be_balanced(BatteryPack *pack) {
+	printf("Inside pack_is_due_to_be_balanced\n");
 	return ( absolute_time_diff_us(get_absolute_time(), pack->nextBalanceTime) < 0 );
 }
 
@@ -91,12 +131,14 @@ void update_voltage(BatteryPack *pack) {
 
 // Return the voltage of the lowest cell in the pack
 float get_lowest_cell_voltage(BatteryPack *pack) {
+	printf("Inside get_lowest_cell_voltage (pack)\n");
 	float lowestCellVoltage = get_lowest_cell_voltage(pack->modules[0]);
 	for ( int m = 1; m < MODULES_PER_PACK; m++ ) {
 		if ( get_lowest_cell_voltage(pack->modules[m]) < lowestCellVoltage ) {
 			lowestCellVoltage = get_lowest_cell_voltage(pack->modules[m]);
 		}
 	}
+	printf("get_lowest_cell_voltage : returning %f\n", lowestCellVoltage);
 	return lowestCellVoltage;
 }
 
