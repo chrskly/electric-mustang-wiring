@@ -20,36 +20,14 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 
+#include <stdexcept>
+
 #include "settings.h"
 #include "comms.h"
 #include "statemachine.h"
 #include "battery.h"
 #include "pack.h"
-#include "structs.h"
 
-/*
-CRC8 crc8;
-uint8_t checksum;
-const uint8_t finalxor [12] = {0xCF, 0xF5, 0xBB, 0x81, 0x27, 0x1D, 0x53, 0x69, 0x02, 0x38, 0x76, 0x4C};
-*/
-
-uint8_t getcheck(can_frame &msg, int id) {
-	  return 0x00;
-}
-
-/*
-  unsigned char canmes [11];
-  int meslen = msg.len + 1; //remove one for crc and add two for id bytes
-  canmes [1] = msg.id;
-  canmes [0] = msg.id >> 8;
-
-  for (int i = 0; i < (msg.len - 1); i++)
-  {
-    canmes[i + 2] = msg.buf[i];
-  }
-  return (crc8.get_crc8(canmes, meslen, finalxor[id]));
-}
-*/
 
 //// ----
 //
@@ -61,111 +39,10 @@ struct can_frame pollModuleFrame;
 
 struct repeating_timer pollModuleTimer;
 
-/*
- * pollMessageId : loops from 0 to 5. Sets the Id of the CAN message.
- * mescycle      : loops from 0 to 0xF. Incremented when pollMessageId wraps.
- *
- * Contents of message
- *   byte 0 : balance data
- *   byte 1 : balance data
- *   byte 2 : 0x00
- *   byte 3 : 0x00
- *   byte 4 : 
- *   byte 5 : 0x01
- *   byte 6 :
- *   byte 7 : checksum
- */
-
-void request_pack_data(BatteryPack *pack) {
-
-	  printf("Inside request_pack_data\n");
-
-    /*
-	  if ( pack->pollMessageId == 6 ) {
-		    pack->pollMessageId = 0;
-		    pack->msgcycle++;
-
-		    if ( pack->testcycle < 4 ) {
-			      pack->testcycle++;
-		    }
-
-		    if ( pack->msgcycle == 0xF ) {
-			      pack->msgcycle = 0;
-			      if ( ! pack_is_due_to_be_balanced(pack) ) {
-			      	  reset_balance_timer(pack);
-			      }
-		    }
-	  }
-	  */
-
-    // Set the Id and length of the CAN frame
-    printf("pollMessageId %d\n", (*pack).pollMessageId);
-    printf("pollMessageId %d\n", pack->pollMessageId);
-	  pollModuleFrame.can_id = 0x080 | (pack->pollMessageId);
-	  printf("pollMessageId %d\n", pack->pollMessageId);
-	  //pollModuleFrame.can_id = 0x080;
-	  pollModuleFrame.can_dlc = 8;
-
-	  if ( pack_is_due_to_be_balanced(pack) ) {
-	  	  //uint16_t lowestCellVoltage = ( uint16_t(get_lowest_cell_voltage(pack)) * 1000 ) + 5;
-	  	  uint16_t lowestCellVoltage = get_lowest_cell_voltage(pack) * 1000;
-	  	  printf("loestCellVoltage %d\n", lowestCellVoltage);
-		    pollModuleFrame.data[0] = lowestCellVoltage & 0x00FF;          // low byte
-		    pollModuleFrame.data[1] = ( lowestCellVoltage >> 8 ) & 0x00FF; // high byte
-	  }
-	  else {
-		    pollModuleFrame.data[0] = 0xC7;
-		    pollModuleFrame.data[1] = 0x10;
-	  }
-
-	  pollModuleFrame.data[2] = 0x00; // balancing bits
-	  pollModuleFrame.data[3] = 0x00; // balancing bits
-
-	  if (pack->testcycle < 3) {
-		    pollModuleFrame.data[4] = 0x20;
-		    pollModuleFrame.data[5] = 0x00;
-	  }
-	  else {
-		    if ( pack_is_due_to_be_balanced(pack) ) {
-			      pollModuleFrame.data[4] = 0x48;
-		    }
-		    else {
-			      pollModuleFrame.data[4] = 0x40;
-		    }
-		    pollModuleFrame.data[5] = 0x01;
-	  }
-
-	  pollModuleFrame.data[6] = pack->msgcycle << 4;
-
-	  if ( pack->testcycle == 2 ) {
-		    pollModuleFrame.data[6] = pollModuleFrame.data[6] + 0x04;
-	  }
-
-	  pollModuleFrame.data[7] = getcheck(pollModuleFrame, pack->pollMessageId);
-
-    printf("Sending poll message on CAN bus\n");
-	  //pack->CAN->sendMessage(&pollModuleFrame);
-	  extern MCP2515 mainCAN;
-	  mainCAN.sendMessage(&pollModuleFrame);
-	  ++pack->pollMessageId;
-
-	  //if (bms.checkstatus() == true) {
-		//    resetbalancedebug();
-	  //}
-	  printf("request_pack_data complete\n");
-}
-
 // Send request to each pack to ask for a data update
 bool poll_packs_for_data(struct repeating_timer *t) {
-	  extern Battery *battery;
-	  //extern UART_ID;
-		for ( int p = 0; p < NUM_PACKS; p++ ) {
-			  //char str[200];
-			  //sprintf(str, "Requesting data from pack %d\n", p);
-			  //uart_puts(UART_ID, str);
-			  printf("Requesting data from pack %d\n", p);
-			  request_pack_data(battery->packs[p]);
-		}
+	  extern Battery battery;
+		battery.request_data();
 		return true;
 }
 
@@ -187,31 +64,31 @@ struct can_frame statusFrame;
 struct repeating_timer statusMessageTimer;
 
 bool send_status_message(struct repeating_timer *t) {
-	extern State state;
-	extern MCP2515 mainCAN;
-	statusFrame.can_id = STATUS_MSG_ID;
-	statusFrame.can_dlc = 1;
-	if ( state == state_standby ) {
-		statusFrame.data[0] = 0x00 << 4;
-	} else if ( state == state_drive ) {
-		statusFrame.data[0] = 0x01 << 4;
-	} else if ( state == state_charging ) {
-		statusFrame.data[0] = 0x02 << 4;
-	} else if ( state == state_overTempFault ) {
-		statusFrame.data[0] = 0x03 << 4;
-	} else if ( state == state_underVoltageFault ) {
-		statusFrame.data[0] = 0x04 << 4;
-	} else {
-		//
-	}
-	// do pack dead check
+		extern State state;
+		extern MCP2515 mainCAN;
+		statusFrame.can_id = STATUS_MSG_ID;
+		statusFrame.can_dlc = 1;
+		if ( state == state_standby ) {
+				statusFrame.data[0] = 0x00 << 4;
+		} else if ( state == state_drive ) {
+				statusFrame.data[0] = 0x01 << 4;
+		} else if ( state == state_charging ) {
+				statusFrame.data[0] = 0x02 << 4;
+		} else if ( state == state_overTempFault ) {
+				statusFrame.data[0] = 0x03 << 4;
+		} else if ( state == state_underVoltageFault ) {
+				statusFrame.data[0] = 0x04 << 4;
+		} else {
+			//
+		}
+		// do pack dead check
 
-	mainCAN.sendMessage(&statusFrame);
-	return true;
+		mainCAN.sendMessage(&statusFrame);
+		return true;
 }
 
 void enable_status_messages() {
-	add_repeating_timer_ms(1000, send_status_message, NULL, &statusMessageTimer);
+		add_repeating_timer_ms(1000, send_status_message, NULL, &statusMessageTimer);
 }
 
 
@@ -249,7 +126,7 @@ bool send_charge_limits_message(struct repeating_timer *t) {
 		// byte 2 -- DC voltage limit LSB
 		chargeLimitsFrame.data[2] = 0x0; //fixme
 		// byte 3 -- DC current set point
-		chargeLimitsFrame.data[3] = (__u8)get_max_charging_current(&battery);
+		chargeLimitsFrame.data[3] = (__u8)battery.get_max_charging_current();
 		// byte 4 -- 1 == enable charging
 		chargeLimitsFrame.data[4] = 0x0; //fixme
 		// byte 5 -- SoC
@@ -293,31 +170,21 @@ void handle_main_CAN_messages() {
     }
 }
 
+/*
+
 struct can_frame batteryCANInbound;
 
-// 
 void handle_battery_CAN_messages() {
 
 	  extern Battery battery;
+    extern MCP2515 CANPorts[];
 
 	  for ( int p = 0; p < NUM_PACKS; p++ ) {
-	    	if ( battery.packs[p]->CAN->readMessage(&batteryCANInbound) == MCP2515::ERROR_OK ) {
-
-	    		  // Temperature messages
-	    		  if ( ( batteryCANInbound.can_id & 0xFF0 ) == 0x180 ) {
-	    		  	  decode_temperatures(battery.packs[p], &batteryCANInbound);
-	    		  }
-
-	    		  // Voltage messages
-	    		  else if (batteryCANInbound.can_id > 0x99 && batteryCANInbound.can_id < 0x180) {
-	    		  	  decode_voltages(battery.packs[p], batteryCANInbound);
-	    		  }
-
-	    	}
+	    	this->read
   	}
 }
 
-
+*/
 
 
 

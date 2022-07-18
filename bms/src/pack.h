@@ -17,37 +17,94 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef PACK_H
+#define PACK_H
+
 #include "hardware/timer.h"
 #include "mcp2515/mcp2515.h"
 
-#include "structs.h"
+#include "module.h"
+//#include "battery.h"
 
-void initialise_pack(BatteryPack *pack, int packId);
-void print_pack_status(BatteryPack *pack, int packId);
-bool pack_is_alive(BatteryPack *pack);
-void set_pack_error_status(BatteryPack *pack, int newErrorStatus);
-int get_pack_error_status(BatteryPack *pack);
-void set_pack_balance_status(BatteryPack *pack, int newBalanceStatus);
-int get_pack_balance_status(BatteryPack *pack);
-bool pack_is_due_to_be_balanced(BatteryPack *pack);
-void reset_balance_timer(BatteryPack *pack);
+class Battery;
+class BatteryModule;
 
-// Voltage
-float get_voltage(BatteryPack *pack);
-void update_voltage(BatteryPack *pack);
-float get_lowest_cell_voltage(BatteryPack *pack);
-bool has_cell_under_voltage(BatteryPack *pack);
-float get_highest_cell_voltage(BatteryPack *pack);
-bool has_cell_over_voltage(BatteryPack *pack);
-void update_cell_voltage(BatteryPack *pack, int moduleIndex, int cellIndex, float newCellVoltage);
-void decode_voltages(BatteryPack *pack, can_frame voltageFrame);
+class BatteryPack {
 
-// Temperature
-bool has_temperature_sensor_over_max(BatteryPack *pack);
-int get_max_charging_current(BatteryPack *pack);
-float get_lowest_temperature(BatteryPack *pack);
-void decode_temperatures(BatteryPack *pack, can_frame *temperatureMessageFrame);
+    private:
+        int packId;
+        MCP2515* CAN;                                    // CAN bus connection to this pack
+        absolute_time_t lastUpdate;                      // Time we received last update from BMS
+        int numModules;                                  //
+        int numCellsPerModule;                           //
+        int numTemperatureSensorsPerModule;              //
+        Battery *battery;                                // The parent Battery that contains this BatteryPack
+        float voltage;                                   // Voltage of the total pack
+        bool contactorsClosed;                           //
+        int contactorPin;                                // Pin on the pico which controls contactors for this pack
+        int balanceStatus;                               //
+        int errorStatus;
+        absolute_time_t nextBalanceTime;                 // Time that the next balance should occur.
+        uint8_t msgcycle;                                //
+        uint8_t nextmsg;                                 //
+        uint8_t testCycle;                               //
+        int pollMessageId;                               //
+        bool initialised;
+        BatteryModule *modules[];                         // The child modules that make up this BatteryPack        
 
-// Contactors
-bool close_contactors(BatteryPack *pack);
-bool open_contactors(BatteryPack *pack);
+    public:
+        BatteryPack (int packId, int CANCSPin, int contactorPin, int numModules, int numCellsPerModule, int numTemperatureSensorsPerModule);
+        void set_battery(Battery *battery) { this->battery = battery; }
+
+        //int get_poll_message_id() { return this->pollMessageId; }
+        //void set_poll_message_id(int pollMessageId) { this->pollMessageId = pollMessageId; }
+        //void increment_poll_message_id() { ++this->pollMessageId; }
+
+        //int get_test_cycle() { return this-> testCycle; }
+        //void set_test_cycle(int testCycle) { this->testCycle = testCycle; }
+        //void increment_test_cycle() { ++this->testCycle; }
+
+        //int get_msg_cycle() { return this->msgcycle; }
+        //void set_msg_cycle(int msgcycle) { this->msgcycle = msgcycle; }
+        //void increment_msg_cycle() { ++this->msgcycle; }
+
+        void print();
+        uint8_t getcheck(can_frame &msg, int id);
+        void request_data();
+        void read_message();
+
+        bool pack_is_alive();
+
+        void send_message(can_frame *frame) { (*this->CAN).sendMessage(frame); }
+
+        void set_pack_error_status(int newErrorStatus);
+        int get_pack_error_status();
+        void set_pack_balance_status(int newBalanceStatus);
+        int get_pack_balance_status();
+        bool pack_is_due_to_be_balanced();
+        void reset_balance_timer();
+
+        // Voltage
+        float get_voltage();
+        void update_voltage();
+        float get_lowest_cell_voltage();
+        bool has_cell_under_voltage();
+        float get_highest_cell_voltage();
+        bool has_cell_over_voltage();
+        void update_cell_voltage(int moduleIndex, int cellIndex, float newCellVoltage);
+        void decode_voltages(can_frame *rame);
+
+        // Temperature
+        bool has_temperature_sensor_over_max();
+        int get_max_charging_current();
+        float get_lowest_temperature();
+        void decode_temperatures(can_frame *temperatureMessageFrame);
+
+        // Contactors
+        bool close_contactors();
+        bool open_contactors();
+
+};
+
+#endif
+

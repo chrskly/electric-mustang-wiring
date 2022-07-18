@@ -17,25 +17,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef MODULE_H
+#define MODULE_H
 
-void initialise_module(BatteryModule *module, BatteryPack *pack);
+#include "settings.h"
 
-// Voltage
-float get_voltage(BatteryModule *module);
-float get_lowest_cell_voltage(BatteryModule *module);
-bool has_cell_under_voltage(BatteryModule *module);
-float get_highest_cell_voltage(BatteryModule *module);
-bool has_temperature_sensor_over_max(BatteryModule *module);
-void update_cell_voltage(BatteryModule *module, int cellIndex, float newCellVoltage);
-bool has_cell_over_voltage(BatteryModule *module);
+class BatteryPack;
 
-// Temperature
-void update_temperature(BatteryModule *module, int tempSensorId, float newTemperature);
-float get_highest_temperature(BatteryModule *module);
-float get_lowest_temperature(BatteryModule *module);
-bool temperature_at_warning_level(BatteryModule *module);
+class BatteryModule {
 
-// Charging
-int get_max_charging_current(BatteryModule *module);
+    private:
+
+        int numCells;                            // Number of cells in this module
+        int numTemperatureSensors;               // Number of temperature sensors in this module
+        float cellVoltage[CELLS_PER_MODULE];     // Voltages of each cell
+        float cellTemperature[TEMPS_PER_MODULE]; // Temperatures of each cell
+        BatteryPack *pack;                       // The parent BatteryPack that contains this module
+
+    public:
+
+        BatteryModule (BatteryPack *pack, int numCells, int numTemperatureSensors);
+
+        // Voltage
+        float get_voltage();
+        float get_lowest_cell_voltage();
+        bool has_cell_under_voltage();
+        float get_highest_cell_voltage();
+        bool has_temperature_sensor_over_max();
+        void update_cell_voltage(int cellIndex, float newCellVoltage);
+        bool has_cell_over_voltage();
+
+        // Temperature
+        void update_temperature(int tempSensorId, float newTemperature);
+        float get_highest_temperature();
+        float get_lowest_temperature();
+        bool temperature_at_warning_level();
+
+        // Charging
+        int get_max_charging_current();
 
 
+};
+
+#endif

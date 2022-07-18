@@ -43,90 +43,22 @@ SPIO15 (20) SPI0 CS1 - to CS on mcp2515 board 1 (vai level converter)
 
 #include "mcp2515/mcp2515.h"
 
-#include "structs.h"
-
 #include "battery.h"
-#include "pack.h"
+
 #include "update.h"
 #include "bms.h"
 #include "statemachine.h"
 #include "comms.h"
 
 
-#define SPI_PORT      spi0
-
-#define SPI_MISO        16 // pin 21
-#define SPI_CLK         18 // pin 24
-#define SPI_MOSI        19 // pin 25
-
-// mainNet
-#define MAIN_CAN_CS     17 // pin 22
-
-// batt1Net
-#define BATT1_CAN_CS    20 // pin 29
-
-// batt2Net
-//#define BATT2_CAN_CS    15 // pin 20
-#define BATT2_CAN_CS    20 // pin 29
-
-#define CAN_CLK_PIN     21 // pin 27
-
-const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-
-// CAN interfaces
-MCP2515 mainCAN(spi0, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
-MCP2515 batt1CAN(spi0, BATT1_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
-MCP2515 batt2CAN(spi0, BATT2_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
-
-// Set up battery
-
-struct Battery battery;
-
 struct can_frame rx;
 
 // receive frame
 struct can_frame frame;
 
-// Store the statemachine state
 State state;
 
-
-void setupCAN() {
-    // set up CAN ports
-
-    clock_gpio_init(CAN_CLK_PIN, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLK_SYS, 10);
-
-    //battery.packs[0]->CAN = &batt1CAN;
-    battery.packs[0]->CAN = &batt2CAN;
-    battery.packs[1]->CAN = &batt2CAN;
-
-    mainCAN.reset();
-    mainCAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
-    mainCAN.setNormalMode();
-
-    batt1CAN.reset();
-    batt1CAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
-    batt1CAN.setNormalMode();
-
-    batt2CAN.reset();
-    batt2CAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
-    batt2CAN.setNormalMode();
-
-}
-
-void send_startup_test_messages() {
-    frame.can_dlc = 1;
-    frame.data[0] = 0x01;
-    printf("Sending test message on mainCAN\n");
-    mainCAN.sendMessage(&frame);
-    mainCAN.sendMessage(&frame);
-    mainCAN.sendMessage(&frame);
-    printf("Sending test message on batt2CAN\n");
-    batt2CAN.sendMessage(&frame);
-    batt2CAN.sendMessage(&frame);
-    batt2CAN.sendMessage(&frame);
-
-}
+Battery battery(NUM_PACKS);
 
 
 int main() {
@@ -139,31 +71,39 @@ int main() {
     gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
-    //uart_puts(UART_ID, "BMS starting up...\n");
-    printf("BMS starting up ...\n");
-
     // sleep for a bit to allow serial port to start up on PC
     sleep_ms(5000);
 
+    //uart_puts(UART_ID, "BMS starting up...\n");
+    printf("BMS starting up ...\n");
+
     // 8MHz clock for CAN oscillator
-    printf("Turning on CAN clock\n");
-    sleep_ms(1000);
-    //clock_gpio_init(CAN_CLK_PIN, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLK_SYS, 10);
+    clock_gpio_init(CAN_CLK_PIN, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLK_SYS, 10);
 
-    // Initialise the battery state
-    printf("Initialising battery state\n");
-    initialise_battery(&battery);
+    printf("Setting up main CAN port\n");
+    MCP2515 mainCAN(SPI_PORT, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
+    mainCAN.reset();
+    mainCAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
+    mainCAN.setNormalMode();
 
-    printf("Setting up CAN ports...\n");
-    setupCAN();
+    printf("Sending test message on main CAN\n");
+    frame.can_id = 0x001;
+    frame.can_dlc = 4;
+    frame.data[0] = 0xDE;
+    frame.data[1] = 0xAD;
+    frame.data[2] = 0xBE;
+    frame.data[3] = 0xEF;
+    mainCAN.sendMessage(&frame);
 
-    send_startup_test_messages();
+    // does this work?
+    MCP2515* cc = &mainCAN;
+    cc.sendMessage(&frame);
 
-    // print initial status
-    print_pack_status(battery.packs[0], 0);
-    print_pack_status(battery.packs[1], 1);
 
-    // 
+
+    battery.print();
+    battery.send_test_message();
+
     printf("Enabling module polling\n");
     enable_module_polling();
 

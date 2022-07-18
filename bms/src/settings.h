@@ -42,6 +42,28 @@
 
 const int CONTACTOR_PINS[] = { 2, 3 };
 
+//const int CS_PINS[] = { 20, 20 };
+const int CS_PINS[] = { 17, 17 };
+
+#define SPI_PORT      spi0
+
+#define SPI_MISO        16 // pin 21
+#define SPI_CLK         18 // pin 24
+#define SPI_MOSI        19 // pin 25
+
+// mainNet
+#define MAIN_CAN_CS     17 // pin 22
+
+// batt1Net
+//#define BATT1_CAN_CS    20 // pin 29
+
+// batt2Net
+//#define BATT2_CAN_CS    15 // pin 20
+
+#define CAN_CLK_PIN     21 // pin 27
+
+//const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+
 // Official min pack voltage = 269V. 269 / 6 / 16 = 2.8020833333V
 #define CELL_UNDER_VOLTAGE_WARNING_THRESHOLD 2.9
 #define CELL_UNDER_VOLTAGE_FAULT_THRESHOLD 2.81

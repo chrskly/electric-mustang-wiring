@@ -36,34 +36,34 @@ void state_standby(Event event) {
 
 	switch (event) {
 		case E_TEMPERATURE_UPDATE:
-			if ( has_temperature_sensor_over_max(&battery) ) {
+			if ( battery.has_temperature_sensor_over_max() ) {
 			    state = state_overTempFault;
 		    }
 		    break;
 		case E_CELL_VOLTAGE_UPDATE:
-			if ( has_cell_over_voltage(&battery) ) {
+			if ( battery.has_cell_over_voltage() ) {
 				state = state_overVoltageFault;
 				break;
 			}
-			if ( has_cell_under_voltage(&battery) ) {
+			if ( battery.has_cell_under_voltage() ) {
 				state = state_underVoltageFault;
 				break;
 			}
 			break;
 		case E_IGNITION_ON:
-		    close_contactors(&battery);
+		    battery.close_contactors();
 		    state = state_drive;
 		    break;
 		case E_CHARGING_INITIATED:
 		    // Is it warm enough to charge?
-		    if ( too_cold_to_charge(&battery) ) {
+		    if ( battery.too_cold_to_charge() ) {
 		    	break;
 		    }
-			close_contactors(&battery);
+			battery.close_contactors();
 			state = state_charging;
 			break;
 		case E_EMERGENCY_SHUTDOWN:
-		    open_contactors(&battery);
+		    battery.open_contactors();
 		    break;
 		default:
 		    printf("Received unknown event");
@@ -84,28 +84,28 @@ void state_drive(Event event) {
 
 	switch (event) {
 		case E_TEMPERATURE_UPDATE:
-			if ( has_temperature_sensor_over_max(&battery) ) {
+			if ( battery.has_temperature_sensor_over_max() ) {
 				// Tell inverter to shut down + short sleep
-				open_contactors(&battery);
+				battery.open_contactors();
 				state = state_overTempFault;
 			}
 			break;
 		case E_CELL_VOLTAGE_UPDATE:
-			if ( has_cell_over_voltage(&battery) ) {
+			if ( battery.has_cell_over_voltage() ) {
 				// Can we tell the inverter to turn off regen?
 				//state = state_overVoltageFault;
 			}
-			if ( has_cell_under_voltage(&battery) ) {
+			if ( battery.has_cell_under_voltage() ) {
 				// Battery is empty. Disallow driving.
 				// Tell inverter to shut down + short sleep.
-				open_contactors(&battery);
+				battery.open_contactors();
 				state = state_underVoltageFault;
 				break;
 			}
 			break;
 		case E_IGNITION_OFF:
 			// Tell inverter to shut down + short sleep
-			open_contactors(&battery);
+			battery.open_contactors();
 			break;
 		case E_CHARGING_INITIATED:
 		    // FIXME - what do we do here.
@@ -113,7 +113,7 @@ void state_drive(Event event) {
 		    break;
 		case E_EMERGENCY_SHUTDOWN:
 		    // Tell inverter to shut down + short sleep.
-		    open_contactors(&battery);
+		    battery.open_contactors();
 		    break;
 	}
 
@@ -133,20 +133,20 @@ void state_charging(Event event) {
 	switch (event) {
 		case E_TEMPERATURE_UPDATE:
 		    // Switch to error state if any cell is too hot
-			if ( has_temperature_sensor_over_max(&battery) ) {
+			if ( battery.has_temperature_sensor_over_max() ) {
 				// Tell charger to shut down
 				// open contactors
 			    state = state_overTempFault;
 		    }
 		    // Is it too cold to continue charging?
-		    if ( too_cold_to_charge(&battery) ) {
+		    if ( battery.too_cold_to_charge() ) {
 		    	// Tell charger to shut down
 		    	// open contactors
 		    	state = state_standby;
 		    }
 		    break;
 		case E_CELL_VOLTAGE_UPDATE:
-			if ( has_cell_over_voltage(&battery) ) {
+			if ( battery.has_cell_over_voltage() ) {
 				// Tell charger to shut down
 				// open contactors
 				state = state_overVoltageFault;
@@ -160,7 +160,7 @@ void state_charging(Event event) {
 			// We're already charging. Nothing to do.
 			break;
 		case E_EMERGENCY_SHUTDOWN:
-		    open_contactors(&battery);
+		    battery.open_contactors();
 		    break;
 		default:
 		    printf("Received unknown event");
@@ -183,7 +183,7 @@ void state_overTempFault(Event event) {
 
 	switch (event) {
 		case E_TEMPERATURE_UPDATE:
-			if ( ! has_temperature_sensor_over_max(&battery) ) {
+			if ( ! battery.has_temperature_sensor_over_max() ) {
 			    state = state_standby;
 		    }
 		    break;
@@ -215,12 +215,12 @@ void state_overVoltageFault(Event event) {
 		case E_TEMPERATURE_UPDATE:
 		    // overTempFault beats overVoltageFault, so if a cell is too hot
 		    // then switch to overTempFault state.
-			if ( has_temperature_sensor_over_max(&battery) ) {
+			if ( battery.has_temperature_sensor_over_max() ) {
 			    state = state_overTempFault;
 		    }
 		    break;
 		case E_CELL_VOLTAGE_UPDATE:
-			if ( ! has_cell_over_voltage(&battery) ) {
+			if ( ! battery.has_cell_over_voltage() ) {
 				state = state_standby;
 			}
 			break;
@@ -228,7 +228,7 @@ void state_overVoltageFault(Event event) {
 		    // Allow the car to drive off the excess charge which triggered an
 		    // overVoltageFault.
 		    // FIXME - can we tell the inverter to disable regen?
-		    close_contactors(&battery);
+		    battery.close_contactors();
 		    state = state_drive;
 		    break;
 		case E_CHARGING_INITIATED:
@@ -255,13 +255,13 @@ void state_underVoltageFault(Event event) {
 
 	switch (event) {
 		case E_TEMPERATURE_UPDATE:
-			if ( has_temperature_sensor_over_max(&battery) ) {
+			if ( battery.has_temperature_sensor_over_max() ) {
 			    state = state_overTempFault;
 		    }
 		    break;
 		case E_CELL_VOLTAGE_UPDATE:
 		    // cell voltage might rise slightly on its own over time when at rest
-		    if ( ! has_cell_under_voltage(&battery) ) {
+		    if ( ! battery.has_cell_under_voltage() ) {
 		    	state = state_standby;
 		    }
 			break;
@@ -270,10 +270,10 @@ void state_underVoltageFault(Event event) {
 		    break;
 		case E_CHARGING_INITIATED:
 		    // Is it warm enough to charge?
-		    if ( too_cold_to_charge(&battery) ) {
+		    if ( battery.too_cold_to_charge() ) {
 		    	break;
 		    }
-			close_contactors(&battery);
+			battery.close_contactors();
 			state = state_charging;
 			break;
 		case E_EMERGENCY_SHUTDOWN:

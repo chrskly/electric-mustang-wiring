@@ -17,31 +17,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "structs.h"
+#ifndef BATTERY_H
+#define BATTERY_H
 
-void initialise_battery(Battery *battery);
+#include "pack.h"
 
-// Voltage
-float get_voltage(Battery *battery);
-void update_voltage(Battery *battery);
-void update_cell_voltage(Battery *battery, int packIndex, int moduleIndex, int cellIndex, float newCellVoltage);
-float get_lowest_cell_voltage(Battery *battery);
-void update_lowest_cell_voltage(Battery *battery);
-bool has_cell_under_voltage(Battery *battery);
-float get_highest_cell_voltage(Battery *battery);
-void update_highest_cell_voltage(Battery *battery);
-bool has_cell_over_voltage(Battery *battery);
-float voltage_delta_between_packs(Battery *battery);
-BatteryPack* get_pack_with_highest_voltage(Battery *battery);
+class Battery {
+    private:
+        BatteryPack *packs[NUM_PACKS];
+        int numPacks;
+        float voltage;
+        float lowestCellVoltage;
+        float highestCellVoltage;
+        float lowestCellTemperature;
+        float highestCellTemperature;
+    public:
+        Battery (int numPacks);
+        int print();
 
-// Temperature
-bool has_temperature_sensor_over_max(Battery *battery);
-int get_max_charging_current(Battery *battery);
-float get_lowest_temperature(Battery *battery);
-bool too_cold_to_charge(Battery *battery);
+        void request_data();
+        void read_message();
+        void send_test_message();
 
-// Contactors
-void close_contactors(Battery *battery);
-void open_contactors(Battery *battery);
+        // Voltage
+        float get_voltage();
+        void set_voltage(float voltage) { this->voltage = voltage; }
+        void update_voltage();
+        void update_cell_voltage(int packIndex, int moduleIndex, int cellIndex, float newCellVoltage);
+        float get_lowest_cell_voltage();
+        void update_lowest_cell_voltage();
+        bool has_cell_under_voltage();
+        float get_highest_cell_voltage();
+        void update_highest_cell_voltage();
+        bool has_cell_over_voltage();
+        float voltage_delta_between_packs();
+        BatteryPack* get_pack_with_highest_voltage();
 
+        // Temperature
+        bool has_temperature_sensor_over_max();
+        int get_max_charging_current();
+        float get_lowest_temperature();
+        bool too_cold_to_charge();
+
+        // Contactors
+        void close_contactors();
+        void open_contactors();
+};
+
+#endif
 

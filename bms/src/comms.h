@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "structs.h"
+#include "battery.h"
 
 void request_module_data(BatteryModule *module);
 bool poll_all_modules_for_data(struct repeating_timer *t);
