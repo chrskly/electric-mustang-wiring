@@ -28,6 +28,8 @@
 #include "module.h"
 #include "pack.h"
 
+using namespace std;
+
 BatteryModule::BatteryModule (BatteryPack *pack, int numCells, int numTemperatureSensors) {
 
 	// Point back to parent pack
@@ -67,6 +69,7 @@ float BatteryModule::get_voltage() {
 
 // Return the voltage of the lowest cell voltage in the module
 float BatteryModule::get_lowest_cell_voltage() {
+	printf("Inside module::get_lowest_cell_voltage\n");
 	float lowestCellVoltage = 1000;
 	for ( int c = 0; c < this->numCells; c++ ) {
 		if ( this->cellVoltage[c] < lowestCellVoltage ) {

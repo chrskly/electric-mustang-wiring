@@ -43,7 +43,8 @@
 const int CONTACTOR_PINS[] = { 2, 3 };
 
 //const int CS_PINS[] = { 20, 20 };
-const int CS_PINS[] = { 17, 17 };
+//const int CS_PINS[2] = { 20, 15 };
+const int CS_PINS[2] = { 15, 15 };
 
 #define SPI_PORT      spi0
 

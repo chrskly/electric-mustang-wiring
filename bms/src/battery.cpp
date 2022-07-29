@@ -22,6 +22,9 @@
 #include "battery.h"
 #include "pack.h"
 
+
+using namespace std;
+
 Battery::Battery (int numPacks) {
 
 	this->voltage = 0;
@@ -37,8 +40,13 @@ Battery::Battery (int numPacks) {
 		printf("Initialising battery pack %d\n", p);		
 		static BatteryPack pack(p, CS_PINS[p], CONTACTOR_PINS[p], MODULES_PER_PACK, CELLS_PER_MODULE, TEMPS_PER_MODULE);
 		pack.set_battery(this);
+		this->packs[p] = &pack;
 	}	
 }
+
+//void Battery::set_CAN_port(int packId, MCP2515 *port) {
+//	this->packs[packId]->set_CAN_port(port);
+//}
 
 int Battery::print () {
 	for ( int p = 0; p < this->numPacks; p++ ) {
@@ -64,8 +72,10 @@ void Battery::send_test_message() {
 		printf("Sending test message to pack %d\n", p);
 		can_frame fr;
 		fr.can_id = 0x000;
-		fr.can_dlc = 1;
-		fr.data[0] = 0x00;
+		fr.can_dlc = 3;
+		fr.data[0] = 0x7E;
+		fr.data[1] = 0x57;
+		fr.data[2] = p;
 		this->packs[p]->send_message(&fr);
 	}
 }

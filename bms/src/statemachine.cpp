@@ -22,6 +22,8 @@
 #include "statemachine.h"
 #include "battery.h"
 
+using namespace std;
+
 
 /*
  * State      : standby

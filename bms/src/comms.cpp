@@ -28,6 +28,8 @@
 #include "battery.h"
 #include "pack.h"
 
+using namespace std;
+
 
 //// ----
 //
@@ -47,7 +49,7 @@ bool poll_packs_for_data(struct repeating_timer *t) {
 }
 
 void enable_module_polling() {
-	  printf("Enabling module polling (inner)\n");
+	  //printf("Enabling module polling (inner)\n");
     add_repeating_timer_ms(1000, poll_packs_for_data, NULL, &pollModuleTimer);
 }
 

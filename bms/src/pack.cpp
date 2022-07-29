@@ -24,6 +24,8 @@
 
 #include "settings.h"
 
+using namespace std;
+
 BatteryPack::BatteryPack (int packId, int CANCSPin, int contactorPin, int numModules, int numCellsPerModule, int numTemperatureSensorsPerModule) {
 
 	printf("Initialising BatteryPack %d\n", packId);
@@ -87,12 +89,17 @@ BatteryPack::BatteryPack (int packId, int CANCSPin, int contactorPin, int numMod
     printf("Pack %d setup complete\n", packId);
 }
 
+//void BatteryPack::set_CAN_port(MCP2515* port) {
+//	printf("pack::set_CAN_port : %p\n", port);
+//	this->CAN = port;
+//}
+
 void BatteryPack::print() {
 	printf("--------------------------------------------------------------------------------\n");
 	printf("Pack ID                : %d\n", this->packId);
 	printf("Pack voltage           : %d\n", this->voltage);
 	printf("Pack contactors closed : %d\n", this->contactorsClosed);
-	printf("Pack CAN port          : %d\n", this->CAN);
+	printf("Pack CAN port          : %p\n", this->CAN);
 	printf("--------------------------------------------------------------------------------\n");
 }
 
@@ -138,9 +145,9 @@ uint8_t BatteryPack::getcheck(can_frame &msg, int id) {
 
 void BatteryPack::request_data() {
 
-	can_frame pollModuleFrame;
+	printf("Requesting pack data\n");
 
-	printf("Inside request_pack_data\n");
+	can_frame pollModuleFrame;
 
 	/*
 	  if ( pack->pollMessageId == 6 ) {
@@ -160,25 +167,33 @@ void BatteryPack::request_data() {
 	  }
 	  */
 
+    printf("a\n");
 	// Set the Id and length of the CAN frame
-	//printf("pollMessageId %d\n", (*pack).pollMessageId);
-	//printf("pollMessageId %d\n", pack->pollMessageId);
 	pollModuleFrame.can_id = 0x080 | (this->pollMessageId);
-	printf("pollMessageId %d\n", this->pollMessageId);
+	//printf("pollMessageId %d\n", this->pollMessageId);
 	//pollModuleFrame.can_id = 0x080;
 	pollModuleFrame.can_dlc = 8;
 
+    printf("b\n");
 	if ( this->pack_is_due_to_be_balanced() ) {
+		printf("bb\n");
 		//uint16_t lowestCellVoltage = ( uint16_t(get_lowest_cell_voltage(pack)) * 1000 ) + 5;
-		uint16_t lowestCellVoltage = this->get_lowest_cell_voltage() * 1000;
-		printf("loestCellVoltage %d\n", lowestCellVoltage);
-	    pollModuleFrame.data[0] = lowestCellVoltage & 0x00FF;          // low byte
-	    pollModuleFrame.data[1] = ( lowestCellVoltage >> 8 ) & 0x00FF; // high byte
+		//uint16_t lowestCellVoltage = this->get_lowest_cell_voltage() * 1000;
+		float lowestCellVoltage = this->get_lowest_cell_voltage();
+		printf("lowestCellVoltage %f\n", lowestCellVoltage);
+		printf("bbb\n");
+	    //pollModuleFrame.data[0] = lowestCellVoltage & 0x00FF;          // low byte
+	    printf("bbbb\n");
+	    //pollModuleFrame.data[1] = ( lowestCellVoltage >> 8 ) & 0x00FF; // high byte
+	    printf("bbbbb\n");
 	}
 	else {
+		printf("-b-\n");
 	    pollModuleFrame.data[0] = 0xC7;
 	    pollModuleFrame.data[1] = 0x10;
 	}
+
+    printf("c\n");
 
 	pollModuleFrame.data[2] = 0x00; // balancing bits
 	pollModuleFrame.data[3] = 0x00; // balancing bits
@@ -197,6 +212,8 @@ void BatteryPack::request_data() {
 	    pollModuleFrame.data[5] = 0x01;
 	}
 
+    printf("d\n");
+
 	pollModuleFrame.data[6] = this->msgcycle << 4;
 
 	if ( this->testCycle == 2 ) {
@@ -213,18 +230,17 @@ void BatteryPack::request_data() {
 	//extern MCP2515 batt2CAN;
 	//batt2CAN.sendMessage(&pollModuleFrame);
     
-    printf("Sending poll message on CAN bus 3\n");
     //extern MCP2515 CANPorts[NUM_PACKS];
 	this->send_message(&pollModuleFrame);
 	//CANPorts[packId].sendMessage(&pollModuleFrame);
 
-
+    printf("e\n");
 	++this->pollMessageId;
 
 	//if (bms.checkstatus() == true) {
 	//    resetbalancedebug();
 	//}
-	printf("request_pack_data complete\n");
+	printf("Request_pack_data complete\n");
 }
 
 void BatteryPack::read_message() {
@@ -306,8 +322,10 @@ void BatteryPack::update_voltage() {
 
 // Return the voltage of the lowest cell in the pack
 float BatteryPack::get_lowest_cell_voltage() {
+	printf("inside battery::get_lowest_cell_voltage\n");
 	float lowestCellVoltage = 100;
 	for ( int m = 0; m < this->numModules; m++ ) {
+		printf("Getting lowestCellVoltage for module %d\n", m);
 		if ( this->modules[m]->get_lowest_cell_voltage() < lowestCellVoltage ) {
 			lowestCellVoltage = this->modules[m]->get_lowest_cell_voltage();
 		}

@@ -38,7 +38,7 @@ class BatteryPack {
         int numModules;                                  //
         int numCellsPerModule;                           //
         int numTemperatureSensorsPerModule;              //
-        Battery *battery;                                // The parent Battery that contains this BatteryPack
+        Battery* battery;                                // The parent Battery that contains this BatteryPack
         float voltage;                                   // Voltage of the total pack
         bool contactorsClosed;                           //
         int contactorPin;                                // Pin on the pico which controls contactors for this pack
@@ -50,9 +50,10 @@ class BatteryPack {
         uint8_t testCycle;                               //
         int pollMessageId;                               //
         bool initialised;
-        BatteryModule *modules[];                         // The child modules that make up this BatteryPack        
+        BatteryModule* modules[];                         // The child modules that make up this BatteryPack        
 
     public:
+        
         BatteryPack (int packId, int CANCSPin, int contactorPin, int numModules, int numCellsPerModule, int numTemperatureSensorsPerModule);
         void set_battery(Battery *battery) { this->battery = battery; }
 
@@ -67,6 +68,8 @@ class BatteryPack {
         //int get_msg_cycle() { return this->msgcycle; }
         //void set_msg_cycle(int msgcycle) { this->msgcycle = msgcycle; }
         //void increment_msg_cycle() { ++this->msgcycle; }
+
+        //void set_CAN_port(MCP2515 *port);
 
         void print();
         uint8_t getcheck(can_frame &msg, int id);

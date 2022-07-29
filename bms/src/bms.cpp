@@ -50,6 +50,8 @@ SPIO15 (20) SPI0 CS1 - to CS on mcp2515 board 1 (vai level converter)
 #include "statemachine.h"
 #include "comms.h"
 
+using namespace std;
+
 
 struct can_frame rx;
 
@@ -95,11 +97,60 @@ int main() {
     frame.data[3] = 0xEF;
     mainCAN.sendMessage(&frame);
 
-    // does this work?
-    MCP2515* cc = &mainCAN;
-    cc.sendMessage(&frame);
+    //--  BATT 0
 
+    printf("Setting up battery 0 CAN port\n");
+    MCP2515 b0_CAN(SPI_PORT, 15, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
+    b0_CAN.reset();
+    b0_CAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
+    b0_CAN.setNormalMode();
 
+    printf("Sending test message on battery 0 CAN port\n");
+    frame.can_id = 0x001;
+    frame.can_dlc = 3;
+    frame.data[0] = 0xBA;
+    frame.data[1] = 0x77;
+    frame.data[2] = 0x00;
+    b0_CAN.sendMessage(&frame);
+
+    //--  BATT 1
+
+    printf("Setting up battery 1 CAN port\n");
+    MCP2515 b1_CAN(SPI_PORT, 20, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
+    b1_CAN.reset();
+    b1_CAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
+    b1_CAN.setNormalMode();
+
+    printf("Sending test message on battery 1 CAN port\n");
+    frame.can_id = 0x001;
+    frame.can_dlc = 3;
+    frame.data[0] = 0xBA;
+    frame.data[1] = 0x77;
+    frame.data[2] = 0x01;
+    b1_CAN.sendMessage(&frame);    
+
+    // The CAN library seems to only work if I define the instances at this scope ¯\_(ツ)_/¯
+    /*
+    printf("Creating CANports ...\n");
+    for ( int p = 0; p < NUM_PACKS; p++ ) {
+        printf("Creating CAN port : CS %d, CONT %d, MOD %d, CELL %d, TEMP %d\n", CS_PINS[p], CONTACTOR_PINS[p], MODULES_PER_PACK, CELLS_PER_MODULE, TEMPS_PER_MODULE);
+        // this is static, so not getting recreated
+        static MCP2515 port(SPI_PORT, CS_PINS[p], CONTACTOR_PINS[p], MODULES_PER_PACK, CELLS_PER_MODULE, TEMPS_PER_MODULE);
+        static MCP2515* port_ptr = &port;
+        printf(">> PORT %d : %p\n", p, port_ptr);
+        battery.set_CAN_port(p, port_ptr);
+        printf(">> sending test message\n");
+        port.sendMessage(&frame);
+        port.sendMessage(&frame);
+        port.sendMessage(&frame);
+    }
+    */
+    /*
+    printf(">>>> Printing CANports ...\n");
+    for ( int p = 0; p < NUM_PACKS; p++ ) {
+        printf(">> PORT %d : %p\n", p, battery.packs[p]->CAN);
+    }
+    */    
 
     battery.print();
     battery.send_test_message();

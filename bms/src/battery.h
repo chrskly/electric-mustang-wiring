@@ -24,7 +24,7 @@
 
 class Battery {
     private:
-        BatteryPack *packs[NUM_PACKS];
+        BatteryPack* packs[NUM_PACKS];
         int numPacks;
         float voltage;
         float lowestCellVoltage;
@@ -32,7 +32,9 @@ class Battery {
         float lowestCellTemperature;
         float highestCellTemperature;
     public:
+        //BatteryPack* packs[NUM_PACKS];
         Battery (int numPacks);
+        //void set_CAN_port(int packId, MCP2515* port);
         int print();
 
         void request_data();
