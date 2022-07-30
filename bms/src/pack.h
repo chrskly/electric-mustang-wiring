@@ -25,51 +25,21 @@
 
 #include "module.h"
 //#include "battery.h"
+#include "settings.h"
 
 class Battery;
 class BatteryModule;
 
 class BatteryPack {
 
-    private:
-        int packId;
-        MCP2515* CAN;                                    // CAN bus connection to this pack
-        absolute_time_t lastUpdate;                      // Time we received last update from BMS
-        int numModules;                                  //
-        int numCellsPerModule;                           //
-        int numTemperatureSensorsPerModule;              //
-        Battery* battery;                                // The parent Battery that contains this BatteryPack
-        float voltage;                                   // Voltage of the total pack
-        bool contactorsClosed;                           //
-        int contactorPin;                                // Pin on the pico which controls contactors for this pack
-        int balanceStatus;                               //
-        int errorStatus;
-        absolute_time_t nextBalanceTime;                 // Time that the next balance should occur.
-        uint8_t msgcycle;                                //
-        uint8_t nextmsg;                                 //
-        uint8_t testCycle;                               //
-        int pollMessageId;                               //
-        bool initialised;
-        BatteryModule* modules[];                         // The child modules that make up this BatteryPack        
-
     public:
+
+        int id;
         
-        BatteryPack (int packId, int CANCSPin, int contactorPin, int numModules, int numCellsPerModule, int numTemperatureSensorsPerModule);
-        void set_battery(Battery *battery) { this->battery = battery; }
+        BatteryPack ();
+        BatteryPack (int _id, int CANCSPin, int _contactorPin, int _numModules, int _numCellsPerModule, int _numTemperatureSensorsPerModule);
 
-        //int get_poll_message_id() { return this->pollMessageId; }
-        //void set_poll_message_id(int pollMessageId) { this->pollMessageId = pollMessageId; }
-        //void increment_poll_message_id() { ++this->pollMessageId; }
-
-        //int get_test_cycle() { return this-> testCycle; }
-        //void set_test_cycle(int testCycle) { this->testCycle = testCycle; }
-        //void increment_test_cycle() { ++this->testCycle; }
-
-        //int get_msg_cycle() { return this->msgcycle; }
-        //void set_msg_cycle(int msgcycle) { this->msgcycle = msgcycle; }
-        //void increment_msg_cycle() { ++this->msgcycle; }
-
-        //void set_CAN_port(MCP2515 *port);
+        void set_battery(Battery* battery) { this->battery = battery; }
 
         void print();
         uint8_t getcheck(can_frame &msg, int id);
@@ -78,7 +48,8 @@ class BatteryPack {
 
         bool pack_is_alive();
 
-        void send_message(can_frame *frame) { (*this->CAN).sendMessage(frame); }
+        //void send_message(can_frame *frame) { (*this->CAN).sendMessage(frame); }
+        void send_message(can_frame *frame);
 
         void set_pack_error_status(int newErrorStatus);
         int get_pack_error_status();
@@ -106,6 +77,29 @@ class BatteryPack {
         // Contactors
         bool close_contactors();
         bool open_contactors();
+
+    private:
+
+        MCP2515 CAN;                                     // CAN bus connection to this pack
+        absolute_time_t lastUpdate;                      // Time we received last update from BMS
+        int numModules;                                  //
+        int numCellsPerModule;                           //
+        int numTemperatureSensorsPerModule;              //
+        Battery* battery;                                // The parent Battery that contains this BatteryPack
+        float voltage;                                   // Voltage of the total pack
+        bool contactorsClosed;                           //
+        int contactorPin;                                // Pin on the pico which controls contactors for this pack
+        int balanceStatus;                               //
+        int errorStatus;
+        absolute_time_t nextBalanceTime;                 // Time that the next balance should occur.
+        uint8_t msgcycle;                                //
+        uint8_t nextmsg;                                 //
+        uint8_t testCycle;                               //
+        int pollMessageId;                               //
+        bool initialised;
+        //BatteryModule* modules[];                         // The child modules that make up this BatteryPack        
+        BatteryModule modules[MODULES_PER_PACK];                         // The child modules that make up this BatteryPack        
+
 
 };
 

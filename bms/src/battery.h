@@ -21,10 +21,11 @@
 #define BATTERY_H
 
 #include "pack.h"
+#include "settings.h"
 
 class Battery {
     private:
-        BatteryPack* packs[NUM_PACKS];
+        BatteryPack packs[NUM_PACKS];
         int numPacks;
         float voltage;
         float lowestCellVoltage;
@@ -33,8 +34,8 @@ class Battery {
         float highestCellTemperature;
     public:
         //BatteryPack* packs[NUM_PACKS];
-        Battery (int numPacks);
-        //void set_CAN_port(int packId, MCP2515* port);
+        Battery (int _numPacks);
+        void initialise();
         int print();
 
         void request_data();

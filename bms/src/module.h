@@ -27,7 +27,7 @@ class BatteryPack;
 class BatteryModule {
 
     private:
-
+        int id;
         int numCells;                            // Number of cells in this module
         int numTemperatureSensors;               // Number of temperature sensors in this module
         float cellVoltage[CELLS_PER_MODULE];     // Voltages of each cell
@@ -35,8 +35,9 @@ class BatteryModule {
         BatteryPack* pack;                       // The parent BatteryPack that contains this module
 
     public:
-
-        BatteryModule (BatteryPack *pack, int numCells, int numTemperatureSensors);
+        BatteryModule();
+        BatteryModule(int _id, BatteryPack* _pack, int _numCells, int _numTemperatureSensors);
+        void print();
 
         // Voltage
         float get_voltage();

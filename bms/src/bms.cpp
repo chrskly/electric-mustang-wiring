@@ -49,6 +49,7 @@ SPIO15 (20) SPI0 CS1 - to CS on mcp2515 board 1 (vai level converter)
 #include "bms.h"
 #include "statemachine.h"
 #include "comms.h"
+#include "led.h"
 
 using namespace std;
 
@@ -61,6 +62,8 @@ struct can_frame frame;
 State state;
 
 Battery battery(NUM_PACKS);
+//Battery battery = NULL;
+//Battery battery;
 
 
 int main() {
@@ -74,15 +77,20 @@ int main() {
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
     // sleep for a bit to allow serial port to start up on PC
-    sleep_ms(5000);
+    //sleep_ms(5000);
 
-    //uart_puts(UART_ID, "BMS starting up...\n");
     printf("BMS starting up ...\n");
+
+    battery.initialise();
+
+    gpio_init(PICO_DEFAULT_LED_PIN);
+    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+    enable_led_blink();
 
     // 8MHz clock for CAN oscillator
     clock_gpio_init(CAN_CLK_PIN, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLK_SYS, 10);
 
-    printf("Setting up main CAN port\n");
+    printf("Setting up main CAN port (BITRATE:%d:%d)\n", CAN_1000KBPS, MCP_8MHZ);
     MCP2515 mainCAN(SPI_PORT, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
     mainCAN.reset();
     mainCAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
@@ -97,66 +105,14 @@ int main() {
     frame.data[3] = 0xEF;
     mainCAN.sendMessage(&frame);
 
-    //--  BATT 0
-
-    printf("Setting up battery 0 CAN port\n");
-    MCP2515 b0_CAN(SPI_PORT, 15, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
-    b0_CAN.reset();
-    b0_CAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
-    b0_CAN.setNormalMode();
-
-    printf("Sending test message on battery 0 CAN port\n");
-    frame.can_id = 0x001;
-    frame.can_dlc = 3;
-    frame.data[0] = 0xBA;
-    frame.data[1] = 0x77;
-    frame.data[2] = 0x00;
-    b0_CAN.sendMessage(&frame);
-
-    //--  BATT 1
-
-    printf("Setting up battery 1 CAN port\n");
-    MCP2515 b1_CAN(SPI_PORT, 20, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
-    b1_CAN.reset();
-    b1_CAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
-    b1_CAN.setNormalMode();
-
-    printf("Sending test message on battery 1 CAN port\n");
-    frame.can_id = 0x001;
-    frame.can_dlc = 3;
-    frame.data[0] = 0xBA;
-    frame.data[1] = 0x77;
-    frame.data[2] = 0x01;
-    b1_CAN.sendMessage(&frame);    
-
-    // The CAN library seems to only work if I define the instances at this scope ¯\_(ツ)_/¯
-    /*
-    printf("Creating CANports ...\n");
-    for ( int p = 0; p < NUM_PACKS; p++ ) {
-        printf("Creating CAN port : CS %d, CONT %d, MOD %d, CELL %d, TEMP %d\n", CS_PINS[p], CONTACTOR_PINS[p], MODULES_PER_PACK, CELLS_PER_MODULE, TEMPS_PER_MODULE);
-        // this is static, so not getting recreated
-        static MCP2515 port(SPI_PORT, CS_PINS[p], CONTACTOR_PINS[p], MODULES_PER_PACK, CELLS_PER_MODULE, TEMPS_PER_MODULE);
-        static MCP2515* port_ptr = &port;
-        printf(">> PORT %d : %p\n", p, port_ptr);
-        battery.set_CAN_port(p, port_ptr);
-        printf(">> sending test message\n");
-        port.sendMessage(&frame);
-        port.sendMessage(&frame);
-        port.sendMessage(&frame);
-    }
-    */
-    /*
-    printf(">>>> Printing CANports ...\n");
-    for ( int p = 0; p < NUM_PACKS; p++ ) {
-        printf(">> PORT %d : %p\n", p, battery.packs[p]->CAN);
-    }
-    */    
-
     battery.print();
     battery.send_test_message();
 
+    printf("Enabling handling of inbound CAN messages from batteries\n");
+    enable_handle_battery_CAN_messages();
+
     printf("Enabling module polling\n");
-    enable_module_polling();
+    //enable_module_polling();
 
     while(true) {
         // process inbound messages

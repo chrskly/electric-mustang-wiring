@@ -27,6 +27,8 @@ add_executable(bms
         comms.cpp
         statemachine.h
         statemachine.cpp
+        led.h
+        led.cpp
         )
 
 #add_executable(module-test

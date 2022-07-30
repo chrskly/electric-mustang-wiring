@@ -17,3 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "pico/stdlib.h"
+
+#include "led.h"
+
+struct repeating_timer ledBlinkTimer;
+
+bool led_blink(struct repeating_timer *t) {
+    if ( gpio_get(PICO_DEFAULT_LED_PIN) == 0 ) {
+        gpio_put(PICO_DEFAULT_LED_PIN, 1);
+    } else {
+        gpio_put(PICO_DEFAULT_LED_PIN, 0);
+    }
+    return true;
+}
+
+void enable_led_blink() {
+    add_repeating_timer_ms(500, led_blink, NULL, &ledBlinkTimer);
+}

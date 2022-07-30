@@ -172,21 +172,17 @@ void handle_main_CAN_messages() {
     }
 }
 
-/*
 
-struct can_frame batteryCANInbound;
 
-void handle_battery_CAN_messages() {
+struct repeating_timer handleBatteryCANMessagesTimer;
 
+bool handle_battery_CAN_messages(struct repeating_timer *t) {
 	  extern Battery battery;
-    extern MCP2515 CANPorts[];
-
-	  for ( int p = 0; p < NUM_PACKS; p++ ) {
-	    	this->read
-  	}
+	  battery.read_message();
+	  return true;
 }
 
-*/
-
-
+void enable_handle_battery_CAN_messages() {
+	  add_repeating_timer_ms(100, handle_battery_CAN_messages, NULL, &handleBatteryCANMessagesTimer);
+}
 

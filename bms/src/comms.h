@@ -27,3 +27,6 @@ void enable_status_messages();
 bool send_charge_limits_message();
 void enable_charge_limits_messages();
 void disable_charge_limits_messages();
+
+bool handle_battery_CAN_messages(struct repeating_timer *t);
+void enable_handle_battery_CAN_messages();
