@@ -62,8 +62,6 @@ struct can_frame frame;
 State state;
 
 Battery battery(NUM_PACKS);
-//Battery battery = NULL;
-//Battery battery;
 
 
 int main() {
@@ -76,13 +74,11 @@ int main() {
     gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
-    // sleep for a bit to allow serial port to start up on PC
-    //sleep_ms(5000);
-
     printf("BMS starting up ...\n");
 
     battery.initialise();
 
+    // Set up blinky LED
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
     enable_led_blink();
@@ -112,13 +108,9 @@ int main() {
     enable_handle_battery_CAN_messages();
 
     printf("Enabling module polling\n");
-    //enable_module_polling();
+    enable_module_polling();
 
-    while(true) {
-        // process inbound messages
-        // send outbound messages
-        // send status message out on main CAN port
-    }
+    while(true) { }
 
     return 0;
 }

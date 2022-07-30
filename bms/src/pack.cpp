@@ -46,8 +46,6 @@ BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorPin, int _numModu
 
     // Set up CAN port
     printf("Creating CAN port (cs:%d, miso:%d, mosi:%d, clk:%d)\n", CANCSPin, SPI_MISO, SPI_MOSI, SPI_CLK);
-	//CAN = MCP2515(SPI_PORT, CANCSPin, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
-	//MCP2515 CAN(SPI_PORT, CANCSPin, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
 	MCP2515 CAN(spi0, CANCSPin, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
 	MCP2515::ERROR response;
 	if ( CAN.reset() != MCP2515::ERROR_OK ) {

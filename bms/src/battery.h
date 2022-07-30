@@ -24,6 +24,7 @@
 #include "settings.h"
 
 class Battery {
+
     private:
         BatteryPack packs[NUM_PACKS];
         int numPacks;
@@ -32,8 +33,8 @@ class Battery {
         float highestCellVoltage;
         float lowestCellTemperature;
         float highestCellTemperature;
+
     public:
-        //BatteryPack* packs[NUM_PACKS];
         Battery (int _numPacks);
         void initialise();
         int print();
