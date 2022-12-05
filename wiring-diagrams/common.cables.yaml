@@ -18,12 +18,6 @@ cables:
     wirecount: 2
     colors: [ RD, BK ]
 
-  # HVJB => inverter
-  Z04:
-    gauge: 1 mm2
-    wirecount: 2
-    colors: [ RD, YE ]
-
   # HVJB shunt power, contactor power
   Z05:
     gauge: 1 mm2
@@ -77,6 +71,39 @@ cables:
     gauge: 1 mm2
     wirecount: 2
     colors: [ OG, RD ]
+
+  Z14:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ RD ]
+
+  Z15:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ BK ]
+
+  Z16:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ RD ]
+
+  Z17:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ PK, VT ]
+
+  Z18:
+    gauge: 70 mm2
+    wirecount: 2
+    colors: [ OG, OG ]
+
+  Z19:
+    gauge: 70 mm2
+    wirecount: 1
+    colors: [ OG ]
+
+
+
 
 
 

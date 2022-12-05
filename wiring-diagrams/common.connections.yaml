@@ -26,16 +26,45 @@ connections:
     - Z03: [ 1, 2 ]
     - 12V_FRONT_J1: [ 2, 1 ]
 
-  # HVJB => inverter
+  # 12V supply to shunt
   -
-    - HVJB: [ PRECHG_CONT_GND, MAIN_CONT_GND ]
-    - Z04: [ 1, 2 ]
-    - AMPSEAL_35_1: [ PRECHG, MAIN_CON ]
+    - 12V_FRONT_J4:
+      - ISA_SHUNT_12V
+    - Z05: [ 1 ]
+    - ISA_SHUNT:
+      - 12V
 
+  # GND to HVJB
   -
-    - HVJB: [ ISA_SHUNT_12V, IGNITION_12V, CONTACTORS_12V, CONTACTORS_GND ]
-    - Z05: [ 1, 2, 3, 4 ]
-    - 12V_FRONT_J4: [ ISA_SHUNT_12V, IGNITION_12V, CONTACTORS_12V, CONTACTORS_GND ]
+    - 12V_FRONT_J4:
+      - HVJB_GND
+    - Z05: [ 2 ]
+    - HVJB:
+      - GND
+
+  #
+  -
+    - 12V_FRONT_J4:
+      - IGNITION_12V
+    - Z05: [ 3 ]
+    - HVJB:
+      - IGNITION_12V
+
+  #
+  -
+    - 12V_FRONT_J4:
+      - CONTACTORS_12V
+    - Z05: [ 4 ]
+    - HVJB:
+      - CONTACTORS_12V
+
+  #
+  #-
+  #  - PRECHARGE_CONTACTOR:
+  #    - HV_A
+  #  - Z
+  #  - HVJB:
+  #    - 
 
   # 12v-front <=> 12v-rear, ignition and charge_enable signals
   -
@@ -51,20 +80,29 @@ connections:
   -
     - FRONT_BATTERY_BOX:
       - HV_POS
+    - Z07: [ 1 ]
+    - MAIN_CONTACTOR:
+      - HV_B
+  -
+    - FRONT_BATTERY_BOX:
       - HV_NEG
-    - Z07 : [ 1, 2 ]
-    - HVJB:
-      - BATTERY_HV_POS
-      - BATTERY_HV_NEG
+    - Z07: [ 2 ]
+    - ISA_SHUNT:
+      - HV_B
 
   -
     - REAR_BATTERY_BOX:
       - HV_POS
+    - Z08: [ 1 ]
+    - MAIN_CONTACTOR:
+      - HV_B
+
+  -
+    - REAR_BATTERY_BOX:
       - HV_NEG
-    - Z08: [ 1, 2 ]
-    - HVJB:
-      - BATTERY_HV_POS
-      - BATTERY_HV_NEG
+    - Z08: [ 2 ]
+    - ISA_SHUNT:
+      - HV_B
 
   # bms,  battery inhibit signals => 12v-front
   -
@@ -119,6 +157,70 @@ connections:
     - BMS_J5:
       - IGNITION_ON_IN
       - CHARGE_ENABLE_IN
+
+  #
+  -
+    - HVJB:
+      - CONTACTORS_12V
+    - Z14: [ 1 ]
+    - MAIN_CONTACTOR:
+      - 12V
+
+  -
+    - HVJB:
+      - GND
+    - Z15: [ 1 ]
+    - ISA_SHUNT:
+      - GND
+
+  -
+    - HVJB:
+      - CONTACTORS_12V
+    - Z16: [ 1 ]
+    - PRECHARGE_CONTACTOR:
+      - 12V
+
+  -
+    - MAIN_CONTACTOR:
+      - GND
+    - Z17: [ 1 ]
+    - AMPSEAL_35_1:
+      - MAIN_CON
+  -
+    - PRECHARGE_CONTACTOR:
+      - GND
+    - Z17: [ 2 ]
+    - AMPSEAL_35_1:
+      - PRECHG
+
+  -
+    - INVERTER:
+      - HV_POS
+    - Z18: [ 1 ]
+    - MAIN_CONTACTOR:
+      - HV_A
+
+  -
+    - INVERTER:
+      - HV_NEG
+    - Z18: [ 2 ]
+    - ISA_SHUNT:
+      - HV_A
+
+  -
+    - PRECHARGE_CONTACTOR:
+      - HV_B
+    - Z19: [ 1 ]
+    - MAIN_CONTACTOR:
+      - HV_B
+
+
+
+
+
+
+
+
 
 
 

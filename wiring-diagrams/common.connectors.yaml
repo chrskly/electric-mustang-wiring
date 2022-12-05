@@ -28,21 +28,33 @@ connectors:
   HVJB:
     type: 8pin
     pinlabels:
-      - ISA_SHUNT_12V
-      - ISA_SHUNT_CAN_H
-      - ISA_SHUNT_CAN_L
+      - GND
       - IGNITION_12V
       - CONTACTORS_12V
-      - CONTACTORS_GND
-      # Main/precharge contactors
-      - BATTERY_HV_POS
-      - BATTERY_HV_NEG
-      - MAIN_CONT_GND
-      - PRECHG_CONT_GND
-      # Charging contactor
-      - CHARGE_CONT_HV_POS
-      - CHARGE_CONT_HV_NEG
       - CHARGE_CONTACTORS_12V
+
+  ISA_SHUNT:
+    pinlabels:
+      - 12V
+      - GND
+      - CAN_H
+      - CAN_L
+      - HV_A
+      - HV_B
+
+  MAIN_CONTACTOR:
+    pinlabels:
+      - HV_A
+      - HV_B
+      - 12V
+      - GND
+
+  PRECHARGE_CONTACTOR:
+    pinlabels:
+      - HV_A
+      - HV_B
+      - 12V
+      - GND
 
   # Inverter Ampseal
   AMPSEAL_35_1:
@@ -84,6 +96,11 @@ connectors:
       - CHG_CAN_L   # 33
       - MG1_ENC_1   # 34
       - MG1_ENC_2   # 35
+
+  INVERTER:
+    pinlabels:
+      - HV_POS
+      - HV_NEG
 
   #
   # BMS
@@ -152,7 +169,7 @@ connectors:
     pinlabels:
       - ISA_SHUNT_12V
       - IGNITION_12V
-      - CONTACTORS_GND
+      - HVJB_GND
       - CONTACTORS_12V
 
   # 12v-front => coolant pump

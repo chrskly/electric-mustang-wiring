@@ -50,6 +50,14 @@ connections:
       - NEG_CONT_POS
       - NEG_CONT_NEG
 
+  # LIM voltage sense board => lim
+  -
+    - LIM_VOLTAGE_SENSE_2:
+      - SENSE
+    - X04: [ 5 ]
+    - LIM_4B:
+      - U_HV_DC
+
   # LIM voltage sense board => ccs contactors
   -
     - CCS_POS_CONTACTOR:
@@ -73,14 +81,6 @@ connections:
     - TESLA_CHARGER_B:
       - B1_12V
       - B7_GND
-
-  # LIM voltage sense board => lim
-  -
-    - LIM_VOLTAGE_SENSE_2:
-      - SENSE
-    - X07: [ 1 ]
-    - LIM_4B:
-      - U_HV_DC
 
   # LIM => 12v-rear, power supply
   -
@@ -242,19 +242,19 @@ connections:
 
 
   # CCS HVJB DC HV => HVJB
-  -
-    - CCS_POS_CONTACTOR:
-      - HV_B
-    - X17: [ 1 ]
-    - HVJB:
-      - CHARGE_CONT_HV_POS
+  #-
+  #  - CCS_POS_CONTACTOR:
+  #    - HV_B
+  #  - X17: [ 1 ]
+  #  - HVJB:
+  #    - CHARGE_CONT_HV_POS
 
-  -
-    - CCS_NEG_CONTACTOR:
-      - HV_B
-    - X17: [ 2 ]
-    - HVJB:
-      - CHARGE_CONT_HV_NEG
+  #-
+  #  - CCS_NEG_CONTACTOR:
+  #    - HV_B
+  #  - X17: [ 2 ]
+  #  - HVJB:
+  #    - CHARGE_CONT_HV_NEG
 
   # CHADEMO charge port => HVJB
   -
@@ -351,5 +351,87 @@ connections:
     - X27: [ 1 ]
     - CCS_HVJB:
       - GND
+
+  # CHADEMO contactors => HVJB
+  -
+    - CHADEMO_POS_CONTACTOR:
+      - HV_B
+    - X28: [ 1 ]
+    - CCS_POS_CONTACTOR:
+      - HV_B
+  -
+    - CHADEMO_NEG_CONTACTOR:
+      - HV_B
+    - X28: [ 2 ]
+    - CCS_NEG_CONTACTOR:
+      - HV_B
+
+  -
+    - CHARGE_CONTACTOR_POS:
+      - HV_A
+    - X29: [ 1 ]
+    - CCS_POS_CONTACTOR:
+      - HV_B
+  -
+    - CHARGE_CONTACTOR_NEG:
+      - HV_A
+    - X29: [ 2 ]
+    - CCS_NEG_CONTACTOR:
+      - HV_B
+
+
+
+  # GND for charge contactors
+  -
+    - HVJB:
+      - GND
+    - X30: [ 1 ]
+    - CHARGE_CONTACTOR_POS:
+      - GND
+
+  -
+    - HVJB:
+      - GND
+    - X31: [ 1 ]
+    - CHARGE_CONTACTOR_NEG:
+      - GND
+
+  -
+    - HVJB:
+      - CHARGE_CONTACTORS_12V
+    - X32: [ 1 ]
+    - CHARGE_CONTACTOR_POS:
+      - 12V
+
+  -
+    - HVJB:
+      - CHARGE_CONTACTORS_12V
+    - X33: [ 1 ]
+    - CHARGE_CONTACTOR_NEG:
+      - 12V
+
+  -
+    - CHARGE_CONTACTOR_POS:
+      - HV_B
+    - Z20: [ 1 ]
+    - MAIN_CONTACTOR:
+      - HV_A
+
+  -
+    - CHARGE_CONTACTOR_NEG:
+      - HV_B
+    - Z20: [ 2 ]
+    - ISA_SHUNT:
+      - HV_A
+
+  -
+    - TESLA_CHARGER_B:
+      - B7_GND
+    - Z21: [ 1 ]
+    - CCS_HVJB:
+      - GND
+
+
+
 
 

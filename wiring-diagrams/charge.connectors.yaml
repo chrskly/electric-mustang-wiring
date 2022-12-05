@@ -272,6 +272,21 @@ connectors:
       - TESLA_CAN_H
       - TESLA_CAN_L
 
+  CHARGE_CONTACTOR_POS:
+    pinlabels:
+      - HV_A
+      - HV_B
+      - 12V
+      - GND
+
+  CHARGE_CONTACTOR_NEG:
+    pinlabels:
+      - HV_A
+      - HV_B
+      - 12V
+      - GND
+
+
 
 
 

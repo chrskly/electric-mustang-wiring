@@ -22,8 +22,8 @@ cables:
   # CCS_HVJB <-> LIM_4B
   X04:
     gauge: 1 mm2
-    wirecount: 4
-    colors: [ YE, GN, BU, VT ]
+    wirecount: 5
+    colors: [ YE, GN, BU, VT, PK ]
 
   # LIM Voltage sense board to HVJB (probably inside the CCS HVJB anyway)
   X05:
@@ -36,12 +36,6 @@ cables:
     gauge: 1 mm2
     wirecount: 2
     colors: [ RD, BK ]
-
-  # LIM sense board => LIM
-  X07:
-    gauge: 1 mm2
-    wirecount: 1
-    colors: [ YE ]
 
   # LIM => 12v-rear, power supply
   X08:
@@ -93,12 +87,6 @@ cables:
 
   # CCS charge port HV => CCS HVJB
   X16:
-    gauge: 35 mm2
-    wirecount: 2
-    colors: [ OG, OG ]
-
-  # CCS HVJB DC HV => HVJB
-  X17:
     gauge: 35 mm2
     wirecount: 2
     colors: [ OG, OG ]
@@ -156,5 +144,51 @@ cables:
     gauge: 1 mm2
     wirecount: 1
     colors: [ GN ]
+
+  # Battery side of CCS contactor => battery side of Chademo contactor
+  # This is a busbar inside the rear hvjb
+  X28:
+    gauge: 35 mm2
+    wirecount: 2
+    colors: [ OG, OG ]
+
+  # charge contactors in front hvjb => read hvjb
+  X29:
+    gauge: 35 mm2
+    wirecount: 2
+    colors: [ OG, OG ]
+
+
+  X30:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ BK ]
+
+  X31:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ BK ]
+
+  X32:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ RD ]
+
+  X33:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ RD ]
+
+
+  Z20:
+    gauge: 70 mm2
+    wirecount: 2
+    colors: [ OG, OG ]
+
+
+  Z21:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ BK ]
 
 
