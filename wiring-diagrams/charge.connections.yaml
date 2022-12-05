@@ -1,18 +1,22 @@
 
 connections:
 
-  # CCS_HVJB <=> LIM
   -
-    - CCS_HVJB:
-      - POS_CONT_POS
-      - NEG_CONT_POS
-      - POS_CONT_NEG
-      - NEG_CONT_NEG
-    - X04: [ 1-4 ]
+    - CCS_POS_CONTACTOR:
+      - 12V
+      - GND
+    - X04: [ 1, 2 ]
     - LIM_4B:
       - POS_CONT_POS
-      - NEG_CONT_POS
       - POS_CONT_NEG
+
+  -
+    - CCS_NEG_CONTACTOR:
+      - 12V
+      - GND
+    - X04: [ 3, 4 ]
+    - LIM_4B:
+      - NEG_CONT_POS
       - NEG_CONT_NEG
 
   # LIM => 12v-rear, power supply
@@ -25,14 +29,18 @@ connections:
       - LIM_12V
       - LIM_GND
 
-  # LIM voltage sense board => CCS HVJB
+  # LIM voltage sense board => ccs contactors
   -
-    - CCS_HVJB:
-      - CCS_POS_CONTACTOR_HV_A
-      - CCS_NEG_CONTACTOR_HV_A
-    - X05 : [ 1, 2 ]
+    - CCS_POS_CONTACTOR:
+      - HV_A
+    - X05: [ 1 ]
     - LIM_VOLTAGE_SENSE_1:
       - HV_POS
+  -
+    - CCS_NEG_CONTACTOR:
+      - HV_A
+    - X05: [ 2 ]
+    - LIM_VOLTAGE_SENSE_1:
       - HV_NEG
 
   # LIM voltage sense board => lim
@@ -145,47 +153,45 @@ connections:
     - CHARGER_FUSE_3:
       - IN
 
-  # DC fuses => HVJB
+  # DC fuses => CCS contactors (battery side)
   -
     - CHARGER_FUSE_1:
       - OUT
     - X13: [ 1 ]
-    - CCS_HVJB:
-      - CCS_POS_CONTACTOR_HV_B
-
+    - CCS_POS_CONTACTOR:
+      - HV_B
   -
     - CHARGER_FUSE_2:
       - OUT
     - X13: [ 2 ]
-    - CCS_HVJB:
-      - CCS_POS_CONTACTOR_HV_B
-
+    - CCS_POS_CONTACTOR:
+      - HV_B
   -
     - CHARGER_FUSE_3:
       - OUT
     - X13: [ 3 ]
-    - CCS_HVJB:
-      - CCS_POS_CONTACTOR_HV_B
+    - CCS_POS_CONTACTOR:
+      - HV_B
 
   # tesla DC neg => HVJB
   -
     - TESLA_CHARGER_DC:
       - P1_NEG
     - X14: [ 1 ]
-    - CCS_HVJB:
-      - CCS_NEG_CONTACTOR_HV_B
+    - CCS_NEG_CONTACTOR:
+      - HV_B
   -
     - TESLA_CHARGER_DC:
       - P2_NEG
     - X14: [ 2 ]
-    - CCS_HVJB:
-      - CCS_NEG_CONTACTOR_HV_B
+    - CCS_NEG_CONTACTOR:
+      - HV_B
   -
     - TESLA_CHARGER_DC:
       - P3_NEG
     - X14: [ 3 ]
-    - CCS_HVJB:
-      - CCS_NEG_CONTACTOR_HV_B
+    - CCS_NEG_CONTACTOR:
+      - HV_B
 
   # CCS charge port => LIM
   -
@@ -202,28 +208,27 @@ connections:
     - CCS_CHARGE_PORT:
       - DC_POS
     - X16: [ 1 ]
-    - CCS_HVJB:
-      - CCS_POS_CONTACTOR_HV_A
-
+    - CCS_POS_CONTACTOR:
+      - HV_A
   -
     - CCS_CHARGE_PORT:
       - DC_NEG
     - X16: [ 2 ]
-    - CCS_HVJB:
-      - CCS_NEG_CONTACTOR_HV_A
+    - CCS_NEG_CONTACTOR:
+      - HV_A
 
 
   # CCS HVJB DC HV => HVJB
   -
-    - CCS_HVJB:
-      - CCS_POS_CONTACTOR_HV_B
+    - CCS_POS_CONTACTOR:
+      - HV_B
     - X17: [ 1 ]
     - HVJB:
       - CHARGE_CONT_HV_POS
 
   -
-    - CCS_HVJB:
-      - CCS_NEG_CONTACTOR_HV_B
+    - CCS_NEG_CONTACTOR:
+      - HV_B
     - X17: [ 2 ]
     - HVJB:
       - CHARGE_CONT_HV_NEG
@@ -233,14 +238,14 @@ connections:
     - CHADEMO_CHARGE_PORT:
       - HV_POS
     - X18: [ 1 ]
-    - CCS_HVJB:
-      - CHADEMO_POS_CONTACTOR_HV_A
+    - CHADEMO_POS_CONTACTOR:
+      - HV_A
   -
     - CHADEMO_CHARGE_PORT:
       - HV_NEG
     - X18: [ 2 ]
-    - CCS_HVJB:
-      - CHADEMO_NEG_CONTACTOR_HV_A
+    - CHADEMO_NEG_CONTACTOR:
+      - HV_A
 
   # 12v-rear J7 => lim sense board, 12v supply
   -

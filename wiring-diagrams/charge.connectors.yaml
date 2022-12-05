@@ -104,25 +104,37 @@ connectors:
       - LED_BLUE
       - LED_GND
 
+  CCS_POS_CONTACTOR:
+    pinlabels:
+      - HV_A
+      - HV_B
+      - 12V
+      - GND
+
+  CCS_NEG_CONTACTOR:
+    pinlabels:
+      - HV_A
+      - HV_B
+      - 12V
+      - GND
+
+  CHADEMO_POS_CONTACTOR:
+    pinlabels:
+      - HV_A
+      - HV_B
+      - 12V
+      - GND
+
+  CHADEMO_NEG_CONTACTOR:
+    pinlabels:
+      - HV_A
+      - HV_B
+      - 12V
+      - GND
+
   CCS_HVJB:
     pinlabels:
-      - POS_CONT_POS
-      - NEG_CONT_POS
-      - POS_CONT_NEG
-      - NEG_CONT_NEG
-      # CCS and Chademo contactor B sides are linked together in HVJB
-      - CCS_POS_CONTACTOR_HV_A
-      - CCS_POS_CONTACTOR_HV_B
-      - CCS_NEG_CONTACTOR_HV_A
-      - CCS_NEG_CONTACTOR_HV_B
       - GND
-      # Chademo controlled contactors
-      - CHADEMO_POS_CONTACTOR_HV_A
-      - CHADEMO_NEG_CONTACTOR_HV_A
-      - CHADEMO_POS_CONTACTOR_LV_12V
-      - CHADEMO_POS_CONTACTOR_LV_GND
-      - CHADEMO_NEG_CONTACTOR_LV_12V
-      - CHADEMO_NEG_CONTACTOR_LV_GND
   
   # evcreate LIM voltage sense board
   # FIXME check pinout
