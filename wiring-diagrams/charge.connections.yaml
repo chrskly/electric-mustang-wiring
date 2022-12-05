@@ -1,6 +1,37 @@
 
 connections:
 
+  # LIM => RGB LED
+  -
+    - LIM_4B:
+      - LED_RED
+      - LED_GREEN
+      - LED_BLUE
+      - LED_GND
+    - X01: [ 1, 2, 3, 4 ]
+    - CCS_STATUS_LIGHT:
+      - LED_RED
+      - LED_GREEN
+      - LED_BLUE
+      - LED_GND
+
+  # Charge port PE => GND
+  -
+    - CCS_CHARGE_PORT:
+      - PE
+    - X02: [ 1 ]
+    - CCS_HVJB:
+      - GND
+  
+  # GND from 12V batt => CCS_HVJB
+  -
+    - 12V_REAR_J10:
+      - GND
+    - X03: [ 1 ]
+    - CCS_HVJB:
+      - GND
+
+  # LIM control of CCS contactors
   -
     - CCS_POS_CONTACTOR:
       - 12V
@@ -19,16 +50,6 @@ connections:
       - NEG_CONT_POS
       - NEG_CONT_NEG
 
-  # LIM => 12v-rear, power supply
-  -
-    - LIM_1B:
-      - 12V
-      - GND
-    - X08: [ 1, 2 ]
-    - 12V_REAR_J6:
-      - LIM_12V
-      - LIM_GND
-
   # LIM voltage sense board => ccs contactors
   -
     - CCS_POS_CONTACTOR:
@@ -43,14 +64,6 @@ connections:
     - LIM_VOLTAGE_SENSE_1:
       - HV_NEG
 
-  # LIM voltage sense board => lim
-  -
-    - LIM_VOLTAGE_SENSE_2:
-      - SENSE
-    - X07: [ 1 ]
-    - LIM_4B:
-      - U_HV_DC
-
   # 12v-rear => Tesla charger, 12V supply
   - 
     - 12V_REAR_J2:
@@ -60,6 +73,24 @@ connections:
     - TESLA_CHARGER_B:
       - B1_12V
       - B7_GND
+
+  # LIM voltage sense board => lim
+  -
+    - LIM_VOLTAGE_SENSE_2:
+      - SENSE
+    - X07: [ 1 ]
+    - LIM_4B:
+      - U_HV_DC
+
+  # LIM => 12v-rear, power supply
+  -
+    - LIM_1B:
+      - 12V
+      - GND
+    - X08: [ 1, 2 ]
+    - 12V_REAR_J6:
+      - LIM_12V
+      - LIM_GND
 
   #
   # CCS charge port
@@ -85,34 +116,6 @@ connections:
     - CHARGER_MCB_3:
       - IN
 
-  # Charge port PE => GND
-  -
-    - CCS_CHARGE_PORT:
-      - PE
-    - X02: [ 1 ]
-    - CCS_HVJB:
-      - GND
-
-  # MCBs => tesla
-  -
-    - CHARGER_MCB_1:
-      - OUT
-    - X11: [ 1 ]
-    - TESLA_CHARGER_AC:
-      - P1_POS
-  -
-    - CHARGER_MCB_2:
-      - OUT
-    - X11: [ 2 ]
-    - TESLA_CHARGER_AC:
-      - P2_POS
-  -
-    - CHARGER_MCB_3:
-      - OUT
-    - X11: [ 3 ]
-    - TESLA_CHARGER_AC:
-      - P3_POS  
-
   # neutrals => tesla
   -
     - CCS_CHARGE_PORT:
@@ -132,6 +135,26 @@ connections:
     - X10: [ 3 ]
     - TESLA_CHARGER_AC:
       - P3_NEG
+
+  # MCBs => tesla
+  -
+    - CHARGER_MCB_1:
+      - OUT
+    - X11: [ 1 ]
+    - TESLA_CHARGER_AC:
+      - P1_POS
+  -
+    - CHARGER_MCB_2:
+      - OUT
+    - X11: [ 2 ]
+    - TESLA_CHARGER_AC:
+      - P2_POS
+  -
+    - CHARGER_MCB_3:
+      - OUT
+    - X11: [ 3 ]
+    - TESLA_CHARGER_AC:
+      - P3_POS
 
   # tesla DC pos => fuses
   -
@@ -267,28 +290,6 @@ connections:
       - 12V
       - GND
 
-  # LIM => RGB LED
-  -
-    - LIM_4B:
-      - LED_RED
-      - LED_GREEN
-      - LED_BLUE
-      - LED_GND
-    - X01: [ 1, 2, 3, 4 ]
-    - CCS_STATUS_LIGHT:
-      - LED_RED
-      - LED_GREEN
-      - LED_BLUE
-      - LED_GND
-
-  # GND from 12V batt => CCS_HVJB
-  -
-    - 12V_REAR_J10:
-      - GND
-    - X03: [ 1 ]
-    - CCS_HVJB:
-      - GND
-
   # 12v-rear => enable charge contactors
   -
     - 12V_REAR_J1:
@@ -304,7 +305,6 @@ connections:
     - X22: [ 1 ]
     - LIM_2B:
       - GND
-
 
   # CCS charge controller power
   -
