@@ -1,0 +1,160 @@
+
+cables:
+
+  # LIM => RGB LED
+  X01:
+    gauge: 1 mm2
+    wirecount: 4
+    colors: [ RD, GN, BU, BK ]
+
+  # Charge port PE => GND
+  X02:
+    gauge: 2.5 mm2
+    wirecount: 1
+    colors: [ GN ]
+
+  # GND from 12V batt => CCS_HVJB
+  X03:
+    gauge: 2.5 mm2
+    wirecount: 1
+    colors: [ BK ]
+
+  # CCS_HVJB <-> LIM_4B
+  X04:
+    gauge: 1 mm2
+    wirecount: 4
+    colors: [ YE, GN, BU, VT ]
+
+  # LIM Voltage sense board to HVJB (probably inside the CCS HVJB anyway)
+  X05:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, BK ]
+
+  # 12V power supply to Tesla charger
+  X06:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, BK ]
+
+  # LIM sense board => LIM
+  X07:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ YE ]
+
+  # LIM => 12v-rear, power supply
+  X08:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, BK ]
+
+  # CCS charge port, 3x live => MCBs
+  X09:
+    gauge: 2.5 mm2
+    wirecount: 3
+    colors: [ OG, OG, OG ]
+
+  # CCS charge port, 3x neutral => Tesla
+  X10:
+    gauge: 2.5 mm2
+    wirecount: 3
+    colors: [ OG, OG, OG ]
+
+  # MCBs => tesla
+  X11:
+    gauge: 2.5 mm2
+    wirecount: 3
+    colors: [ OG, OG, OG ]
+
+  # Tesla DC => DC fuses
+  X12:
+    gauge: 2.5 mm2
+    wirecount: 3
+    colors: [ OG, OG, OG ]
+
+  # DC fuses, pos => HVJB
+  X13:
+    gauge: 2.5 mm2
+    wirecount: 3
+    colors: [ OG, OG, OG ]
+
+  # Tesla DC neg => HVJB
+  X14:
+    gauge: 2.5 mm2
+    wirecount: 3
+    colors: [ OG, OG, OG ]
+
+  # Charge port => lim
+  X15:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ OG, PK ]
+
+  # CCS charge port HV => CCS HVJB
+  X16:
+    gauge: 35 mm2
+    wirecount: 2
+    colors: [ OG, OG ]
+
+  # CCS HVJB DC HV => HVJB
+  X17:
+    gauge: 35 mm2
+    wirecount: 2
+    colors: [ OG, OG ]
+
+  # Chademo charge port HV => HVJB
+  X18:
+    gauge: 35 mm2
+    wirecount: 2
+    colors: [ OG, OG ]
+
+  # 12v-rear => lim sense board, 12v supply
+  X19:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, BK ]
+
+  # 12v-rear J10 <= 12V batt
+  X20:
+    # FIXME is this gauge right?
+    gauge: 6 mm2
+    wirecount: 2
+    colors: [ RD, BK ]
+
+  # 12v-rear => enable charge contactors
+  X21:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ PK ]
+
+  # LIM GND
+  X22:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ BK ]
+
+  # CCS charge controller power
+  X23:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, BK ]
+
+  # CCS charge controller, LIM CAN
+  X24:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ PK, VT ]
+
+  X26:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ PK, VT ]
+
+  # Tesla case GND
+  X27:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ GN ]
+
+

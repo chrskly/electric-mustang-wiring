@@ -16,3 +16,5 @@ fp-info-cache
 # Netlist files (exported from Eeschema)
 *.net
 .DS_Store
+
+wiring-diagrams/output

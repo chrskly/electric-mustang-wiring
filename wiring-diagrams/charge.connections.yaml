@@ -1,0 +1,350 @@
+
+connections:
+
+  # CCS_HVJB <=> LIM
+  -
+    - CCS_HVJB:
+      - POS_CONT_POS
+      - NEG_CONT_POS
+      - POS_CONT_NEG
+      - NEG_CONT_NEG
+    - X04: [ 1-4 ]
+    - LIM_4B:
+      - POS_CONT_POS
+      - NEG_CONT_POS
+      - POS_CONT_NEG
+      - NEG_CONT_NEG
+
+  # LIM => 12v-rear, power supply
+  -
+    - LIM_1B:
+      - 12V
+      - GND
+    - X08: [ 1, 2 ]
+    - 12V_REAR_J6:
+      - LIM_12V
+      - LIM_GND
+
+  # LIM voltage sense board => CCS HVJB
+  -
+    - CCS_HVJB:
+      - CCS_POS_CONTACTOR_HV_A
+      - CCS_NEG_CONTACTOR_HV_A
+    - X05 : [ 1, 2 ]
+    - LIM_VOLTAGE_SENSE_1:
+      - HV_POS
+      - HV_NEG
+
+  # LIM voltage sense board => lim
+  -
+    - LIM_VOLTAGE_SENSE_2:
+      - SENSE
+    - X07: [ 1 ]
+    - LIM_4B:
+      - U_HV_DC
+
+  # 12v-rear => Tesla charger, 12V supply
+  - 
+    - 12V_REAR_J2:
+      - TESLA_12V
+      - TESLA_GND
+    - X06: [ 1, 2 ]
+    - TESLA_CHARGER_B:
+      - B1_12V
+      - B7_GND
+
+  #
+  # CCS charge port
+  #
+
+  # AC lives => MCBs
+  -
+    - CCS_CHARGE_PORT:
+      - L1
+    - X09: [ 1 ]
+    - CHARGER_MCB_1:
+      - IN
+  -
+    - CCS_CHARGE_PORT:
+      - L2
+    - X09: [ 2 ]
+    - CHARGER_MCB_2:
+      - IN
+  -
+    - CCS_CHARGE_PORT:
+      - L3
+    - X09: [ 3 ]
+    - CHARGER_MCB_3:
+      - IN
+
+  # Charge port PE => GND
+  -
+    - CCS_CHARGE_PORT:
+      - PE
+    - X02: [ 1 ]
+    - CCS_HVJB:
+      - GND
+
+  # MCBs => tesla
+  -
+    - CHARGER_MCB_1:
+      - OUT
+    - X11: [ 1 ]
+    - TESLA_CHARGER_AC:
+      - P1_POS
+  -
+    - CHARGER_MCB_2:
+      - OUT
+    - X11: [ 2 ]
+    - TESLA_CHARGER_AC:
+      - P2_POS
+  -
+    - CHARGER_MCB_3:
+      - OUT
+    - X11: [ 3 ]
+    - TESLA_CHARGER_AC:
+      - P3_POS  
+
+  # neutrals => tesla
+  -
+    - CCS_CHARGE_PORT:
+      - N
+    - X10: [ 1 ]
+    - TESLA_CHARGER_AC:
+      - P1_NEG
+  -
+    - CCS_CHARGE_PORT:
+      - N
+    - X10: [ 2 ]
+    - TESLA_CHARGER_AC:
+      - P2_NEG
+  -
+    - CCS_CHARGE_PORT:
+      - N
+    - X10: [ 3 ]
+    - TESLA_CHARGER_AC:
+      - P3_NEG
+
+  # tesla DC pos => fuses
+  -
+    - TESLA_CHARGER_DC:
+      - P1_POS
+    - X12: [ 1 ]
+    - CHARGER_FUSE_1:
+      - IN
+  -
+    - TESLA_CHARGER_DC:
+      - P2_POS
+    - X12: [ 2 ]
+    - CHARGER_FUSE_2:
+      - IN
+  -
+    - TESLA_CHARGER_DC:
+      - P3_POS
+    - X12: [ 3 ]
+    - CHARGER_FUSE_3:
+      - IN
+
+  # DC fuses => HVJB
+  -
+    - CHARGER_FUSE_1:
+      - OUT
+    - X13: [ 1 ]
+    - CCS_HVJB:
+      - CCS_POS_CONTACTOR_HV_B
+
+  -
+    - CHARGER_FUSE_2:
+      - OUT
+    - X13: [ 2 ]
+    - CCS_HVJB:
+      - CCS_POS_CONTACTOR_HV_B
+
+  -
+    - CHARGER_FUSE_3:
+      - OUT
+    - X13: [ 3 ]
+    - CCS_HVJB:
+      - CCS_POS_CONTACTOR_HV_B
+
+  # tesla DC neg => HVJB
+  -
+    - TESLA_CHARGER_DC:
+      - P1_NEG
+    - X14: [ 1 ]
+    - CCS_HVJB:
+      - CCS_NEG_CONTACTOR_HV_B
+  -
+    - TESLA_CHARGER_DC:
+      - P2_NEG
+    - X14: [ 2 ]
+    - CCS_HVJB:
+      - CCS_NEG_CONTACTOR_HV_B
+  -
+    - TESLA_CHARGER_DC:
+      - P3_NEG
+    - X14: [ 3 ]
+    - CCS_HVJB:
+      - CCS_NEG_CONTACTOR_HV_B
+
+  # CCS charge port => LIM
+  -
+    - CCS_CHARGE_PORT:
+      - CP
+      - PP
+    - X15: [ 1, 2 ]
+    - LIM_2B:
+      - CP
+      - PP
+
+  # CCS charge port HV => read HVJB
+  -
+    - CCS_CHARGE_PORT:
+      - DC_POS
+    - X16: [ 1 ]
+    - CCS_HVJB:
+      - CCS_POS_CONTACTOR_HV_A
+
+  -
+    - CCS_CHARGE_PORT:
+      - DC_NEG
+    - X16: [ 2 ]
+    - CCS_HVJB:
+      - CCS_NEG_CONTACTOR_HV_A
+
+
+  # CCS HVJB DC HV => HVJB
+  -
+    - CCS_HVJB:
+      - CCS_POS_CONTACTOR_HV_B
+    - X17: [ 1 ]
+    - HVJB:
+      - CHARGE_CONT_HV_POS
+
+  -
+    - CCS_HVJB:
+      - CCS_NEG_CONTACTOR_HV_B
+    - X17: [ 2 ]
+    - HVJB:
+      - CHARGE_CONT_HV_NEG
+
+  # CHADEMO charge port => HVJB
+  -
+    - CHADEMO_CHARGE_PORT:
+      - HV_POS
+    - X18: [ 1 ]
+    - CCS_HVJB:
+      - CHADEMO_POS_CONTACTOR_HV_A
+  -
+    - CHADEMO_CHARGE_PORT:
+      - HV_NEG
+    - X18: [ 2 ]
+    - CCS_HVJB:
+      - CHADEMO_NEG_CONTACTOR_HV_A
+
+  # 12v-rear J7 => lim sense board, 12v supply
+  -
+    - 12V_REAR_J7:
+      - LIM_SENSE_12V
+      - LIM_SENSE_GND
+    - X19: [ 1, 2 ]
+    - LIM_VOLTAGE_SENSE_2:
+      - 12V
+      - GND  
+
+  # 12v-rear J10 <= 12V batt
+  -
+    - 12V_REAR_J10:
+      - PERM_12V
+      - GND
+    - X20: [ 1, 2 ]
+    - 12VBATT:
+      - 12V
+      - GND
+
+  # LIM => RGB LED
+  -
+    - LIM_4B:
+      - LED_RED
+      - LED_GREEN
+      - LED_BLUE
+      - LED_GND
+    - X01: [ 1, 2, 3, 4 ]
+    - CCS_STATUS_LIGHT:
+      - LED_RED
+      - LED_GREEN
+      - LED_BLUE
+      - LED_GND
+
+  # GND from 12V batt => CCS_HVJB
+  -
+    - 12V_REAR_J10:
+      - GND
+    - X03: [ 1 ]
+    - CCS_HVJB:
+      - GND
+
+  # 12v-rear => enable charge contactors
+  -
+    - 12V_REAR_J1:
+      - CHARGE_CONTACTORS_12V
+    - X21: [ 1 ]
+    - HVJB:
+      - CHARGE_CONTACTORS_12V
+
+  # LIM GND
+  -
+    - CCS_HVJB:
+      - GND
+    - X22: [ 1 ]
+    - LIM_2B:
+      - GND
+
+
+  # CCS charge controller power
+  -
+    - CCS_CONTROLLER_J1:
+      - 12V
+      - GND
+    - X23: [ 1, 2 ]
+    - 12V_REAR_J3:
+      - CCS_12V
+      - CCS_GND
+
+  # CCS charge controller, LIM CAN
+  -
+    - CCS_CONTROLLER_J2:
+      - LIM_CAN_H
+      - LIM_CAN_L
+    - X24: [ 1, 2 ]
+    - LIM_1B:
+      - PT_CAN_H
+      - PT_CAN_L
+
+  # CCS charge controller, main CAN
+  #-
+  #  - CCS_CONTROLLER_J3:
+  #    - MAIN_CAN_H
+  #    - MAIN_CAN_L
+  #  - X25: [ 1, 2 ]
+  #  - ??
+
+  # CCS charge conrtoller, Tesla CAN
+  -
+    - CCS_CONTROLLER_J4:
+      - TESLA_CAN_H
+      - TESLA_CAN_L
+    - X26: [ 1, 2 ]
+    - TESLA_CHARGER_B:
+      - B4_CAN_H
+      - B10_CAN_L
+
+  # Tesla charger case GND
+  -
+    - TESLA_CHARGER_DC:
+      - CASE_GND
+    - X27: [ 1 ]
+    - CCS_HVJB:
+      - GND
+
+

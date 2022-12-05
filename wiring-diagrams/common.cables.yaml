@@ -1,0 +1,87 @@
+
+cables:
+
+  # 12V supply to battery boxes
+  Z01:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, BK ]
+
+  Z02:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, BK ]
+
+  # 12v-front <=> 12V batt
+  Z03:
+    gauge: 6 mm2
+    wirecount: 2
+    colors: [ RD, BK ]
+
+  # HVJB => inverter
+  Z04:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, YE ]
+
+  # HVJB shunt power, contactor power
+  Z05:
+    gauge: 1 mm2
+    wirecount: 4
+    colors: [ RD, YE, GN, BK ]
+
+  # 12v-front <=> 12v-rear, ignition and charge_enable signals
+  Z06:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ PK, YE ]
+
+  # HV front batt box to HVJB
+  Z07:
+    gauge: 70 mm2
+    wirecount: 2
+    colors: [ OG, OG ]
+
+  # HV rear batt box to HVJB
+  Z08:
+    gauge: 70 mm2
+    wirecount: 2
+    colors: [ OG, OG ]
+
+  # bms battery inhibit signals => 12v-front
+  Z09:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ PK, VT ]
+
+  # bms CAN to battery
+  Z10:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ PK, VT ]
+
+  # bms CAN to battery
+  Z11:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ PK, VT ]
+
+  # BMS power from 12v-rear
+  Z12:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, BK ]
+
+  # 12v-rear => bms, ignition/charge signals
+  Z13:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ OG, RD ]
+
+
+
+
+
+
+
+

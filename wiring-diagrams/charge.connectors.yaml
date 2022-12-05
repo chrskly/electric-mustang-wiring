@@ -1,0 +1,265 @@
+
+connectors:
+
+  #
+  # 12v-rear LV box
+  #
+
+  # 12v-rear => enable charge contactors
+  12V_REAR_J1:
+    type: Molex MegaFit
+    pinlabels:
+      - CHARGE_CONTACTORS_12V
+
+  # 12v-rear => Tesla 12V supply
+  12V_REAR_J2:
+    type: Molex MegaFit
+    pinlabels:
+      - TESLA_12V
+      - TESLA_GND
+
+  # 12v-rear => CCS charge controller 12V supply
+  12V_REAR_J3:
+    type: Molex MegaFit
+    pinlabels:
+      - CCS_12V
+      - CCS_GND
+
+  # 12v-rear => Chademo charge controller 12V supply
+  12V_REAR_J4:
+    type: Molex MegaFit
+    pinlabels:
+      - CHADEMO_12V
+      - CHADEMO_GND
+
+  # 12v-rear => LIM, 12V supply
+  12V_REAR_J6:
+    type: Molex MegaFit
+    pinlabels:
+      - LIM_12V
+      - LIM_GND
+
+  # 12v-rear => LIM sense board, 12V supply
+  12V_REAR_J7:
+    type: Molex MegaFit
+    pinlabels:
+      - LIM_SENSE_12V
+      - LIM_SENSE_GND
+
+
+  #
+  # LIM
+  #
+
+  LIM_1B:
+    type: Hirschmann 805-587-545
+    pinlabels:
+      - LED_S        # 1
+      - NONE         # 2
+      - LED_M        # 3
+      - LOCK_MOT_POS # 4
+      - LOCK_MOT_NEG # 5
+      - PT_CAN_H     # 6
+      - PT_CAN_L     # 7
+      - IGN_WAKE     # 8
+      - 12V          # 9
+      - GND          # 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - CHARGE_E     # 15
+      - LOCK_FB      # 16
+
+  LIM_2B:
+    type: TE 1-967616-1
+    pinlabels:
+      - CP  # 1
+      - PP  # 2
+      - 3
+      - 4
+      - GND # 5
+      - 6
+
+  LIM_4B:
+    type: TE 1534152-1
+    pinlabels:
+      - POS_CONT_POS # 1
+      - NEG_CONT_POS # 2
+      - POS_CONT_NEG # 3
+      - NEG_CONT_NEG # 4
+      - U_HV_DC      # 5
+      - LED_RED      # 6
+      - LED_GREEN    # 7
+      - LED_BLUE     # 8
+      - LED_GND      # 9
+      - 10
+      - 11
+      - 12
+
+  CCS_STATUS_LIGHT:
+    pinlabels:
+      - LED_RED
+      - LED_GREEN
+      - LED_BLUE
+      - LED_GND
+
+  CCS_HVJB:
+    pinlabels:
+      - POS_CONT_POS
+      - NEG_CONT_POS
+      - POS_CONT_NEG
+      - NEG_CONT_NEG
+      # CCS and Chademo contactor B sides are linked together in HVJB
+      - CCS_POS_CONTACTOR_HV_A
+      - CCS_POS_CONTACTOR_HV_B
+      - CCS_NEG_CONTACTOR_HV_A
+      - CCS_NEG_CONTACTOR_HV_B
+      - GND
+      # Chademo controlled contactors
+      - CHADEMO_POS_CONTACTOR_HV_A
+      - CHADEMO_NEG_CONTACTOR_HV_A
+      - CHADEMO_POS_CONTACTOR_LV_12V
+      - CHADEMO_POS_CONTACTOR_LV_GND
+      - CHADEMO_NEG_CONTACTOR_LV_12V
+      - CHADEMO_NEG_CONTACTOR_LV_GND
+  
+  # evcreate LIM voltage sense board
+  # FIXME check pinout
+  LIM_VOLTAGE_SENSE_1:
+    pinlabels:
+      - HV_POS
+      - NONE
+      - NONE
+      - HV_NEG
+  LIM_VOLTAGE_SENSE_2:
+    pinlabels:
+      - 12V
+      - SENSE
+      - GND
+
+  #
+  # TESLA
+  #
+
+  # Tesla gen2 charger
+  TESLA_CHARGER_A:
+    pinlabels:
+      - A1_OUT2_AC_PRESENT
+      - A2_NONE
+      - A3_D1_ENABLE
+      - A4_NONE
+      - A5_NONE
+      - A6_OUT1_HV_ENABLE
+      - A7_NONE
+      - A8_NONE
+      - A9_NONE
+      - A10_D2_3P
+
+  TESLA_CHARGER_B:
+    pinlabels:
+      - B1_12V
+      - B2_NONE
+      - B3_NONE
+      - B4_CAN_H
+      - B5_CP
+      - B6_NONE
+      - B7_GND
+      - B8_NONE
+      - B9_NONE
+      - B10_CAN_L
+      - B11_PROX
+      - B12_NONE
+
+  TESLA_CHARGER_DC:
+    pinlabels:
+      - P1_POS
+      - P1_NEG
+      - P2_POS
+      - P2_NEG
+      - P3_POS
+      - P3_NEG
+      - CASE_GND
+
+  TESLA_CHARGER_AC:
+    pinlabels:
+      - P1_POS
+      - P1_NEG
+      - P2_POS
+      - P2_NEG
+      - P3_POS
+      - P3_NEG
+
+  # CCS charge port
+  CCS_CHARGE_PORT:
+    pinlabels:
+      - L1
+      - L2
+      - L3
+      - N
+      - PE
+      - PP
+      - CP
+      - DC_POS
+      - DC_NEG
+
+  # Tesla AC side MCBs
+  CHARGER_MCB_1:
+    pinlabels:
+      - IN
+      - OUT
+  CHARGER_MCB_2:
+    pinlabels:
+      - IN
+      - OUT
+  CHARGER_MCB_3:
+    pinlabels:
+      - IN
+      - OUT
+
+  # Tesla DC side fuses
+  CHARGER_FUSE_1:
+    pinlabels:
+      - IN
+      - OUT
+  CHARGER_FUSE_2:
+    pinlabels:
+      - IN
+      - OUT
+  CHARGER_FUSE_3:
+    pinlabels:
+      - IN
+      - OUT
+
+  CHADEMO_CHARGE_PORT:
+    pinlabels:
+      - HV_POS
+      - HV_NEG
+
+  # CCS charge controller power
+  CCS_CONTROLLER_J1:
+    pinlabels:
+      - 12V
+      - GND
+
+  # CCS charge controller, LIM CAN
+  CCS_CONTROLLER_J2:
+    pinlabels:
+      - LIM_CAN_H
+      - LIM_CAN_L
+
+  # CCS charge controller, main CAN
+  CCS_CONTROLLER_J3:
+    pinlabels:
+      - MAIN_CAN_H
+      - MAIN_CAN_L
+
+  # CCS charge controller, Tesla CAN
+  CCS_CONTROLLER_J4:
+    pinlabels:
+      - TESLA_CAN_H
+      - TESLA_CAN_L
+
+
+
+

@@ -1,0 +1,67 @@
+
+connectors:
+
+  # Ignition switch (key)
+  IGNITION_SW:
+    type: Switch
+    pinlabels:
+      - 12V
+      - IGNITION
+      - START
+
+  # MG1 resolver
+  MG1RES:
+    type: 8pin
+    subtype: male
+    # check
+    pinlabels: [ T1, T2, SIN_A, SIN_B, COS_A, COS_B, EXC, GND ]
+
+  # MG2 resolver
+  MG2RES:
+    type: 8pin
+    subtype: male
+    pinlabels: [ T1, T2, SIN_A, SIN_B, COS_A, COS_B, EXC, GND ]
+
+  # Shifter on gs300h
+  # P R N D
+  SHIFTER:
+    type: SUMITOMO 90980-12362
+    pinlabels:
+      - REVERSE # 1
+      - 2
+      - COMMON  # 3
+      - 4
+      - 5
+      - PARK    # 6
+      - NEUTRAL # 7
+      - DRIVE   # 8
+
+  # 12v-front => inverter 
+  12V_FRONT_J2:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - INVERTER_REV
+      - INVERTER_12V
+      - INVERTER_FWD
+      - INVERTER_GND
+
+  # 12v-front => ignition switch
+  12V_FRONT_J5:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - IGNITION_SWITCH_A
+      - IGNITION_SWITCH_B
+
+  # 12V-front => shifter
+  12V_FRONT_J6:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - SHIFTER_FWD
+      - NONE
+      - SHIFTER_12V
+      - SHIFTER_REV
+
+

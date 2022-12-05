@@ -1,0 +1,125 @@
+
+connections:
+
+  # Battery box 12V supply (contactors)
+  -
+    - 12V_FRONT_J8:
+      - REAR_BATTERY_12V
+      - GND
+    - Z01: [ 1, 2 ]
+    - REAR_BATTERY_BOX:
+      - BATTERY_ENABLE
+      - GND
+
+  -
+    - 12V_FRONT_J9:
+      - FRONT_BATTERY_12V
+      - GND
+    - Z02: [ 1, 2 ]
+    - FRONT_BATTERY_BOX:
+      - BATTERY_ENABLE
+      - GND
+
+  # 12v-front battery power
+  -
+    - 12VBATT: [ 1, 2 ]
+    - Z03: [ 1, 2 ]
+    - 12V_FRONT_J1: [ 2, 1 ]
+
+  # HVJB => inverter
+  -
+    - HVJB: [ PRECHG_CONT_GND, MAIN_CONT_GND ]
+    - Z04: [ 1, 2 ]
+    - AMPSEAL_35_1: [ PRECHG, MAIN_CON ]
+
+  -
+    - HVJB: [ ISA_SHUNT_12V, IGNITION_12V, CONTACTORS_12V, CONTACTORS_GND ]
+    - Z05: [ 1, 2, 3, 4 ]
+    - 12V_FRONT_J4: [ ISA_SHUNT_12V, IGNITION_12V, CONTACTORS_12V, CONTACTORS_GND ]
+
+  # 12v-front <=> 12v-rear, ignition and charge_enable signals
+  -
+    - 12V_FRONT_J3:
+      - CHARGER_ENABLE_IN
+      - IGNITION_ENABLE_OUT
+    - Z06: [ 1, 2 ]
+    - 12V_REAR_J10:
+      - CHARGER_ON_SIGNAL
+      - IGNITION_12V
+
+  # Battery boxes to HVJB
+  -
+    - FRONT_BATTERY_BOX:
+      - HV_POS
+      - HV_NEG
+    - Z07 : [ 1, 2 ]
+    - HVJB:
+      - BATTERY_HV_POS
+      - BATTERY_HV_NEG
+
+  -
+    - REAR_BATTERY_BOX:
+      - HV_POS
+      - HV_NEG
+    - Z08: [ 1, 2 ]
+    - HVJB:
+      - BATTERY_HV_POS
+      - BATTERY_HV_NEG
+
+  # bms,  battery inhibit signals => 12v-front
+  -
+    - BMS_J6:
+      - BATT2_INHIBIT
+    - Z09: [ 1 ]
+    - 12V_FRONT_J8:
+      - REAR_BATTERY_INHIBIT
+  -
+    - BMS_J6:
+      - BATT1_INHIBIT
+    - Z09: [ 2 ]
+    - 12V_FRONT_J9:
+      - FRONT_BATTERY_INHIBIT
+
+  # bms can => battery can
+  -
+    - BMS_J3:
+      - BATT1_CAN_H
+      - BATT1_CAN_L
+    - Z10: [ 1, 2 ]
+    - REAR_BATTERY_BOX:
+      - CAN_H
+      - CAN_L
+
+  -
+    - BMS_J4:
+      - BATT2_CAN_H
+      - BATT2_CAN_L
+    - Z11: [ 1, 2 ]
+    - FRONT_BATTERY_BOX:
+      - CAN_H
+      - CAN_L
+
+  # BMS power
+  -
+    - BMS_J1:
+      - 12V
+      - GND
+    - Z12: [ 1, 2 ]
+    - 12V_REAR_J5:
+      - BMS_12V
+      - BMS_GND
+
+
+  # ignition on, charge on signals from 12v-rear to bms
+  -
+    - 12V_REAR_J10:
+      - IGNITION_12V
+      - CHARGER_ON_SIGNAL
+    - Z13: [ 1, 2 ]
+    - BMS_J5:
+      - IGNITION_ON_IN
+      - CHARGE_ENABLE_IN
+
+
+
+

@@ -1,0 +1,41 @@
+
+cables:
+
+  # 12v-front => ignition switch
+  D01:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, OG ]
+
+  # ignition switch start signal => inverter
+  D02:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ PK ]
+
+  # inverter => MG1
+  D03:
+    gauge: 0.25 mm2
+    color_code: DIN
+    wirecount: 8
+    shield: true
+
+  # inverter => MG2
+  D04:
+    gauge: 0.25 mm2
+    color_code: DIN
+    wirecount: 8
+    shield: true
+
+  # 12v-front <=> inverter
+  D05:
+    gauge: 0.25 mm2
+    wirecount: 4
+    colors: [ YE, RD, GN, BK ]
+
+  # 12v-front => shifter
+  #W7:
+  D06:
+    gauge: 1 mm2
+    wirecount: 3
+    colors: [ RD, YE, OG]

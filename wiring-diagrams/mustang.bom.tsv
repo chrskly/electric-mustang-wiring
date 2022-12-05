@@ -1,9 +1,0 @@
-Id	Description	Qty	Unit	Designators
-1	Cable, 2 x 6 mm²	0	m	W3
-2	Cable, 4 x 0.25 mm²	0	m	W4
-3	Cable, 8 x 0.25 mm² shielded	0	m	W1, W2
-4	Connector, 2pin, 2 pins	1		BATT1
-5	Connector, 8pin, male, 8 pins	2		X2, X3
-6	Connector, Ampseal-35, male, 35 pins	1		X1
-7	Connector, Molex MegaFit, male, 2 pins	3		J1, J5, J7
-8	Connector, Molex MegaFit, male, 4 pins	4		J2, J3, J4, J6

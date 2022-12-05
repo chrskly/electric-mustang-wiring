@@ -1,0 +1,208 @@
+
+connectors:
+
+  # 12V battery
+  12VBATT:
+    type: 2pin
+    pinlabels: [ 12V, GND ]
+
+  FRONT_BATTERY_BOX:
+    pinlabels:
+      - HV_POS
+      - HV_NEG
+      - BATTERY_ENABLE  # 12V for contactors
+      - GND
+      - CAN_H
+      - CAN_L
+
+  REAR_BATTERY_BOX:
+    pinlabels:
+      - HV_POS
+      - HV_NEG
+      - BATTERY_ENABLE
+      - GND
+      - CAN_H
+      - CAN_L
+
+  # Front HVJB
+  HVJB:
+    type: 8pin
+    pinlabels:
+      - ISA_SHUNT_12V
+      - ISA_SHUNT_CAN_H
+      - ISA_SHUNT_CAN_L
+      - IGNITION_12V
+      - CONTACTORS_12V
+      - CONTACTORS_GND
+      # Main/precharge contactors
+      - BATTERY_HV_POS
+      - BATTERY_HV_NEG
+      - MAIN_CONT_GND
+      - PRECHG_CONT_GND
+      # Charging contactor
+      - CHARGE_CONT_HV_POS
+      - CHARGE_CONT_HV_NEG
+      - CHARGE_CONTACTORS_12V
+
+  # Inverter Ampseal
+  AMPSEAL_35_1:
+    type: Ampseal-35
+    subtype: male
+    pinlabels:
+      - 12V         # 1
+      - GND         # 2
+      - MG2_FWD     # 3
+      - MG2_REV     # 4
+      - MG2_START   # 5
+      - MG2_BRAKE   # 6
+      - CRUISE      # 7
+      - 5V          # 8
+      - MG2_ACCEL_1 # 9
+      - MG2_ACCEL_2 # 10
+      - GND         # 11
+      - MG1_EXC_A   # 12
+      - MG1_T2      # 13
+      - 5V          # 14
+      - MG2_ENC_1   # 15
+      - MG2_ENC_2   # 16
+      - GND         # 17
+      - MG2_SIN_A   # 18
+      - MG2_COS_A   # 19
+      - MG2_EXC_A   # 20
+      - GND         # 21
+      - MG2_T1      # 22
+      - MG2_T2      # 23
+      - MAIN_CON    # 24
+      - PRECHG      # 25
+      - AC_CON      # 26
+      - HV_CON      # 27
+      - AC_PRECH    # 28
+      - MG1_T1      # 29
+      - EVSE_PROXY  # 30
+      - CP          # 31
+      - CHG_CAN_H   # 32
+      - CHG_CAN_L   # 33
+      - MG1_ENC_1   # 34
+      - MG1_ENC_2   # 35
+
+  #
+  # BMS
+  #
+
+  BMS_J1:
+    type: unknown
+    subtype: male
+    pinlabels:
+      - 12V
+      - GND
+
+  BMS_J2:
+    pinlabels:
+      - MAIN_CAN_H
+      - MAIN_CAN_L
+
+  BMS_J3:
+    pinlabels:
+      - BATT1_CAN_H
+      - BATT1_CAN_L
+
+  BMS_J4:
+    pinlabels:
+      - BATT2_CAN_H
+      - BATT2_CAN_L
+
+  BMS_J5:
+    pinlabels:
+      - IGNITION_ON_IN
+      - CHARGE_ENABLE_IN
+
+  # low side switches. Can turn off contactors when in charge mode (but not in drive mode).
+  # => front-12v
+  BMS_J6:
+    pinlabels:
+      - BATT2_INHIBIT
+      - BATT1_INHIBIT
+
+  #
+  # 12v-front
+  #
+
+  # 12v-front => 12V battery
+  12V_FRONT_J1:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - GND
+      - 12V_BATT_IN
+
+  # 12v-front => 12v-rear
+  12V_FRONT_J3:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - CHARGER_ENABLE_IN
+      - IGNITION_ENABLE_OUT
+      - NONE
+      - NONE
+
+  # 12v-front => hvjb
+  12V_FRONT_J4:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - ISA_SHUNT_12V
+      - IGNITION_12V
+      - CONTACTORS_GND
+      - CONTACTORS_12V
+
+  # 12v-front => coolant pump
+  12V_FRONT_J7:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - COOLANT_GND
+      - COOLANT_12V
+
+  # 12v-front => rear battery box
+  12V_FRONT_J8:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - REAR_BATTERY_INHIBIT
+      - NONE
+      - REAR_BATTERY_12V
+      - GND
+
+  # 12v-front => front battery box
+  12V_FRONT_J9:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - FRONT_BATTERY_INHIBIT
+      - NONE
+      - FRONT_BATTERY_12V
+      - GND
+
+  #
+  # 12v-rear
+  #
+
+  # 12v-rear => BMS 12V supply
+  12V_REAR_J5:
+    type: Molex MegaFit
+    pinlabels:
+      - BMS_12V
+      - BMS_GND
+
+  # 12v-rear => 12v-front + 12V batt
+  12V_REAR_J10:
+    type: Molex MegaFit
+    pinlabels:
+      - PERM_12V
+      - GND
+      - IGNITION_12V
+      - CHARGER_ON_SIGNAL
+
+  
+
+  
