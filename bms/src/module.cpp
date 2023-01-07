@@ -182,7 +182,7 @@ float BatteryModule::get_lowest_temperature() {
 bool BatteryModule::temperature_at_warning_level() {
 	for ( int c = 0; c < numCells; c++ ) {
 		if ( cellTemperature[c] >= CELL_OVER_TEMPERATURE_WARNING_THRESHOLD and 
-			 cellTemperature[c] < CELL_OVER_TEMPERATURE_FAULT_THRESHOLD ) {
+			cellTemperature[c] < CELL_OVER_TEMPERATURE_FAULT_THRESHOLD ) {
 			return true;
 		}
 	}
