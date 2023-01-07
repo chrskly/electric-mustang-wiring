@@ -1,0 +1,17 @@
+
+cables:
+
+  L01:
+    gauge: 2.5 mm2
+    wirecount: 4
+    colors: [ RD, BK ]
+
+  L02:
+    gauge: 2.5 mm2
+    wirecount: 4
+    colors: [ RD, BK ]
+
+
+
+
+

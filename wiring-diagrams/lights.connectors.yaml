@@ -1,0 +1,76 @@
+
+connectors:
+
+  12V_LIGHTING_J03:
+    pinlabels:
+      - LH_HEADLIGHT
+      - LH_FRONT_INDICATOR
+      - LH_HIGHBEAM
+      - LH_GND
+
+  12V_LIGHTING_J04:
+    pinlabels:
+      - RH_HEADLIGHT
+      - RH_FRONT_INDICATOR
+      - RH_HIGHBEAM
+      - RH_GND
+
+
+  # front
+
+  LH_HEADLIGHT:
+    pinlabels:
+      - 12V
+      - GND
+
+  RH_HEADLIGHT:
+    pinlabels:
+      - 12V
+      - GND
+
+  LH_HIGHBEAM:
+    pinlabels:
+      - 12V
+      - GND
+
+  RH_HIGHBEAM:
+    pinlabels:
+      - 12V
+      - GND
+
+  LH_FRONT_INDICATOR:
+    pinlabels:
+      - 12V
+      - GND
+
+  RH_FRONT_INDICATOR:
+    pinlabels:
+      - 12V
+      - GND
+
+  # rear
+
+  LH_REAR_INDICATOR:
+    pinlabels:
+      - 12V
+      - GND
+
+  RH_REAR_INDICATOR:
+    pinlabels:
+      - 12V
+      - GND  
+
+  REVERSE_LIGHT:
+    pinlabels:
+      - 12V
+      - GND
+
+  BRAKE_LIGHT:
+    pinlabels:
+      - 12V
+      - GND
+
+
+
+
+

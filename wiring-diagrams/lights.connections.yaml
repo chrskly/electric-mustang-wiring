@@ -1,0 +1,18 @@
+
+connections:
+
+  -
+    - 12V_LIGHTING_J03:
+      - LH_HEADLIGHT
+
+      - LH_GND
+    - LH_HEADLIGHT:
+      - 12V
+      - GND
+    - L01: [ 1, 2 ]
+    - 
+
+  -
+    - 12V_LIGHTING_J03:
+      - LH_FRONT_INDICATOR
+      - LH_HIGHBEAM
