@@ -31,6 +31,21 @@
 using namespace std;
 
 
+// FIXME move somewhere else
+
+struct repeating_timer statusPrintTimer;
+
+bool status_print(struct repeating_timer *t) {
+	extern Battery battery;
+    battery.print();
+	return true;
+}
+
+void enable_status_print() {
+    add_repeating_timer_ms(5000, status_print, NULL, &statusPrintTimer);
+}
+
+
 //// ----
 //
 // Polling the modules for voltage and temperature readings
@@ -43,14 +58,15 @@ struct repeating_timer pollModuleTimer;
 
 // Send request to each pack to ask for a data update
 bool poll_packs_for_data(struct repeating_timer *t) {
-	  extern Battery battery;
-		battery.request_data();
-		return true;
+	extern Battery battery;
+    battery.request_data();
+	return true;
 }
 
 void enable_module_polling() {
     add_repeating_timer_ms(1000, poll_packs_for_data, NULL, &pollModuleTimer);
 }
+
 
 //// ----
 //
@@ -65,31 +81,31 @@ struct can_frame statusFrame;
 struct repeating_timer statusMessageTimer;
 
 bool send_status_message(struct repeating_timer *t) {
-		extern State state;
-		extern MCP2515 mainCAN;
-		statusFrame.can_id = STATUS_MSG_ID;
-		statusFrame.can_dlc = 1;
-		if ( state == state_standby ) {
-				statusFrame.data[0] = 0x00 << 4;
-		} else if ( state == state_drive ) {
-				statusFrame.data[0] = 0x01 << 4;
-		} else if ( state == state_charging ) {
-				statusFrame.data[0] = 0x02 << 4;
-		} else if ( state == state_overTempFault ) {
-				statusFrame.data[0] = 0x03 << 4;
-		} else if ( state == state_underVoltageFault ) {
-				statusFrame.data[0] = 0x04 << 4;
-		} else {
-			//
-		}
-		// do pack dead check
+	extern State state;
+	extern MCP2515 mainCAN;
+	statusFrame.can_id = STATUS_MSG_ID;
+	statusFrame.can_dlc = 1;
+	if ( state == state_standby ) {
+        statusFrame.data[0] = 0x00 << 4;
+	} else if ( state == state_drive ) {
+		statusFrame.data[0] = 0x01 << 4;
+	} else if ( state == state_charging ) {
+		statusFrame.data[0] = 0x02 << 4;
+	} else if ( state == state_overTempFault ) {
+		statusFrame.data[0] = 0x03 << 4;
+	} else if ( state == state_underVoltageFault ) {
+		statusFrame.data[0] = 0x04 << 4;
+	} else {
+		//
+	}
+	// do pack dead check
 
-		mainCAN.sendMessage(&statusFrame);
-		return true;
+	mainCAN.sendMessage(&statusFrame);
+	return true;
 }
 
 void enable_status_messages() {
-		add_repeating_timer_ms(1000, send_status_message, NULL, &statusMessageTimer);
+	add_repeating_timer_ms(1000, send_status_message, NULL, &statusMessageTimer);
 }
 
 
@@ -115,33 +131,33 @@ struct repeating_timer chargeLimitsMessageTimer;
 
 bool send_charge_limits_message(struct repeating_timer *t) {
 
-		extern Battery battery;
+    extern Battery battery;
 
-		chargeLimitsFrame.can_id = 0x102;
-		chargeLimitsFrame.can_dlc = 8;
+    chargeLimitsFrame.can_id = 0x102;
+    chargeLimitsFrame.can_dlc = 8;
 
-		// byte 0
-		chargeLimitsFrame.data[0] = 0x0;
-		// byte 1 -- DC voltage limit MSB
-		chargeLimitsFrame.data[1] = 0x0; //fixme
-		// byte 2 -- DC voltage limit LSB
-		chargeLimitsFrame.data[2] = 0x0; //fixme
-		// byte 3 -- DC current set point
-		chargeLimitsFrame.data[3] = (__u8)battery.get_max_charging_current();
-		// byte 4 -- 1 == enable charging
-		chargeLimitsFrame.data[4] = 0x0; //fixme
-		// byte 5 -- SoC
-		chargeLimitsFrame.data[5] = 0x0; //fixme
-		// byte 6 -- 0x0
-		chargeLimitsFrame.data[6] = 0x0;
-		// byte 7 -- 0x0
-		chargeLimitsFrame.data[7] = 0x0;
+    // byte 0
+    chargeLimitsFrame.data[0] = 0x0;
+    // byte 1 -- DC voltage limit MSB
+    chargeLimitsFrame.data[1] = 0x0; //fixme
+    // byte 2 -- DC voltage limit LSB
+    chargeLimitsFrame.data[2] = 0x0; //fixme
+    // byte 3 -- DC current set point
+    chargeLimitsFrame.data[3] = (__u8)battery.get_max_charging_current();
+    // byte 4 -- 1 == enable charging
+    chargeLimitsFrame.data[4] = 0x0; //fixme
+    // byte 5 -- SoC
+    chargeLimitsFrame.data[5] = 0x0; //fixme
+    // byte 6 -- 0x0
+    chargeLimitsFrame.data[6] = 0x0;
+    // byte 7 -- 0x0
+    chargeLimitsFrame.data[7] = 0x0;
 
-	  return true;
+    return true;
 }
 
 void enable_charge_limits_messages() {
-	  add_repeating_timer_ms(1000, send_charge_limits_message, NULL, &chargeLimitsMessageTimer);
+    add_repeating_timer_ms(1000, send_charge_limits_message, NULL, &chargeLimitsMessageTimer);
 }
 
 void disable_charge_limits_messages() {
@@ -159,15 +175,15 @@ struct can_frame mainCANInbound;
 
 void handle_main_CAN_messages() {
 
-	  extern MCP2515 mainCAN;
+    extern MCP2515 mainCAN;
 
-	  if ( mainCAN.readMessage(&mainCANInbound) == MCP2515::ERROR_OK ) {
-        if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_WH ) {
-          	// process Wh data
-        } else if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_AH ) {
-        	  // process Ah data
-        }
-        // ...
+    if ( mainCAN.readMessage(&mainCANInbound) == MCP2515::ERROR_OK ) {
+    if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_WH ) {
+      	// process Wh data
+    } else if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_AH ) {
+    	  // process Ah data
+    }
+    // ...
     }
 }
 
@@ -176,12 +192,12 @@ void handle_main_CAN_messages() {
 struct repeating_timer handleBatteryCANMessagesTimer;
 
 bool handle_battery_CAN_messages(struct repeating_timer *t) {
-	  extern Battery battery;
-	  battery.read_message();
-	  return true;
+	extern Battery battery;
+	battery.read_message();
+	return true;
 }
 
 void enable_handle_battery_CAN_messages() {
-	  add_repeating_timer_ms(100, handle_battery_CAN_messages, NULL, &handleBatteryCANMessagesTimer);
+	add_repeating_timer_ms(100, handle_battery_CAN_messages, NULL, &handleBatteryCANMessagesTimer);
 }
 

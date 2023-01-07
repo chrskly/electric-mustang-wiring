@@ -29,6 +29,8 @@ add_executable(bms
         statemachine.cpp
         led.h
         led.cpp
+        CRC8.h
+        CRC8.cpp
         )
 
 #add_executable(module-test

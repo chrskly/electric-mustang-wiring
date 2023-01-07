@@ -20,6 +20,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#define VERSION 1.0
+
 // Serial port
 #define UART_ID      uart0
 #define BAUD_RATE   115200
@@ -27,7 +29,8 @@
 #define UART_RX_PIN      1 // pin 2
 
 
-#define NUM_PACKS         2                        // The total number of paralleled packs in this battery
+//#define NUM_PACKS         2                        // The total number of paralleled packs in this battery
+#define NUM_PACKS         1
 #define CELLS_PER_MODULE 16                        // The number of cells in each module
 #define TEMPS_PER_MODULE  4                        // The number of temperature sensors in each module
 #define MODULES_PER_PACK  6                        // The number of modules in each pack
@@ -40,11 +43,11 @@
 #define SAFE_VOLTAGE_DELTA_BETWEEN_PACKS 0.01      // When closing contactors, the voltage difference between the packs shall not
                                                    // be greater than this voltage, in volts.
 
-const int CONTACTOR_PINS[] = { 2, 3 };
+const int CONTACTOR_PINS[] = { 2, 3 };             // Pins which control the contactors for the battery packs.
 
-//const int CS_PINS[] = { 20, 20 };
-//const int CS_PINS[2] = { 20, 15 };
-const int CS_PINS[2] = { 15, 15 };
+//const int CS_PINS[2] = { 20, 15 };                 // Chip select pins for the CAN controllers for each battery pack.
+//const int CS_PINS[2] = { 15, 15 };
+const int CS_PINS[1] = { 15, };
 
 #define SPI_PORT      spi0
 
@@ -54,12 +57,6 @@ const int CS_PINS[2] = { 15, 15 };
 
 // mainNet
 #define MAIN_CAN_CS     17 // pin 22
-
-// batt1Net
-//#define BATT1_CAN_CS    20 // pin 29
-
-// batt2Net
-//#define BATT2_CAN_CS    15 // pin 20
 
 #define CAN_CLK_PIN     21 // pin 27
 
@@ -83,8 +80,6 @@ const int CS_PINS[2] = { 15, 15 };
 #define CHARGE_CURRENT_MIN 8                        // ~3.3kw
 
 #define BALANCE_INTERVAL 1200                       // number of seconds between balancing sessions
-
-
 
 //// ---- CAN message IDs
 

@@ -26,9 +26,12 @@
 #include "module.h"
 //#include "battery.h"
 #include "settings.h"
+#include "CRC8.h"
 
 class Battery;
 class BatteryModule;
+
+const uint8_t finalxor[12] = { 0xCF, 0xF5, 0xBB, 0x81, 0x27, 0x1D, 0x53, 0x69, 0x02, 0x38, 0x76, 0x4C };
 
 class BatteryPack {
 
@@ -62,11 +65,12 @@ class BatteryPack {
         float get_voltage();
         void update_voltage();
         float get_lowest_cell_voltage();
+        void update_cell_delta();
         bool has_cell_under_voltage();
         float get_highest_cell_voltage();
         bool has_cell_over_voltage();
         void update_cell_voltage(int moduleIndex, int cellIndex, float newCellVoltage);
-        void decode_voltages(can_frame *rame);
+        void decode_voltages(can_frame *frame);
 
         // Temperature
         bool has_temperature_sensor_over_max();
@@ -87,19 +91,24 @@ class BatteryPack {
         int numTemperatureSensorsPerModule;              //
         Battery* battery;                                // The parent Battery that contains this BatteryPack
         float voltage;                                   // Voltage of the total pack
+        float cellDelta;                                 // Difference in voltage between high and low cell
         bool contactorsClosed;                           //
         int contactorPin;                                // Pin on the pico which controls contactors for this pack
         int balanceStatus;                               //
         int errorStatus;
         absolute_time_t nextBalanceTime;                 // Time that the next balance should occur.
-        uint8_t msgcycle;                                //
+        uint8_t msgCycle;                                //
         uint8_t nextmsg;                                 //
         uint8_t testCycle;                               //
-        int pollMessageId;                               //
+        uint8_t pollMessageId;                           //
         bool initialised;
-        //BatteryModule* modules[];                         // The child modules that make up this BatteryPack        
-        BatteryModule modules[MODULES_PER_PACK];                         // The child modules that make up this BatteryPack        
+        BatteryModule modules[MODULES_PER_PACK];         // The child modules that make up this BatteryPack        
+        CRC8 crc8;
 
+        bool inStartup;
+        uint8_t modulePollingCycle;
+        can_frame pollModuleFrame;
+        
 
 };
 

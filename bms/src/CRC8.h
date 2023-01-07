@@ -17,17 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "battery.h"
+// This code was directly borrowed from the SimpBMS project over here :
+//   https://github.com/Tom-evnut/BMWPhevBMS.git
 
-void enable_status_print();
-void request_module_data(BatteryModule *module);
-bool poll_all_modules_for_data(struct repeating_timer *t);
-void enable_module_polling();
-bool send_status_message();
-void enable_status_messages();
-bool send_charge_limits_message();
-void enable_charge_limits_messages();
-void disable_charge_limits_messages();
+#include <stdint.h>
 
-bool handle_battery_CAN_messages(struct repeating_timer *t);
-void enable_handle_battery_CAN_messages();
+#ifndef CRC8_H
+#define CRC8_H
+
+typedef uint8_t crc;
+#define POLYNOMIAL 0x1D
+#define WIDTH  (8 * sizeof(crc))
+#define TOPBIT (1 << (WIDTH - 1))
+
+class CRC8 {
+    public:
+        CRC8();
+        void begin();
+        crc get_crc8(uint8_t const message[], int nBytes, uint8_t final);
+ 
+    private:
+        uint8_t crcTable[256];
+  
+
+};
+
+#endif

@@ -61,10 +61,15 @@ BatteryModule::BatteryModule (int _id, BatteryPack* _pack, int _numCells, int _n
 }
 
 void BatteryModule::print () {
-	printf("        Module id : %d (numCells : %d)\n", id, numCells);
+	printf("    Module id : %d (numCells : %d)\n", id, numCells);
 	printf("        Cell Voltages : ");
 	for ( int c = 0; c < numCells; c++ ) {
-		printf("%d:%d ", c, cellVoltage[c]);
+		printf("%d:%1.3fV ", c, cellVoltage[c]);
+	}
+	printf("\n");
+	printf("        Temperatures : ");
+	for ( int t = 0; t < numTemperatureSensors; t++ ) {
+		printf("%d:%3.2fC ", t, cellTemperature[t]);
 	}
 	printf("\n");
 }
