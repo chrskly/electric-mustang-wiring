@@ -17,21 +17,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
 #include "pico/stdlib.h"
 
 #include "led.h"
 
+bool LEDon = false;
+int LEDcounter = 0;
+int LEDonDuration = 1;
+int LEDoffDuration = 10;
+
+void led_set_mode(LED_MODE newMode) {
+    switch( newMode ) {
+        case STANDBY:
+            LEDonDuration = 1;
+            LEDoffDuration = 9;
+        case DRIVE:
+            LEDonDuration = 10;
+            LEDoffDuration = 0;
+        case CHARGING:
+            LEDonDuration = 5;
+            LEDoffDuration = 5;
+        case FAULT:
+            LEDonDuration = 1;
+            LEDoffDuration = 1;
+    }
+
+}
+
 struct repeating_timer ledBlinkTimer;
 
 bool led_blink(struct repeating_timer *t) {
-    if ( gpio_get(PICO_DEFAULT_LED_PIN) == 0 ) {
-        gpio_put(PICO_DEFAULT_LED_PIN, 1);
+    extern int LEDonDuration;
+    extern int LEDoffDuration;
+    extern int LEDcounter;
+    extern bool LEDon;
+    ++LEDcounter;
+    //printf("counter %d (%d/%d)\n", LEDcounter, LEDonDuration, LEDoffDuration);
+
+    if ( LEDon ) {
+        if ( LEDcounter > LEDonDuration ) {
+            gpio_put(PICO_DEFAULT_LED_PIN, 0);
+            LEDcounter = 0;
+            LEDon = false;
+        }
     } else {
-        gpio_put(PICO_DEFAULT_LED_PIN, 0);
+        if ( LEDcounter > LEDoffDuration ) {
+            gpio_put(PICO_DEFAULT_LED_PIN, 1);
+            LEDcounter = 0;
+            LEDon = true;
+        }
     }
+
     return true;
 }
 
 void enable_led_blink() {
-    add_repeating_timer_ms(500, led_blink, NULL, &ledBlinkTimer);
+    add_repeating_timer_ms(100, led_blink, NULL, &ledBlinkTimer);
 }

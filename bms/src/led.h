@@ -17,4 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+enum LED_MODE {
+    STANDBY,
+    DRIVE,
+    CHARGING,
+    FAULT
+};
+
+void led_set_mode(LED_MODE newMode);
+bool led_blink(struct repeating_timer *t);
 void enable_led_blink();

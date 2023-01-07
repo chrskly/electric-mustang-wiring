@@ -18,12 +18,12 @@
  */
 
 enum Event {
-	E_TEMPERATURE_UPDATE,  // a battery temperature update has been received
-	E_CELL_VOLTAGE_UPDATE, // a cell voltage update has been received
-	E_IGNITION_ON,         // Ignition was turned on
-	E_IGNITION_OFF,        // Ignition was turned off
-	E_CHARGING_INITIATED,  // charging has been initiated
-	E_EMERGENCY_SHUTDOWN,  //
+    E_TEMPERATURE_UPDATE,  // a battery temperature update has been received
+    E_CELL_VOLTAGE_UPDATE, // a cell voltage update has been received
+    E_IGNITION_ON,         // Ignition was turned on
+    E_IGNITION_OFF,        // Ignition was turned off
+    E_CHARGING_INITIATED,  // charging has been initiated
+    E_EMERGENCY_SHUTDOWN,  //
 };
 
 typedef void (*State)(Event);
