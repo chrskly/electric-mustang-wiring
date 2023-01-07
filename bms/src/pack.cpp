@@ -40,8 +40,8 @@ BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorPin, int _numModu
 
 		// Initialise modules
 		for ( int m = 0; m < numModules; m++ ) {
-			//printf("Creating module %d (cpm:%d, tpm:%d)\n", m, numCellsPerModule, numTemperatureSensorsPerModule);
-			modules[m] = BatteryModule(m, this, numCellsPerModule, numTemperatureSensorsPerModule);
+				//printf("Creating module %d (cpm:%d, tpm:%d)\n", m, numCellsPerModule, numTemperatureSensorsPerModule);
+				modules[m] = BatteryModule(m, this, numCellsPerModule, numTemperatureSensorsPerModule);
 		}
 
     // Set up CAN port
@@ -49,13 +49,13 @@ BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorPin, int _numModu
 		MCP2515 CAN(spi0, CANCSPin, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 		MCP2515::ERROR response;
 		if ( CAN.reset() != MCP2515::ERROR_OK ) {
-			printf("ERROR problem resetting battery CAN port %d\n", id);
+				printf("ERROR problem resetting battery CAN port %d\n", id);
 		}
 		if ( CAN.setBitrate(CAN_500KBPS, MCP_8MHZ) != MCP2515::ERROR_OK ) {
-			printf("ERROR problem setting bitrate on battery CAN port %d\n", id);
+				printf("ERROR problem setting bitrate on battery CAN port %d\n", id);
 		}
 		if ( CAN.setNormalMode() != MCP2515::ERROR_OK ) {
-			printf("ERROR problem setting normal mode on battery CAN port %d\n", id);
+				printf("ERROR problem setting normal mode on battery CAN port %d\n", id);
 		}
 
     printf("Sending test message for pack %d\n", id);
@@ -216,47 +216,47 @@ void BatteryPack::read_message() {
 }
 
 bool BatteryPack::pack_is_alive() {
-	absolute_time_t now = get_absolute_time();
-	int64_t timeSinceLastUpdate = absolute_time_diff_us(lastUpdate, now);
-	if ( timeSinceLastUpdate >= PACK_ALIVE_TIMEOUT ) {
-		return false;
-	}
-	return true;
+		absolute_time_t now = get_absolute_time();
+		int64_t timeSinceLastUpdate = absolute_time_diff_us(lastUpdate, now);
+		if ( timeSinceLastUpdate >= PACK_ALIVE_TIMEOUT ) {
+				return false;
+		}
+		return true;
 }
 
 void BatteryPack::send_message(can_frame *frame) {
-	printf("SEND :: id:%02X	 [", frame->can_id);
-	for ( int i = 0; i < frame->can_dlc; i++ ) {
-		printf("%02X ", frame->data[i]);
-	}
-	printf("]\n");
-	CAN.sendMessage(frame);
+		printf("SEND :: id:%02X	 [", frame->can_id);
+		for ( int i = 0; i < frame->can_dlc; i++ ) {
+				printf("%02X ", frame->data[i]);
+		}
+		printf("]\n");
+		CAN.sendMessage(frame);
 }
 
 void BatteryPack::set_pack_error_status(int newErrorStatus) {
-	errorStatus = newErrorStatus;
+		errorStatus = newErrorStatus;
 }
 
 int BatteryPack::get_pack_error_status() {
-	return errorStatus;
+		return errorStatus;
 }
 
 void BatteryPack::set_pack_balance_status(int newBalanceStatus) {
-	balanceStatus = newBalanceStatus;
+		balanceStatus = newBalanceStatus;
 }
 
 int BatteryPack::get_pack_balance_status() {
-	return balanceStatus;
+		return balanceStatus;
 }
 
 // Return true if it's time for the pack to be balanced.
 bool BatteryPack::pack_is_due_to_be_balanced() {
-	return false;
-	return ( absolute_time_diff_us(get_absolute_time(), nextBalanceTime) < 0 );
+		return false;
+		return ( absolute_time_diff_us(get_absolute_time(), nextBalanceTime) < 0 );
 }
 
 void BatteryPack::reset_balance_timer() {
-	nextBalanceTime = delayed_by_us(get_absolute_time(), BALANCE_INTERVAL);
+		nextBalanceTime = delayed_by_us(get_absolute_time(), BALANCE_INTERVAL);
 }
 
 
@@ -268,63 +268,63 @@ void BatteryPack::reset_balance_timer() {
 
 // Return the voltage of the whole pack
 float BatteryPack::get_voltage() {
-	return voltage;
+		return voltage;
 }
 
 // Update the pack voltage value by summing all of the cell voltages
 void BatteryPack::update_voltage() {
-	float newVoltage = 0;
-	for ( int m = 0; m < numModules; m++ ) {
-		newVoltage += modules[m].get_voltage();
-	}
-	voltage = newVoltage;
+		float newVoltage = 0;
+		for ( int m = 0; m < numModules; m++ ) {
+				newVoltage += modules[m].get_voltage();
+		}
+		voltage = newVoltage;
 }
 
 // Return the voltage of the lowest cell in the pack
 float BatteryPack::get_lowest_cell_voltage() {
-	float lowestCellVoltage = 100;
-	for ( int m = 0; m < numModules; m++ ) {
-		if ( modules[m].get_lowest_cell_voltage() < lowestCellVoltage ) {
-			lowestCellVoltage = modules[m].get_lowest_cell_voltage();
+		float lowestCellVoltage = 100;
+		for ( int m = 0; m < numModules; m++ ) {
+				if ( modules[m].get_lowest_cell_voltage() < lowestCellVoltage ) {
+						lowestCellVoltage = modules[m].get_lowest_cell_voltage();
+				}
 		}
-	}
-	return lowestCellVoltage;
+		return lowestCellVoltage;
 }
 
 // Return true if any cell in the pack is under min voltage
 bool BatteryPack::has_cell_under_voltage() {
-	for ( int m = 0; m < numModules; m++ ){
-		if ( modules[m].has_cell_under_voltage() ) {
-			return true;
+		for ( int m = 0; m < numModules; m++ ){
+				if ( modules[m].has_cell_under_voltage() ) {
+						return true;
+				}
 		}
-	}
-	return false;
+		return false;
 }
 
 // Return the voltage of the highest cell in the pack
 float BatteryPack::get_highest_cell_voltage() {
-	float highestCellVoltage = 0;
-	for ( int m = 0; m < numModules; m++ ) {
-		if ( modules[m].get_highest_cell_voltage() < highestCellVoltage ) {
-			highestCellVoltage = modules[m].get_highest_cell_voltage();
+		float highestCellVoltage = 0;
+		for ( int m = 0; m < numModules; m++ ) {
+				if ( modules[m].get_highest_cell_voltage() < highestCellVoltage ) {
+						highestCellVoltage = modules[m].get_highest_cell_voltage();
+				}
 		}
-	}
-	return highestCellVoltage;
+		return highestCellVoltage;
 }
 
 // Calculate largest voltage difference between cells in the pack and store result
 void BatteryPack::update_cell_delta() {
-	cellDelta = get_highest_cell_voltage() - get_lowest_cell_voltage();
+		cellDelta = get_highest_cell_voltage() - get_lowest_cell_voltage();
 }
 
 // Return true if any cell in the pack is over max voltage
 bool BatteryPack::has_cell_over_voltage() {
-	for ( int m = 0; m < numModules; m++ ){
-		if ( modules[m].has_cell_over_voltage() ) {
-			return true;
+		for ( int m = 0; m < numModules; m++ ){
+				if ( modules[m].has_cell_over_voltage() ) {
+						return true;
+				}
 		}
-	}
-	return false;
+		return false;
 }
 
 // Update the value for the voltage of an individual cell in a pack
@@ -397,42 +397,42 @@ void BatteryPack::decode_voltages(can_frame *frame) {
 
 // Return true if any cell in the pack is over max temperature
 bool BatteryPack::has_temperature_sensor_over_max() {
-	for ( int m = 0; m < numModules; m++ ) {
-		if ( modules[m].has_temperature_sensor_over_max() ) {
-			return true;
+		for ( int m = 0; m < numModules; m++ ) {
+				if ( modules[m].has_temperature_sensor_over_max() ) {
+						return true;
+				}
 		}
-	}
-	return false;
+		return false;
 }
 
 // Return the maximum current we can charge the pack with.
 int BatteryPack::get_max_charging_current() {
-	int maxChargeCurrent = 0;
-	for ( int m = 0; m < numModules; m++ ) {
-		if ( modules[m].get_max_charging_current() < maxChargeCurrent ) {
-			maxChargeCurrent = modules[m].get_max_charging_current();
+		int maxChargeCurrent = 0;
+		for ( int m = 0; m < numModules; m++ ) {
+				if ( modules[m].get_max_charging_current() < maxChargeCurrent ) {
+						maxChargeCurrent = modules[m].get_max_charging_current();
+				}
 		}
-	}
-	return maxChargeCurrent;
+		return maxChargeCurrent;
 }
 
 // return the temperature of the lowest sensor in the pack
 float BatteryPack::get_lowest_temperature() {
-	float lowestModuleTemperature = 1000;
-	for ( int m = 0; m < numModules; m++ ) {
-		if ( modules[m].get_lowest_temperature() < lowestModuleTemperature ) {
-			lowestModuleTemperature = modules[m].get_lowest_temperature();
+		float lowestModuleTemperature = 1000;
+		for ( int m = 0; m < numModules; m++ ) {
+				if ( modules[m].get_lowest_temperature() < lowestModuleTemperature ) {
+						lowestModuleTemperature = modules[m].get_lowest_temperature();
+				}
 		}
-	}
-	return lowestModuleTemperature;
+		return lowestModuleTemperature;
 }
 
 // Extract temperature sensor readings from CAN frame and update stored values
 void BatteryPack::decode_temperatures(can_frame *temperatureMessageFrame) {
-	int moduleId = (temperatureMessageFrame->can_id & 0x00F) + 1;
-	for ( int t = 0; t < numTemperatureSensorsPerModule; t++ ) {
-		modules[moduleId].update_temperature(t, temperatureMessageFrame->data[t] - 40);
-	}
+		int moduleId = (temperatureMessageFrame->can_id & 0x00F) + 1;
+		for ( int t = 0; t < numTemperatureSensorsPerModule; t++ ) {
+				modules[moduleId].update_temperature(t, temperatureMessageFrame->data[t] - 40);
+		}
 }
 
 
@@ -444,13 +444,13 @@ void BatteryPack::decode_temperatures(can_frame *temperatureMessageFrame) {
 
 
 bool BatteryPack::close_contactors() {
-	gpio_put(contactorPin, 1);
-	return true;
+		gpio_put(contactorPin, 1);
+		return true;
 }
 
 bool BatteryPack::open_contactors() {
-	gpio_put(contactorPin, 0);
-	return true;
+		gpio_put(contactorPin, 0);
+		return true;
 }
 
 
