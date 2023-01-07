@@ -32,7 +32,7 @@ class BatteryModule {
         int numTemperatureSensors;               // Number of temperature sensors in this module
         float cellVoltage[CELLS_PER_MODULE];     // Voltages of each cell
         float cellTemperature[TEMPS_PER_MODULE]; // Temperatures of each cell
-        float cellDelta;                         // Difference in voltage between high and low cell
+        
         BatteryPack* pack;                       // The parent BatteryPack that contains this module
 
     public:
