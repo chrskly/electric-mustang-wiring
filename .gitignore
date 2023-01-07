@@ -18,3 +18,19 @@ fp-info-cache
 .DS_Store
 
 wiring-diagrams/output
+
+# voicebox
+voicebox/src/CMakeCache.txt
+voicebox/src/CMakeFiles/
+voicebox/src/Makefile
+voicebox/src/cmake_install.cmake
+voicebox/src/elf2uf2/
+voicebox/src/generated/
+voicebox/src/pico-sdk/
+voicebox/src/pico_sdk_import.cmake
+voicebox/src/voicebox.bin
+voicebox/src/voicebox.dis
+voicebox/src/voicebox.elf
+voicebox/src/voicebox.elf.map
+voicebox/src/voicebox.hex
+voicebox/src/voicebox.uf2
