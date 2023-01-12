@@ -292,7 +292,7 @@ float BatteryPack::get_lowest_cell_voltage() {
 }
 
 // Return true if any cell in the pack is under min voltage
-bool BatteryPack::has_cell_under_voltage() {
+bool BatteryPack::has_empty_cell() {
         for ( int m = 0; m < numModules; m++ ){
                 if ( modules[m].has_cell_under_voltage() ) {
                         return true;
@@ -318,9 +318,9 @@ void BatteryPack::update_cell_delta() {
 }
 
 // Return true if any cell in the pack is over max voltage
-bool BatteryPack::has_cell_over_voltage() {
+bool BatteryPack::has_full_cell() {
         for ( int m = 0; m < numModules; m++ ){
-                if ( modules[m].has_cell_over_voltage() ) {
+                if ( modules[m].has_full_cell() ) {
                         return true;
                 }
         }
@@ -442,6 +442,22 @@ void BatteryPack::decode_temperatures(can_frame *temperatureMessageFrame) {
 //
 //// ----
 
+// Prevent the contactors for this pack from closing
+void BatteryPack::enable_inhibit_contactor_close() {
+    contactorsAreInhibited = true;
+    gpio_put();
+}
+
+// Allow the contactors for this pack to close
+void BatteryPack::disable_inhibit_contactor_close() {
+    contactorsAreInhibited = false;
+    gpio_put();
+}
+
+// Return true if the contactors for this pack are currently not allowed to close
+bool BatteryPack::contactors_are_inhibited() {
+    return contactorsAreInhibited;
+}
 
 bool BatteryPack::close_contactors() {
         gpio_put(contactorPin, 1);

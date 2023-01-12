@@ -43,11 +43,11 @@ class BatteryModule {
         // Voltage
         float get_voltage();
         float get_lowest_cell_voltage();
-        bool has_cell_under_voltage();
+        bool has_empty_cell();
         float get_highest_cell_voltage();
         bool has_temperature_sensor_over_max();
         void update_cell_voltage(int cellIndex, float newCellVoltage);
-        bool has_cell_over_voltage();
+        bool has_full_cell();
 
         // Temperature
         void update_temperature(int tempSensorId, float newTemperature);

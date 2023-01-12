@@ -103,9 +103,9 @@ float BatteryModule::get_lowest_cell_voltage() {
 }
 
 // Return true if any of the cells in the module are under min voltage
-bool BatteryModule::has_cell_under_voltage() {
+bool BatteryModule::has_empty_cell() {
     for ( int c = 0; c < numCells; c++ ) {
-        if ( cellVoltage[c] < CELL_UNDER_VOLTAGE_FAULT_THRESHOLD ) {
+        if ( cellVoltage[c] < CELL_EMPTY_VOLTAGE ) {
             return true;
         }
     }
@@ -129,9 +129,9 @@ void BatteryModule::update_cell_voltage(int cellIndex, float newCellVoltage) {
 }
 
 // Return true if any of the cells in the module are over max voltage
-bool BatteryModule::has_cell_over_voltage() {
+bool BatteryModule::has_full_cell() {
     for ( int c = 0; c < numCells; c++ ) {
-        if ( cellVoltage[c] > CELL_OVER_VOLTAGE_FAULT_THRESHOLD ) {
+        if ( cellVoltage[c] > CELL_FULL_VOLTAGE ) {
             return true;
         }
     }

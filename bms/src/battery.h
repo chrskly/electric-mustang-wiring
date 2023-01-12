@@ -34,6 +34,17 @@ class Battery {
         float lowestCellTemperature;
         float highestCellTemperature;
 
+        float maxChargingCurrent;
+
+        // Outputs
+        bool heaterEnabled;            // Indicates that the battery heater is currently enabled
+        bool inhibitCharge;            // Indicates that the BMS INHIBIT_CHARGE signal is enabled
+        bool inhibitDrive;             // Indicates that the BMS INHIBIT_DRIVE signal is enabled
+
+        // Inputs
+        bool ignitionOn;
+        bool chargeEnable;             // Charger is asking to charge
+
     public:
         Battery (int _numPacks);
         void initialise();
@@ -50,20 +61,21 @@ class Battery {
         void update_cell_voltage(int packIndex, int moduleIndex, int cellIndex, float newCellVoltage);
         float get_lowest_cell_voltage();
         void update_lowest_cell_voltage();
-        bool has_cell_under_voltage();
+        bool has_empty_cell();
         float get_highest_cell_voltage();
         void update_highest_cell_voltage();
-        bool has_cell_over_voltage();
+        bool has_full_cell();
         float voltage_delta_between_packs();
         BatteryPack* get_pack_with_highest_voltage();
 
         // Temperature
         bool has_temperature_sensor_over_max();
-        int get_max_charging_current();
+        void update_max_charging_current();
         float get_lowest_temperature();
         bool too_cold_to_charge();
 
         // Contactors
+        void inhibit_contactor_close();
         void close_contactors();
         void open_contactors();
 };

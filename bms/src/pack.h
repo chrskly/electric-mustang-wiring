@@ -66,9 +66,9 @@ class BatteryPack {
         void update_voltage();
         float get_lowest_cell_voltage();
         void update_cell_delta();
-        bool has_cell_under_voltage();
+        bool has_empty_cell();
         float get_highest_cell_voltage();
-        bool has_cell_over_voltage();
+        bool has_full_cell();
         void update_cell_voltage(int moduleIndex, int cellIndex, float newCellVoltage);
         void decode_voltages(can_frame *frame);
 

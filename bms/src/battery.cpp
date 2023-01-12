@@ -45,7 +45,8 @@ void Battery::initialise () {
         packs[p] = BatteryPack(p, CS_PINS[p], CONTACTOR_PINS[p], MODULES_PER_PACK, CELLS_PER_MODULE, TEMPS_PER_MODULE);
         printf("Initialisation of battery pack %d complete\n", p);
         packs[p].set_battery(this);
-    }   
+    }
+    disable_heater();
 }
 
 int Battery::print () {
@@ -108,6 +109,35 @@ void Battery::update_cell_voltage(int packIndex, int moduleIndex, int cellIndex,
     packs[packIndex].update_cell_voltage(moduleIndex, cellIndex, newCellVoltage);
 }
 
+// Return the id of the pack that has the highest voltage
+int Battery::get_index_of_high_pack() {
+    int high_pack_index = 0;
+    float high_pack_voltage = 0.0f;
+    for ( int p = 0; p < numPacks; p++ ) {
+        if ( packs[p].get_voltage() > high_pack_voltage ) {
+            high_pack_index = p;
+            high_pack_voltage = packs[p].get_voltage();
+        }
+    }
+    return high_pack_index;
+}
+
+// Return the id of the pack that has the lowest voltage
+int Battery::get_index_of_low_pack() {
+    int low_pack_index = 0;
+    float low_pack_voltage = 1000.0f;
+    for ( int p = 0; p < numPacks; p++ ) {
+        if ( packs[0].get_voltage() < low_pack_voltage ) {
+            low_pack_index = p;
+            low_pack_voltage = packs[p].get_voltage();
+        }
+    }
+    return low_pack_index;
+}
+
+
+
+
 // Low cells
 
 // Return the voltage of the lowest cell in the battery
@@ -127,7 +157,7 @@ void Battery::update_lowest_cell_voltage() {
 }
 
 // Return true if any cell in the battery is below the minimum voltage level
-bool Battery::has_cell_under_voltage() {
+bool Battery::has_empty_cell() {
     for ( int p = 0; p < numPacks; p++ ) {
         if ( packs[p].has_cell_under_voltage() ) {
             return true;
@@ -155,9 +185,9 @@ void Battery::update_highest_cell_voltage() {
 }
 
 // Return true if any cell in the battery is below the minimum voltage level
-bool Battery::has_cell_over_voltage() {
+bool Battery::has_full_cell() {
     for ( int p = 0; p < numPacks; p++ ) {
-        if ( packs[p].has_cell_over_voltage() ) {
+        if ( packs[p].has_full_cell() ) {
             return true;
         }
     }
@@ -191,6 +221,12 @@ BatteryPack* Battery::get_pack_with_highest_voltage() {
     return pack;
 }
 
+// Return true if the voltage difference between any two packs is too high and
+// therefore it's unstafe to close the contactors.
+bool Battery::packs_are_imbalanced() {
+    return ( voltage_delta_between_packs() >= SAFE_VOLTAGE_DELTA_BETWEEN_PACKS );
+}
+
 
 //// ----
 //
@@ -208,14 +244,14 @@ bool Battery::has_temperature_sensor_over_max() {
     return false;
 }
 
-int Battery::get_max_charging_current() {
-    int maxChargeCurrent = CHARGE_CURRENT_MAX;
+void Battery::update_max_charging_current() {
+    int _maxChargeCurrent = CHARGE_CURRENT_MAX;
     for ( int p = 0; p < numPacks; p++ ) {
-        if ( packs[p].get_max_charging_current() < maxChargeCurrent ) {
-            maxChargeCurrent = packs[p].get_max_charging_current();
+        if ( packs[p].get_max_charging_current() < _maxChargeCurrent ) {
+            _maxChargeCurrent = packs[p].get_max_charging_current();
         }
     }
-    return maxChargeCurrent;
+    maxChargeCurrent = _maxChargingCurrent;
 }
 
 float Battery::get_lowest_temperature() {
@@ -228,6 +264,13 @@ float Battery::get_lowest_temperature() {
     return lowestTemperature;
 }
 
+
+//// ----
+//
+// Charging
+//
+//// ----
+
 bool Battery::too_cold_to_charge() {
     if ( get_lowest_temperature() < CELL_UNDER_TEMPERATURE_FAULT_THRESHOLD ) {
         return true;
@@ -235,7 +278,98 @@ bool Battery::too_cold_to_charge() {
     return false;
 }
 
+// Return true if the CHARGE_ENABLE signal from the charge controller is on.
+bool Battery::charge_enable_is_on() {
+    return chargeEnable;
+}
 
+bool Battery::heater_enabled() {
+    return heaterEnabled;
+}
+
+// Enable battery heater(s)
+void Battery::enable_heater() {
+    heaterEnabled = true;
+    gpio_put(HEATER_ENABLE_PIN, 1);
+}
+
+// Disable battery heater(s)
+bool Battery::disable_heater() {
+    heaterEnabled = false;
+    gpio_put(HEATER_ENABLE_PIN, 0);
+}
+
+// Prevent charging
+void Battery::enable_inhibit_charge() {
+    inhibitCharge = true;
+    gpio_put(CHARGE_INHIBIT_PIN, 1);
+}
+
+// Allow charging
+void Battery::disable_inhibit_charge() {
+    inhibitCharge = false;
+    gpio_put(CHARGE_INHIBIT_PIN, 0);
+}
+
+//// ----
+//
+// Driving
+//
+//// ----
+
+// Prevent driving
+void Battery::enable_inhibit_drive() {
+    inhibitDrive = true;
+    gpio_put(DRIVE_INHIBIT_PIN, 1);
+}
+
+// Permit driving
+void Battery::disable_inhibit_drive() {
+    inhibitDrive = false;
+    gpio_put(DRIVE_INHIBIT_PIN, 0);
+}
+
+bool Battery::drive_is_inhibited() {
+    return inhibitDrive;
+}
+
+// Allow contactors to close for the high pack and any other packs which are
+// within SAFE_VOLTAGE_DELTA_BETWEEN_PACKS volts.
+void Battery::disable_inhibit_for_drive() {
+    int highPackId = get_index_of_high_pack();
+    float highPackVoltage = packs[highPackId].get_voltage();
+    float targetVoltage = highPackVoltage - SAFE_VOLTAGE_DELTA_BETWEEN_PACKS;
+    for ( int p = 0; p < numPacks; p++ ) {
+        if ( p == highPackId ) {
+            packs[p].disable_inhibit_contactor_close();
+            continue;
+        }
+        if ( packs[p].get_voltage() >= targetVoltage ) {
+            packs[p].disable_inhibit_contactor_close();
+        }
+    }
+}
+
+// Allow contactors to close for the low pack and any other packs which are
+// within SAFE_VOLTAGE_DELTA_BETWEEN_PACKS volts.
+void Battery::disable_inhibit_for_charge() {
+    int lowPackId = get_index_of_low_pack();
+    float lowPackVoltage = packs[lowPackId].get_voltage();
+    float targetVoltage = lowPackVoltage + SAFE_VOLTAGE_DELTA_BETWEEN_PACKS;
+    for ( int p = 0; p < numPacks; p++ ) {
+        if ( p == lowPackId ) {
+            packs[p].disable_inhibit_contactor_close();
+            continue;
+        }
+        if ( packs[p].get_voltage() <= targetVoltage ) {
+            packs[p].disable_inhibit_contactor_close();
+        }
+    }
+}
+
+void Battery::ignition_is_on() {
+    return ignitionOn;
+}
 
 
 //// ----
@@ -243,6 +377,23 @@ bool Battery::too_cold_to_charge() {
 // Contactor control
 //
 //// ----
+
+// Do not allow any contactors to close in any pack
+void Battery::inhibit_contactor_close() {
+    for ( int p = 0; p < numPacks; p++ ) {
+        packs[p].enable_inhibit_contactor_close();
+    }
+}
+
+// If any of the packs have their contactors inhibited, return true
+bool Battery::one_or_more_contactors_inhibited() {
+    for ( int p = 0; p < numPacks; p++ ) {
+        if ( packs[p].contactors_are_inhibited() ) {
+            return true;
+        }
+    }
+    return false;
+}
 
 void Battery::close_contactors() {
 
