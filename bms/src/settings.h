@@ -49,8 +49,10 @@ const int CONTACTOR_PINS[] = { 2, 3 };             // Pins which control the con
 //const int CS_PINS[2] = { 15, 15 };
 const int CS_PINS[1] = { 15, };
 
-#define CHARGE_INHIBIT_PIN 4;                      // Low-side switch to create CHARGE_INHIBIT signal. a.k.a OUT1
-#define HEATER_ENABLE_PIN 5;                       // Low-side switch to turn on battery heaters. a.k.a. OUT2
+#define CHARGE_INHIBIT_PIN 4                       // Low-side switch to create CHARGE_INHIBIT signal. a.k.a OUT1
+#define HEATER_ENABLE_PIN 5                        // Low-side switch to turn on battery heaters. a.k.a. OUT2
+const int INHIBIT_CONTACTOR_PINS[2] = { 2, 3 };    // Low-side switch to disallow closing of 
+#define DRIVE_INHIBIT_PIN 0
 
 #define SPI_PORT      spi0
 

@@ -90,23 +90,10 @@ int main() {
     clock_gpio_init(CAN_CLK_PIN, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLK_SYS, 10);
 
     printf("Setting up main CAN port (BITRATE:%d:%d)\n", CAN_500KBPS, MCP_8MHZ);
-    //MCP2515 mainCAN(SPI_PORT, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 10000000);
     MCP2515 mainCAN(SPI_PORT, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
     mainCAN.reset();
-    //mainCAN.setBitrate(CAN_1000KBPS, MCP_8MHZ);
     mainCAN.setBitrate(CAN_500KBPS, MCP_8MHZ);
     mainCAN.setNormalMode();
-
-    /*
-    printf("Sending test message on main CAN\n");
-    frame.can_id = 0x001;
-    frame.can_dlc = 4;
-    frame.data[0] = 0xDE;
-    frame.data[1] = 0xAD;
-    frame.data[2] = 0xBE;
-    frame.data[3] = 0xEF;
-    mainCAN.sendMessage(&frame);
-    */
 
     battery.print();
     battery.send_test_message();
@@ -120,18 +107,15 @@ int main() {
     printf("Enabling status print\n");
     enable_status_print();
 
+    led_set_mode(DRIVE);
+
     while(true) {
-        /*
-        sleep_ms(10000);
-        printf("Changing to DRIVE mode\n");
-        led_set_mode(DRIVE);
-        sleep_ms(10000);
-        printf("Changing to CHARGING mode\n");
-        led_set_mode(CHARGING);
-        sleep_ms(10000);
-        printf("Changing to FAULT mode\n");
-        led_set_mode(FAULT);
-        */
+        //printf("Changing to DRIVE mode\n");
+        //led_set_mode(DRIVE);
+        //printf("Changing to CHARGING mode\n");
+        //led_set_mode(CHARGING);
+        //printf("Changing to FAULT mode\n");
+        //led_set_mode(FAULT);
     }
 
     return 0;

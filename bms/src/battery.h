@@ -59,6 +59,8 @@ class Battery {
         void set_voltage(float voltage) { this->voltage = voltage; }
         void update_voltage();
         void update_cell_voltage(int packIndex, int moduleIndex, int cellIndex, float newCellVoltage);
+        int get_index_of_high_pack();
+        int get_index_of_low_pack();
         float get_lowest_cell_voltage();
         void update_lowest_cell_voltage();
         bool has_empty_cell();
@@ -67,6 +69,7 @@ class Battery {
         bool has_full_cell();
         float voltage_delta_between_packs();
         BatteryPack* get_pack_with_highest_voltage();
+        bool packs_are_imbalanced();
 
         // Temperature
         bool has_temperature_sensor_over_max();
@@ -74,8 +77,23 @@ class Battery {
         float get_lowest_temperature();
         bool too_cold_to_charge();
 
+        bool charge_enable_is_on();
+        bool heater_enabled();
+        void enable_heater();
+        void disable_heater();
+        void enable_inhibit_charge();
+        void disable_inhibit_charge();
+        float get_max_charging_current();
+        void enable_inhibit_drive();
+        void disable_inhibit_drive();
+        bool drive_is_inhibited();
+        void disable_inhibit_for_drive();
+        void disable_inhibit_for_charge();
+        bool ignition_is_on();
+
         // Contactors
         void inhibit_contactor_close();
+        bool one_or_more_contactors_inhibited();
         void close_contactors();
         void open_contactors();
 };

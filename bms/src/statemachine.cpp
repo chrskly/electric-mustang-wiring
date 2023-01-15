@@ -138,6 +138,7 @@ void state_drive(Event event) {
              */
             if ( battery.has_empty_cell() ) {
                 battery.enable_inhibit_drive();
+                // wait a while, then open contactors?
                 state = state_batteryEmpty;
                 break;
             }
@@ -226,7 +227,7 @@ void state_charging(Event event) {
             /* Deal with the unlikely scenario where the battery gets too cold
              * mid-charge. Enable heater, block charging.
              */
-            if ( battery.heater_disabled() && battery.too_cold_to_charge() ) {
+            if ( ! battery.heater_enabled() && battery.too_cold_to_charge() ) {
                 battery.enable_inhibit_charge();
                 battery.enable_heater();
             }
@@ -293,7 +294,7 @@ void state_batteryEmpty(Event event) {
 
         case E_CELL_VOLTAGE_UPDATE:
             // After resting for a while, the voltage may rise again slightly.
-            if ( ! battery.has_cell_under_voltage() ) {
+            if ( ! battery.has_empty_cell() ) {
                 // allow driving again
                 battery.disable_inhibit_drive();
 
@@ -326,7 +327,6 @@ void state_batteryEmpty(Event event) {
                     battery.enable_heater();
                 }
             }
-            // separate state here? state_batteryHeating
             state = state_charging;
             break;
 
@@ -401,4 +401,5 @@ void state_fault(Event event) {
 
         default:
             printf("Received unknown event\n");
+    }
 }

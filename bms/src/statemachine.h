@@ -31,9 +31,7 @@ typedef void (*State)(Event);
 void state_standby(Event event);
 void state_drive(Event event);
 void state_charging(Event event);
-void state_overTempFault(Event event);
-void state_underVoltageFault(Event event);
-void state_overVoltageFault(Event event);
-void state_unknownFault(Event event);
+void state_batteryEmpty(Event event);
+void state_fault(Event event);
 
 

@@ -32,7 +32,7 @@ BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorPin, int _numModu
 
     id = _id;
 
-      printf("Initialising BatteryPack %d\n", id);
+          printf("Initialising BatteryPack %d\n", id);
 
     numModules = _numModules;
       numCellsPerModule = _numCellsPerModule;
@@ -193,24 +193,26 @@ void BatteryPack::read_message() {
 
         if ( CAN.readMessage(&frame) == MCP2515::ERROR_OK ) {
 
-                printf("Pack %d received message : id:%02X : ", id, frame.can_id);
-                for ( int i = 0; i < frame.can_dlc; i++ ) {
+            /*
+            printf("Pack %d received message : id:%02X : ", id, frame.can_id);
+            for ( int i = 0; i < frame.can_dlc; i++ ) {
                 printf("%02X ", frame.data[i]);
-          }
-          printf("\n");
+            }
+            printf("\n");
+            */
 
-                // Temperature messages
-                if ( ( frame.can_id & 0xFF0 ) == 0x180 ) {
-                      printf("    Decoding temperature\n");
-                      decode_temperatures(&frame);
-                }
+            // Temperature messages
+            if ( ( frame.can_id & 0xFF0 ) == 0x180 ) {
+                  //printf("    Decoding temperature\n");
+                  decode_temperatures(&frame);
+            }
 
-                // Voltage messages
-                if (frame.can_id > 0x99 && frame.can_id < 0x180) {
-                      //printf("    Decoding voltage\n");
-                      decode_voltages(&frame);
-                      //printf("    After decode_voltages\n");
-                }
+            // Voltage messages
+            if (frame.can_id > 0x99 && frame.can_id < 0x180) {
+                  //printf("    Decoding voltage\n");
+                  decode_voltages(&frame);
+                  //printf("    After decode_voltages\n");
+            }
 
         }
 }
@@ -225,11 +227,13 @@ bool BatteryPack::pack_is_alive() {
 }
 
 void BatteryPack::send_message(can_frame *frame) {
+        /*
         printf("SEND :: id:%02X  [", frame->can_id);
         for ( int i = 0; i < frame->can_dlc; i++ ) {
                 printf("%02X ", frame->data[i]);
         }
         printf("]\n");
+        */
         CAN.sendMessage(frame);
 }
 
@@ -294,7 +298,7 @@ float BatteryPack::get_lowest_cell_voltage() {
 // Return true if any cell in the pack is under min voltage
 bool BatteryPack::has_empty_cell() {
         for ( int m = 0; m < numModules; m++ ){
-                if ( modules[m].has_cell_under_voltage() ) {
+                if ( modules[m].has_empty_cell() ) {
                         return true;
                 }
         }
@@ -445,13 +449,13 @@ void BatteryPack::decode_temperatures(can_frame *temperatureMessageFrame) {
 // Prevent the contactors for this pack from closing
 void BatteryPack::enable_inhibit_contactor_close() {
     contactorsAreInhibited = true;
-    gpio_put();
+    //gpio_put();
 }
 
 // Allow the contactors for this pack to close
 void BatteryPack::disable_inhibit_contactor_close() {
     contactorsAreInhibited = false;
-    gpio_put();
+    //gpio_put();
 }
 
 // Return true if the contactors for this pack are currently not allowed to close

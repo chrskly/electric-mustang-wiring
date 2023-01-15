@@ -91,9 +91,9 @@ bool send_status_message(struct repeating_timer *t) {
         statusFrame.data[0] = 0x01 << 4;
     } else if ( state == state_charging ) {
         statusFrame.data[0] = 0x02 << 4;
-    } else if ( state == state_overTempFault ) {
+    } else if ( state == state_batteryEmpty ) {
         statusFrame.data[0] = 0x03 << 4;
-    } else if ( state == state_underVoltageFault ) {
+    } else if ( state == state_fault ) {
         statusFrame.data[0] = 0x04 << 4;
     } else {
         //

@@ -24,10 +24,14 @@
 
 bool LEDon = false;
 int LEDcounter = 0;
-int LEDonDuration = 1;
+int LEDonDuration = 2;
 int LEDoffDuration = 10;
+struct repeating_timer ledBlinkTimer;   
 
+
+// Switch status light to a different mode
 void led_set_mode(LED_MODE newMode) {
+    printf("Setting LED mode %d\n", newMode);
     switch( newMode ) {
         case STANDBY:
             LEDonDuration = 1;
@@ -45,15 +49,10 @@ void led_set_mode(LED_MODE newMode) {
 
 }
 
-struct repeating_timer ledBlinkTimer;
 
 bool led_blink(struct repeating_timer *t) {
-    extern int LEDonDuration;
-    extern int LEDoffDuration;
-    extern int LEDcounter;
-    extern bool LEDon;
     ++LEDcounter;
-    //printf("counter %d (%d/%d)\n", LEDcounter, LEDonDuration, LEDoffDuration);
+    printf("counter %d (%d/%d)\n", LEDcounter, LEDonDuration, LEDoffDuration);
 
     if ( LEDon ) {
         if ( LEDcounter > LEDonDuration ) {
@@ -75,3 +74,4 @@ bool led_blink(struct repeating_timer *t) {
 void enable_led_blink() {
     add_repeating_timer_ms(100, led_blink, NULL, &ledBlinkTimer);
 }
+

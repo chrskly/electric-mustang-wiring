@@ -70,6 +70,8 @@ class BatteryPack {
         float get_highest_cell_voltage();
         bool has_full_cell();
         void update_cell_voltage(int moduleIndex, int cellIndex, float newCellVoltage);
+        int get_index_of_high_pack();
+        int get_index_of_low_pack();
         void decode_voltages(can_frame *frame);
 
         // Temperature
@@ -77,6 +79,10 @@ class BatteryPack {
         int get_max_charging_current();
         float get_lowest_temperature();
         void decode_temperatures(can_frame *temperatureMessageFrame);
+
+        void enable_inhibit_contactor_close();
+        void disable_inhibit_contactor_close();
+        bool contactors_are_inhibited();
 
         // Contactors
         bool close_contactors();
@@ -108,6 +114,8 @@ class BatteryPack {
         bool inStartup;
         uint8_t modulePollingCycle;
         can_frame pollModuleFrame;
+
+        bool contactorsAreInhibited;                     // Is the
         
 
 };

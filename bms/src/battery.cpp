@@ -70,7 +70,7 @@ void Battery::read_message() {
 
 void Battery::send_test_message() {
     for ( int p = 0; p < numPacks; p++ ) {
-        printf("Sending test message to pack %d\n", p);
+        //printf("Sending test message to pack %d\n", p);
         can_frame fr;
         fr.can_id = 0x000;
         fr.can_dlc = 3;
@@ -159,7 +159,7 @@ void Battery::update_lowest_cell_voltage() {
 // Return true if any cell in the battery is below the minimum voltage level
 bool Battery::has_empty_cell() {
     for ( int p = 0; p < numPacks; p++ ) {
-        if ( packs[p].has_cell_under_voltage() ) {
+        if ( packs[p].has_empty_cell() ) {
             return true;
         }
     }
@@ -245,13 +245,13 @@ bool Battery::has_temperature_sensor_over_max() {
 }
 
 void Battery::update_max_charging_current() {
-    int _maxChargeCurrent = CHARGE_CURRENT_MAX;
+    int _maxChargingCurrent = CHARGE_CURRENT_MAX;
     for ( int p = 0; p < numPacks; p++ ) {
-        if ( packs[p].get_max_charging_current() < _maxChargeCurrent ) {
-            _maxChargeCurrent = packs[p].get_max_charging_current();
+        if ( packs[p].get_max_charging_current() < _maxChargingCurrent ) {
+            _maxChargingCurrent = packs[p].get_max_charging_current();
         }
     }
-    maxChargeCurrent = _maxChargingCurrent;
+    maxChargingCurrent = _maxChargingCurrent;
 }
 
 float Battery::get_lowest_temperature() {
@@ -294,7 +294,7 @@ void Battery::enable_heater() {
 }
 
 // Disable battery heater(s)
-bool Battery::disable_heater() {
+void Battery::disable_heater() {
     heaterEnabled = false;
     gpio_put(HEATER_ENABLE_PIN, 0);
 }
@@ -309,6 +309,10 @@ void Battery::enable_inhibit_charge() {
 void Battery::disable_inhibit_charge() {
     inhibitCharge = false;
     gpio_put(CHARGE_INHIBIT_PIN, 0);
+}
+
+float Battery::get_max_charging_current() {
+    return maxChargingCurrent;
 }
 
 //// ----
@@ -367,7 +371,7 @@ void Battery::disable_inhibit_for_charge() {
     }
 }
 
-void Battery::ignition_is_on() {
+bool Battery::ignition_is_on() {
     return ignitionOn;
 }
 
