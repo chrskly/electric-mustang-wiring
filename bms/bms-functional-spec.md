@@ -31,32 +31,43 @@ BMS will have states of : standby, drive, and charge.
 
 ## Functionality
 
-1. Deny contactor close when pack 1 and pack 2 voltages differ by more than a
-   certain number of mV. Instead, only close the contactors for the pack with
-   the highest voltage. Car will still be drivable and full battery capacity
-   will still be usable (by turning ignition off and on again).
-2. Send CAN message warn when cell(s) near overvolt.
-3. Deny charging when cell(s) overvolt. Programmable buffer.
-4. Warn when cell(s) near undervolt. Programmable buffer.
-5. Deny drive when cell(s) undervolt.
-6. Deny charge when temperature below 0 degrees c.
-7. Deny drive when temperature over XX degress c.
-8. Report range estimate.
-9. Provide max charging rate value to charger.
+1. Provide protection for issues relating to paralleling packs. Deny contactor
+   close when pack voltages (not cell voltages) differ by more than a certain
+   number of mV. Instead, when going into drive mode, only close the
+   contactors for the pack with the highest voltage and, when going into charge
+   mode, only close the contactors for the pack with the lowest voltage. Car
+   will still be drivable and full battery capacity will still be usable (by
+   turning ignition off and on again).
+2. When driving on a subset of packs, allow contactors to close when the pack
+   voltages get back into alignment.
+3. When charging on a subset of packs, allow contactors to close when the pack
+   voltages get back into alignment.
+4. Send CAN message warn when cell(s) near overvolt.
+5. Deny charging when cell(s) overvolt. Programmable buffer.
+6. Warn when cell(s) near undervolt. Programmable buffer.
+7. Deny drive when cell(s) undervolt.
+8. When cells are below 0 degrees c, turn on heaters and deny charge until warm
+   enough.
+9. Deny drive when temperature over XX degress c.
+10. Report range estimate.
+11. Provide max charging rate value to charger.
 
 ## Connections
 
 1. CAN port connected to main CAN bus.
 2. CAN port connected to front battery CAN bus.
 3. CAN port connected to rear battery CAN bus.
-4. Low side switch for rear battery contactors.
-5. Low side switch for front battery contactors.
-6. Drive-enable input signal
-7. Charge-enable input signal
+4. Low side switch for front battery contactors. Contactors are actually controlled by inverter, but BMS can override.
+5. Low side switch for rear battery contactors. Contactors are actually controlled by inverter, but BMS can override.
+6. Low side switch to turn on battery heater.
+7. IGNITION_ON input signal
+8. CHARGE_ENABLE input signal
+9. CHARGE_INHIBIT output signal
+10. DRIVE_INHIBIT output signal
 
 ## CAN messages consumed by BMS
 
-1. SoC data from ISA shunt.
+1. kWh, Ah data from ISA shunt to calculate SoC.
 
 ## CAN messages produced by BMS
 
@@ -77,6 +88,12 @@ BMS will have states of : standby, drive, and charge.
 ## To Do
 
 - [ ] Fetch SoC from shunt and store in memory
+- [ ] Broadcast BMS mode
+- [ ] CHARGE_ENABLE input
+- [ ] IGNITION_ON input
+- [ ] DRIVE_INHIBIT output
+- [ ] Use other core for comms?
+- [ ] Implement balancing
 
 ## Credits
 
