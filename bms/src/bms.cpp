@@ -32,6 +32,8 @@ SPIO15 (20) SPI0 CS1 - to CS on mcp2515 board 1 (vai level converter)
 
 ------------------------------------------------------------------------------*/
 
+using namespace std;
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
@@ -51,8 +53,6 @@ SPIO15 (20) SPI0 CS1 - to CS on mcp2515 board 1 (vai level converter)
 #include "comms.h"
 #include "led.h"
 
-using namespace std;
-
 
 struct can_frame rx;
 
@@ -60,6 +60,7 @@ struct can_frame rx;
 struct can_frame frame;
 
 State state;
+StatusLight statusLight;
 
 Battery battery(NUM_PACKS);
 
@@ -83,7 +84,7 @@ int main() {
     // Set up blinky LED
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-    led_set_mode(STANDBY);
+    statusLight.led_set_mode(STANDBY);
     enable_led_blink();
 
     // 8MHz clock for CAN oscillator
@@ -107,15 +108,7 @@ int main() {
     printf("Enabling status print\n");
     enable_status_print();
 
-    led_set_mode(DRIVE);
-
     while(true) {
-        //printf("Changing to DRIVE mode\n");
-        //led_set_mode(DRIVE);
-        //printf("Changing to CHARGING mode\n");
-        //led_set_mode(CHARGING);
-        //printf("Changing to FAULT mode\n");
-        //led_set_mode(FAULT);
     }
 
     return 0;

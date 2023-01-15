@@ -22,43 +22,48 @@
 
 #include "led.h"
 
-bool LEDon = false;
-int LEDcounter = 0;
-int LEDonDuration = 2;
-int LEDoffDuration = 10;
-struct repeating_timer ledBlinkTimer;   
+using namespace std;
 
 
 // Switch status light to a different mode
-void led_set_mode(LED_MODE newMode) {
+void StatusLight::led_set_mode(LED_MODE newMode) {
     printf("Setting LED mode %d\n", newMode);
     switch( newMode ) {
         case STANDBY:
+            printf("Switch status light to mode STANDBY\n");
             LEDonDuration = 1;
-            LEDoffDuration = 9;
+            LEDoffDuration = 29;
+            break;
         case DRIVE:
-            LEDonDuration = 10;
+            printf("Switch status light to mode DRIVE\n");
+            LEDonDuration = 20;
             LEDoffDuration = 0;
+            break;
         case CHARGING:
-            LEDonDuration = 5;
-            LEDoffDuration = 5;
+            printf("Switch status light to mode CHARGING\n");
+            LEDonDuration = 10;
+            LEDoffDuration = 10;
+            break;
         case FAULT:
+            printf("Switch status light to mode FAULT\n");
             LEDonDuration = 1;
             LEDoffDuration = 1;
+            break;
     }
 
 }
 
-
-bool led_blink(struct repeating_timer *t) {
+void StatusLight::led_blink() {
     ++LEDcounter;
     printf("counter %d (%d/%d)\n", LEDcounter, LEDonDuration, LEDoffDuration);
 
     if ( LEDon ) {
         if ( LEDcounter > LEDonDuration ) {
-            gpio_put(PICO_DEFAULT_LED_PIN, 0);
             LEDcounter = 0;
-            LEDon = false;
+            if ( LEDoffDuration > 0 ) {
+                gpio_put(PICO_DEFAULT_LED_PIN, 0);                
+                LEDon = false;
+            }
         }
     } else {
         if ( LEDcounter > LEDoffDuration ) {
@@ -67,11 +72,17 @@ bool led_blink(struct repeating_timer *t) {
             LEDon = true;
         }
     }
+}
 
+bool process_led_blink_step(struct repeating_timer *t) {
+    extern StatusLight statusLight;
+    statusLight.led_blink();
     return true;
 }
 
+struct repeating_timer ledBlinkTimer;
+
 void enable_led_blink() {
-    add_repeating_timer_ms(100, led_blink, NULL, &ledBlinkTimer);
+    add_repeating_timer_ms(100, process_led_blink_step, NULL, &ledBlinkTimer);
 }
 

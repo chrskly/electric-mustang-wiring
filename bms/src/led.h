@@ -29,10 +29,26 @@ enum LED_MODE {
 };
 
 
+class StatusLight {
+
+    private:
+        bool LEDon;
+        int LEDcounter;
+        int LEDonDuration;
+        int LEDoffDuration;
 
 
-void led_set_mode(LED_MODE newMode);
-bool led_blink(struct repeating_timer *t);
+    public:
+        void led_set_mode(LED_MODE newMode);
+        void led_blink();
+        bool process_led_blink_step();
+
+};
+
+
+
 void enable_led_blink();
 
 #endif
+
+
