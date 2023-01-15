@@ -178,12 +178,11 @@ void handle_main_CAN_messages() {
     extern MCP2515 mainCAN;
 
     if ( mainCAN.readMessage(&mainCANInbound) == MCP2515::ERROR_OK ) {
-    if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_WH ) {
-        // process Wh data
-    } else if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_AH ) {
-          // process Ah data
-    }
-    // ...
+        if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_WH ) {
+            // process Wh data
+        } else if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_AH ) {
+            // process Ah data
+        }
     }
 }
 
