@@ -98,13 +98,14 @@ class BatteryPack {
         Battery* battery;                                // The parent Battery that contains this BatteryPack
         float voltage;                                   // Voltage of the total pack
         float cellDelta;                                 // Difference in voltage between high and low cell
-        bool contactorsClosed;                           //
-        int contactorPin;                                // Pin on the pico which controls contactors for this pack
+
+        // contactors
+        int contactorInhibitPin;                         // Pin on the pico which controls contactors for this pack
+        bool contactorsAreInhibited;                     // Is the
+
         int balanceStatus;                               //
         int errorStatus;
         absolute_time_t nextBalanceTime;                 // Time that the next balance should occur.
-        uint8_t msgCycle;                                //
-        uint8_t nextmsg;                                 //
         uint8_t testCycle;                               //
         uint8_t pollMessageId;                           //
         bool initialised;
@@ -115,7 +116,7 @@ class BatteryPack {
         uint8_t modulePollingCycle;
         can_frame pollModuleFrame;
 
-        bool contactorsAreInhibited;                     // Is the
+
         
 
 };

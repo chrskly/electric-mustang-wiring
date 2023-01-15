@@ -28,67 +28,50 @@ using namespace std;
 
 BatteryPack::BatteryPack(){}
 
-BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorPin, int _numModules, int _numCellsPerModule, int _numTemperatureSensorsPerModule) {
+BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorInhibitPin, int _numModules, int _numCellsPerModule, int _numTemperatureSensorsPerModule) {
 
     id = _id;
 
-          printf("Initialising BatteryPack %d\n", id);
+    printf("Initialising BatteryPack %d\n", id);
 
     numModules = _numModules;
-      numCellsPerModule = _numCellsPerModule;
-      numTemperatureSensorsPerModule = _numTemperatureSensorsPerModule;
+    numCellsPerModule = _numCellsPerModule;
+    numTemperatureSensorsPerModule = _numTemperatureSensorsPerModule;
 
-        // Initialise modules
-        for ( int m = 0; m < numModules; m++ ) {
-                //printf("Creating module %d (cpm:%d, tpm:%d)\n", m, numCellsPerModule, numTemperatureSensorsPerModule);
-                modules[m] = BatteryModule(m, this, numCellsPerModule, numTemperatureSensorsPerModule);
-        }
+    // Initialise modules
+    for ( int m = 0; m < numModules; m++ ) {
+        //printf("Creating module %d (cpm:%d, tpm:%d)\n", m, numCellsPerModule, numTemperatureSensorsPerModule);
+        modules[m] = BatteryModule(m, this, numCellsPerModule, numTemperatureSensorsPerModule);
+    }
 
     // Set up CAN port
     printf("Creating CAN port (cs:%d, miso:%d, mosi:%d, clk:%d)\n", CANCSPin, SPI_MISO, SPI_MOSI, SPI_CLK);
-        MCP2515 CAN(spi0, CANCSPin, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
-        MCP2515::ERROR response;
-        if ( CAN.reset() != MCP2515::ERROR_OK ) {
-                printf("ERROR problem resetting battery CAN port %d\n", id);
-        }
-        if ( CAN.setBitrate(CAN_500KBPS, MCP_8MHZ) != MCP2515::ERROR_OK ) {
-                printf("ERROR problem setting bitrate on battery CAN port %d\n", id);
-        }
-        if ( CAN.setNormalMode() != MCP2515::ERROR_OK ) {
-                printf("ERROR problem setting normal mode on battery CAN port %d\n", id);
-        }
-
-    printf("Sending test message for pack %d\n", id);
-    struct can_frame fr;
-    fr.can_id = 0x001;
-    fr.can_dlc = 1;
-    fr.data[0] = 0x01;
-    CAN.sendMessage(&fr);
+    MCP2515 CAN(spi0, CANCSPin, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
+    MCP2515::ERROR response;
+    if ( CAN.reset() != MCP2515::ERROR_OK ) {
+        printf("ERROR problem resetting battery CAN port %d\n", id);
+    }
+    if ( CAN.setBitrate(CAN_500KBPS, MCP_8MHZ) != MCP2515::ERROR_OK ) {
+        printf("ERROR problem setting bitrate on battery CAN port %d\n", id);
+    }
+    if ( CAN.setNormalMode() != MCP2515::ERROR_OK ) {
+        printf("ERROR problem setting normal mode on battery CAN port %d\n", id);
+    }
 
     // Set last update time to now
-        lastUpdate = get_absolute_time();
+    lastUpdate = get_absolute_time();
 
-        voltage = 0;
+    voltage = 0;
 
-        // Set up contactor control. Default to contactors open.
-        printf("Setting up contactor control\n");
-        contactorsClosed = false;
-        contactorPin = _contactorPin;
-        gpio_init(contactorPin);
-        gpio_set_dir(contactorPin, GPIO_OUT);
-    gpio_put(contactorPin, 0);
-
-    // balanceStatus not needed?
+    // Set up contactor control.
+    contactorInhibitPin = _contactorInhibitPin;
+    printf("Setting up contactor control\n");
+    gpio_init(contactorInhibitPin);
+    gpio_set_dir(contactorInhibitPin, GPIO_OUT);
+    gpio_put(contactorInhibitPin, 0);
 
     // Set next balance time to 10 seconds from now
     nextBalanceTime = delayed_by_us(get_absolute_time(), 10000);
-
-    msgCycle = 0;
-    nextmsg = 0;
-    testCycle = 0;
-
-    // internal counters
-    pollMessageId = 0;
 
     inStartup = true;
     modulePollingCycle = 0;
@@ -100,14 +83,14 @@ BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorPin, int _numModu
 
 void BatteryPack::print() {
         printf("--------------------------------------------------------------------------------\n");
-        printf("Pack ID                : %d\n", id);
-        printf("Pack voltage           : %3.2fV\n", voltage);
-        printf("Cell delta             : %3.3fV\n", cellDelta);
-        printf("Pack contactors closed : %d\n", contactorsClosed);
-        printf("Pack CAN port          : %p\n", CAN);
-        printf("Error status           : %d\n", errorStatus);
-        printf("Balance status         : %d\n", balanceStatus);
-        printf("Modules                :\n");
+        printf("Pack ID                   : %d\n", id);
+        printf("Pack voltage              : %3.2fV\n", voltage);
+        printf("Cell delta                : %3.3fV\n", cellDelta);
+        printf("Pack contactors inhibited : %d\n", contactorsAreInhibited);
+        printf("Pack CAN port             : %p\n", CAN);
+        printf("Error status              : %d\n", errorStatus);
+        printf("Balance status            : %d\n", balanceStatus);
+        printf("Modules                   :\n");
         for ( int m = 0; m < numModules; m++ ) {
                 //printf("    Module %d\n", m);
                 modules[m].print();
@@ -130,9 +113,6 @@ uint8_t BatteryPack::getcheck(can_frame &msg, int id) {
 
 
 /*
- * pollMessageId : loops from 0 to 5. Sets the Id of the CAN message.
- * msgcycle      : loops from 0 to 0xF. Incremented when pollMessageId wraps.
- * testcycle     : 
  *
  * Contents of message
  *   byte 0 : balance data
@@ -461,16 +441,6 @@ void BatteryPack::disable_inhibit_contactor_close() {
 // Return true if the contactors for this pack are currently not allowed to close
 bool BatteryPack::contactors_are_inhibited() {
     return contactorsAreInhibited;
-}
-
-bool BatteryPack::close_contactors() {
-        gpio_put(contactorPin, 1);
-        return true;
-}
-
-bool BatteryPack::open_contactors() {
-        gpio_put(contactorPin, 0);
-        return true;
 }
 
 
