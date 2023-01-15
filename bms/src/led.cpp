@@ -55,7 +55,6 @@ void StatusLight::led_set_mode(LED_MODE newMode) {
 
 void StatusLight::led_blink() {
     ++LEDcounter;
-    printf("counter %d (%d/%d)\n", LEDcounter, LEDonDuration, LEDoffDuration);
 
     if ( LEDon ) {
         if ( LEDcounter > LEDonDuration ) {
