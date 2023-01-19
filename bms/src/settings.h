@@ -43,15 +43,14 @@
 #define SAFE_VOLTAGE_DELTA_BETWEEN_PACKS 0.01      // When closing contactors, the voltage difference between the packs shall not
                                                    // be greater than this voltage, in volts.
 
-const int CONTACTOR_PINS[] = { 2, 3 };             // Pins which control the contactors for the battery packs.
-
 //const int CS_PINS[2] = { 20, 15 };               // Chip select pins for the CAN controllers for each battery pack.
 //const int CS_PINS[2] = { 15, 15 };
 const int CS_PINS[1] = { 15, };
 
+// Outputs
 #define CHARGE_INHIBIT_PIN 4                       // Low-side switch to create CHARGE_INHIBIT signal. a.k.a OUT1
 #define HEATER_ENABLE_PIN 5                        // Low-side switch to turn on battery heaters. a.k.a. OUT2
-const int INHIBIT_CONTACTOR_PINS[2] = { 2, 3 };    // Low-side switch to disallow closing of 
+const int INHIBIT_CONTACTOR_PINS[2] = { 2, 3 };    // Low-side switch to disallow closing of battery box contactors
 #define DRIVE_INHIBIT_PIN 0
 
 #define SPI_PORT      spi0
@@ -65,19 +64,17 @@ const int INHIBIT_CONTACTOR_PINS[2] = { 2, 3 };    // Low-side switch to disallo
 
 #define CAN_CLK_PIN     21 // pin 27
 
-//const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-
 // Official min pack voltage = 269V. 269 / 6 / 16 = 2.8020833333V
 #define CELL_EMPTY_VOLTAGE 2.9
 
 // Official max pack voltage = 398V. 398 / 6 / 16 = 4.1458333333V
 #define CELL_FULL_VOLTAGE 4.0
 
-#define CELL_UNDER_TEMPERATURE_FAULT_THRESHOLD 0
+#define CELL_UNDER_TEMPERATURE_FAULT_THRESHOLD 0    // degrees
 #define CELL_OVER_TEMPERATURE_WARNING_THRESHOLD 55  // degrees
 #define CELL_OVER_TEMPERATURE_FAULT_THRESHOLD 65    // degrees
 
-#define CHARGE_THROTTLE_TEMP_LOW  45                // Start throttling charge current above this temperature
+#define CHARGE_THROTTLE_TEMP_LOW  45                // Start throttling charge current when battery sensors above this temperature
 #define CHARGE_THROTTLE_TEMP_HIGH 65                // Top of the throttling scale. Limit current to CHARGE_CURRENT_MIN at and above this temperature
 #define CHARGE_CURRENT_MAX 125                      // ~50kw
 #define CHARGE_CURRENT_MIN 8                        // ~3.3kw

@@ -32,6 +32,7 @@ class BatteryModule {
         int numTemperatureSensors;               // Number of temperature sensors in this module
         float cellVoltage[CELLS_PER_MODULE];     // Voltages of each cell
         float cellTemperature[TEMPS_PER_MODULE]; // Temperatures of each cell
+        bool allModuleDataPopulated;             // True when we have voltage/temp information for all cells
         
         BatteryPack* pack;                       // The parent BatteryPack that contains this module
 
@@ -43,20 +44,24 @@ class BatteryModule {
         // Voltage
         float get_voltage();
         float get_lowest_cell_voltage();
-        bool has_empty_cell();
         float get_highest_cell_voltage();
-        bool has_temperature_sensor_over_max();
         void update_cell_voltage(int cellIndex, float newCellVoltage);
+        bool has_empty_cell();
         bool has_full_cell();
+
+        bool all_module_data_populated();
+        void check_if_module_data_is_populated();
 
         // Temperature
         void update_temperature(int tempSensorId, float newTemperature);
-        float get_highest_temperature();
         float get_lowest_temperature();
+        float get_highest_temperature();
+        bool has_temperature_sensor_over_max();
         bool temperature_at_warning_level();
 
         // Charging
         int get_max_charging_current();
+                
 
 
 };

@@ -62,8 +62,8 @@ BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorInhibitPin, int _
     // Set last update time to now
     lastUpdate = get_absolute_time();
 
-    voltage = 0;
-    cellDelta = 0;
+    voltage = 0.0000f;
+    cellDelta = 0.0000f;
     contactorsAreInhibited = false;
 
     // Set up contactor control.
@@ -90,12 +90,10 @@ void BatteryPack::print() {
     printf("Pack voltage              : %3.2fV\n", voltage);
     printf("Cell delta                : %3.3fV\n", cellDelta);
     printf("Pack contactors inhibited : %d\n", contactorsAreInhibited);
-    printf("Pack CAN port             : %p\n", CAN);
     printf("Error status              : %d\n", errorStatus);
     printf("Balance status            : %d\n", balanceStatus);
     printf("Modules                   :\n");
     for ( int m = 0; m < numModules; m++ ) {
-        //printf("    Module %d\n", m);
         modules[m].print();
     }
     printf("--------------------------------------------------------------------------------\n");
@@ -129,8 +127,6 @@ uint8_t BatteryPack::getcheck(can_frame &msg, int id) {
  */
 
 void BatteryPack::request_data() {
-
-    //printf("Requesting pack data...\n");
 
     if ( modulePollingCycle == 0xF ) {
         modulePollingCycle = 0;
@@ -269,8 +265,12 @@ void BatteryPack::update_voltage() {
 
 // Return the voltage of the lowest cell in the pack
 float BatteryPack::get_lowest_cell_voltage() {
-    float lowestCellVoltage = 100;
+    float lowestCellVoltage = 10.0000f;
     for ( int m = 0; m < numModules; m++ ) {
+        // skip modules with incomplete cell data
+        if ( ! modules[m].all_module_data_populated() ) {
+            continue;
+        }
         if ( modules[m].get_lowest_cell_voltage() < lowestCellVoltage ) {
             lowestCellVoltage = modules[m].get_lowest_cell_voltage();
         }
@@ -290,9 +290,13 @@ bool BatteryPack::has_empty_cell() {
 
 // Return the voltage of the highest cell in the pack
 float BatteryPack::get_highest_cell_voltage() {
-    float highestCellVoltage = 0;
+    float highestCellVoltage = 0.0000f;
     for ( int m = 0; m < numModules; m++ ) {
-        if ( modules[m].get_highest_cell_voltage() < highestCellVoltage ) {
+        // skip modules with incomplete cell data
+        if ( ! modules[m].all_module_data_populated() ) {
+            continue;
+        }
+        if ( modules[m].get_highest_cell_voltage() > highestCellVoltage ) {
             highestCellVoltage = modules[m].get_highest_cell_voltage();
         }
     }
@@ -325,7 +329,7 @@ void BatteryPack::decode_voltages(can_frame *frame) {
     //printf("    Inside decode_voltages\n");
 
     int messageId = (frame->can_id & 0x0F0);
-    int moduleId = (frame->can_id & 0x00F) + 1;
+    int moduleId = (frame->can_id & 0x00F);
 
     //printf("    decode voltages :: messageId : %02X, moduleId : %02X\n", messageId, moduleId);
 
@@ -366,6 +370,11 @@ void BatteryPack::decode_voltages(can_frame *frame) {
             break;
         default:
             break;
+    }
+
+    // Check if this update has left us with a complete set of voltage/temperature readings
+    if ( ! modules[moduleId].all_module_data_populated() ) {
+        modules[moduleId].check_if_module_data_is_populated();
     }
 
     update_voltage();

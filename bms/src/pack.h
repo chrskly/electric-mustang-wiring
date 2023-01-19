@@ -106,7 +106,6 @@ class BatteryPack {
         int balanceStatus;                               //
         int errorStatus;
         absolute_time_t nextBalanceTime;                 // Time that the next balance should occur.
-        uint8_t testCycle;                               //
         uint8_t pollMessageId;                           //
         bool initialised;
         BatteryModule modules[MODULES_PER_PACK];         // The child modules that make up this BatteryPack        

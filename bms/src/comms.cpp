@@ -172,8 +172,9 @@ void disable_charge_limits_messages() {
 //// ----
 
 struct can_frame mainCANInbound;
+struct repeating_timer handleMainCANMessageTimer;
 
-void handle_main_CAN_messages() {
+bool handle_main_CAN_messages(struct repeating_timer *t) {
 
     extern MCP2515 mainCAN;
 
@@ -184,6 +185,12 @@ void handle_main_CAN_messages() {
             // process Ah data
         }
     }
+
+    return true;
+}
+
+void enable_handle_main_CAN_messages() {
+    add_repeating_timer_ms(10, handle_main_CAN_messages, NULL, &handleMainCANMessageTimer);
 }
 
 
@@ -197,6 +204,6 @@ bool handle_battery_CAN_messages(struct repeating_timer *t) {
 }
 
 void enable_handle_battery_CAN_messages() {
-    add_repeating_timer_ms(100, handle_battery_CAN_messages, NULL, &handleBatteryCANMessagesTimer);
+    add_repeating_timer_ms(10, handle_battery_CAN_messages, NULL, &handleBatteryCANMessagesTimer);
 }
 
