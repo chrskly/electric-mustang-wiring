@@ -39,14 +39,31 @@ Battery::Battery (int _numPacks) {
 }
 
 void Battery::initialise () {
+
     printf("Initialising battery with %d packs\n", numPacks);
+
     for ( int p = 0; p < numPacks; p++ ) {
         printf("Initialising battery pack %d (cs:%d, cp:%d, mpp:%d, cpm:%d, tpm:%d)\n", p, CS_PINS[p], INHIBIT_CONTACTOR_PINS[p], MODULES_PER_PACK, CELLS_PER_MODULE, TEMPS_PER_MODULE);
         packs[p] = BatteryPack(p, CS_PINS[p], INHIBIT_CONTACTOR_PINS[p], MODULES_PER_PACK, CELLS_PER_MODULE, TEMPS_PER_MODULE);
         printf("Initialisation of battery pack %d complete\n", p);
         packs[p].set_battery(this);
     }
+
+    // Set up DRIVE_INHIBIT output
+    gpio_init(DRIVE_INHIBIT_PIN);
+    gpio_set_dir(DRIVE_INHIBIT_PIN, GPIO_OUT);
+    disable_inhibit_drive();
+
+    // Set up heater control
+    gpio_init(HEATER_ENABLE_PIN);
+    gpio_set_dir(HEATER_ENABLE_PIN, GPIO_OUT);
     disable_heater();
+
+    // Set up CHARGE_INHIBIT ouput
+    gpio_init(CHARGE_INHIBIT_PIN);
+    gpio_set_dir(CHARGE_INHIBIT_PIN, GPIO_OUT);
+    disable_inhibit_charge();
+
 }
 
 int Battery::print () {
