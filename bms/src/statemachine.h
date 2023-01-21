@@ -23,6 +23,7 @@ enum Event {
     E_IGNITION_ON,         // Ignition was turned on
     E_IGNITION_OFF,        // Ignition was turned off
     E_CHARGING_INITIATED,  // charging has been initiated
+    E_CHARGING_TERMINATED, // charging has stopped
     E_EMERGENCY_SHUTDOWN,  //
 };
 

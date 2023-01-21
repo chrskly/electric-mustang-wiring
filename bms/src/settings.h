@@ -53,6 +53,14 @@ const int CS_PINS[1] = { 15, };
 const int INHIBIT_CONTACTOR_PINS[2] = { 2, 3 };    // Low-side switch to disallow closing of battery box contactors
 #define DRIVE_INHIBIT_PIN 6
 
+// Inputs
+#define IGNITION_ENABLE_PIN 10
+#define CHARGE_ENABLE_PIN 9
+#define IN_1_PIN 11
+#define IN_2_PIN 12
+#define IN_3_PIN 13
+#define IN_4_PIN 14
+
 #define SPI_PORT      spi0
 
 #define SPI_MISO        16 // pin 21

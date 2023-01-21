@@ -52,6 +52,7 @@ using namespace std;
 #include "statemachine.h"
 #include "comms.h"
 #include "led.h"
+#include "inputs.h"
 
 
 struct can_frame rx;
@@ -109,6 +110,12 @@ int main() {
 
     printf("Enabling status print\n");
     enable_status_print();
+
+    printf("Enable listen for IGNITION_ON signal\n");
+    enable_listen_for_ignition_signal();
+
+    printf("Enable listen for CHARGE_ENABLE signal\n");
+    enable_listen_for_charge_enable_signal();
 
     while(true) {
     }

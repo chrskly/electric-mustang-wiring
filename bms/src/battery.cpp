@@ -18,9 +18,11 @@
  */
 
 #include <stdio.h>
+#include <string>
 
 #include "battery.h"
 #include "pack.h"
+#include "statemachine.h"
 
 #include "settings.h"
 
@@ -67,11 +69,21 @@ void Battery::initialise () {
 }
 
 int Battery::print () {
+    extern State state;
+    printf("----------\n");
+    printf("BMS status : %s\n", state);
     for ( int p = 0; p < numPacks; p++ ) {
         packs[p].print();
     }
     return 0;
 }
+
+
+/*
+char[] Battery::get_state() {
+    return bmsState;
+}
+*/
 
 void Battery::request_data() {
     for ( int p = 0; p < numPacks; p++ ) {
@@ -175,6 +187,9 @@ void Battery::update_lowest_cell_voltage() {
 
 // Return true if any cell in the battery is below the minimum voltage level
 bool Battery::has_empty_cell() {
+    // override while testing with partial pack
+    return false;
+
     for ( int p = 0; p < numPacks; p++ ) {
         if ( packs[p].has_empty_cell() ) {
             return true;

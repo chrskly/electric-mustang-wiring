@@ -31,6 +31,7 @@ add_executable(bms
         led.cpp
         CRC8.h
         CRC8.cpp
+        inputs.cpp
         )
 
 #add_executable(module-test

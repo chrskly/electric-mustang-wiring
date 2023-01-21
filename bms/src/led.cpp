@@ -32,7 +32,7 @@ void StatusLight::led_set_mode(LED_MODE newMode) {
         case STANDBY:
             printf("Switch status light to mode STANDBY\n");
             LEDonDuration = 1;
-            LEDoffDuration = 29;
+            LEDoffDuration = 39;
             break;
         case DRIVE:
             printf("Switch status light to mode DRIVE\n");
