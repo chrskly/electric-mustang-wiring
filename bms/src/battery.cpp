@@ -70,11 +70,12 @@ void Battery::initialise () {
 
 int Battery::print () {
     extern State state;
-    printf("----------\n");
+    printf("--------------------------------------------------------------------------------\n");
     printf("BMS status : %s\n", state);
     for ( int p = 0; p < numPacks; p++ ) {
         packs[p].print();
     }
+    printf("--------------------------------------------------------------------------------\n");
     return 0;
 }
 
