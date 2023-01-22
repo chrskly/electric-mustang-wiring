@@ -34,3 +34,6 @@ voicebox/src/voicebox.elf
 voicebox/src/voicebox.elf.map
 voicebox/src/voicebox.hex
 voicebox/src/voicebox.uf2
+
+# bms
+bms/src/pico_extras_import.cmake
