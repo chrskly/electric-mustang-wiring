@@ -63,7 +63,7 @@ BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorInhibitPin, int _
     lastUpdate = get_absolute_time();
 
     voltage = 0.0000f;
-    cellDelta = 0.0000f;
+    cellDelta = 0;
     contactorsAreInhibited = false;
 
     // Set up contactor control.
@@ -85,18 +85,7 @@ BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorInhibitPin, int _
 }
 
 void BatteryPack::print() {
-    printf("--------------------------------------------------------------------------------\n");
-    printf("Pack ID                   : %d\n", id);
-    printf("Pack voltage              : %3.2fV\n", voltage);
-    printf("Cell delta                : %3.3fV\n", cellDelta);
-    printf("Pack contactors inhibited : %d\n", contactorsAreInhibited);
-    printf("Error status              : %d\n", errorStatus);
-    printf("Balance status            : %d\n", balanceStatus);
-    printf("Modules                   :\n");
-    for ( int m = 0; m < numModules; m++ ) {
-        modules[m].print();
-    }
-    printf("--------------------------------------------------------------------------------\n");
+    printf("Pack %d : %3.2fV : %dmV\n", id, voltage, cellDelta);
 }
 
 
@@ -305,7 +294,7 @@ float BatteryPack::get_highest_cell_voltage() {
 
 // Calculate largest voltage difference between cells in the pack and store result
 void BatteryPack::update_cell_delta() {
-    cellDelta = get_highest_cell_voltage() - get_lowest_cell_voltage();
+    cellDelta = (get_highest_cell_voltage() - get_lowest_cell_voltage()) * 1000.0;
 }
 
 // Return true if any cell in the pack is over max voltage

@@ -49,6 +49,7 @@ void state_standby(Event event) {
                 battery.enable_inhibit_drive();
                 battery.enable_inhibit_charge();
                 printf("Switching to state : fault, reason : battery too hot\n");
+                statusLight.led_set_mode(FAULT);
                 state = state_fault;
                 break;
             }
@@ -58,6 +59,7 @@ void state_standby(Event event) {
             if ( battery.has_empty_cell() ) {
                 battery.enable_inhibit_drive();
                 printf("Switching to state : batteryEmpty\n");
+                statusLight.led_set_mode(FAULT);
                 state = state_batteryEmpty;
                 break;
             }
@@ -287,15 +289,18 @@ void state_charging(Event event) {
             break;
 
         case E_CHARGING_TERMINATED:
+            // In case we were in the process of heating the battery
             battery.disable_heater();
             battery.disable_inhibit_charge();
+
             battery.disable_inhibit_drive();
 
-            /* Did we start charging with an empty battery, but not cancel
-             * before putting any energy into the battery?
+            /* Did we start charging with an empty battery, but cancel the
+             * charge before actually putting any energy into the battery?
              */
             if ( battery.has_empty_cell() ) {
-                printf("Switching to state : batteryEmpty, reason : battery still empty\n");
+                battery.enable_inhibit_drive();
+                printf("Switching to state : batteryEmpty, reason : charge terminated but battery still empty\n");
                 statusLight.led_set_mode(FAULT);
                 state = state_batteryEmpty;
                 break;
@@ -357,20 +362,17 @@ void state_batteryEmpty(Event event) {
                 // allow driving again
                 battery.disable_inhibit_drive();
 
-                //
+                // If ignition is already enabled, switch directly to drive mode.
                 if ( battery.ignition_is_on() ) {
-                    //
                     if ( battery.one_or_more_contactors_inhibited() ) {
                         battery.disable_inhibit_for_drive();
                     }
                     printf("Switching to state : drive, reason : ignition turned on\n");
                     statusLight.led_set_mode(DRIVE);
                     state = state_drive;
-
-
-                } else if ( battery.charge_enable_is_on() ) {
-                    //
+                    break;
                 }
+
                 printf("Switching to state : standby, reason : battery level rose\n");
                 statusLight.led_set_mode(STANDBY);
                 state = state_standby;
@@ -434,9 +436,12 @@ void state_fault(Event event) {
             /* Temperature has dropped below max limit. We need to figure out
              * which state to switch to based on the input signals
              */
-            if ( ! battery.has_temperature_sensor_over_max() && ! battery.packs_are_imbalanced() ) {
+            if ( ! battery.has_temperature_sensor_over_max() ) {
                 // Charge mode overrides drive mode
                 if ( battery.charge_enable_is_on() ) {
+                    if ( battery.packs_are_imbalanced() ) {
+                        battery.disable_inhibit_for_charge();
+                    }
                     battery.disable_inhibit_charge();
                     printf("Switching to state : charging, reason : battery has cooled\n");
                     statusLight.led_set_mode(CHARGING);
@@ -445,6 +450,9 @@ void state_fault(Event event) {
                 }
                 // Drive mode
                 if ( battery.ignition_is_on() ) {
+                    if ( battery.packs_are_imbalanced() ) {
+                        battery.disable_inhibit_for_drive();
+                    }
                     battery.disable_inhibit_charge();
                     battery.disable_inhibit_drive();
                     printf("Switching to state : drive, reason : battery has cooled\n");

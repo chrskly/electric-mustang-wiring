@@ -97,7 +97,7 @@ class BatteryPack {
         int numTemperatureSensorsPerModule;              //
         Battery* battery;                                // The parent Battery that contains this BatteryPack
         float voltage;                                   // Voltage of the total pack
-        float cellDelta;                                 // Difference in voltage between high and low cell
+        int cellDelta;                                   // Difference in voltage between high and low cell, in mV
 
         // contactors
         int contactorInhibitPin;                         // Pin on the pico which controls contactors for this pack
