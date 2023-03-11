@@ -39,3 +39,22 @@ cables:
     gauge: 1 mm2
     wirecount: 3
     colors: [ RD, YE, OG]
+
+  # Supply to brake and signal from brake
+  D07:
+    gauge: 1 mm2
+    wirecount: 2
+    colors: [ RD, PK ]
+
+  # Cruise button
+  D08:
+    gauge: 0.5 mm2
+    wirecount: 2
+    colors: [ YE, GN ]
+
+  # 12v-front => inverter
+  D09:
+    gauge: 0.5 mm2
+    wirecount: 2
+    colors: [ YE, GN ]
+

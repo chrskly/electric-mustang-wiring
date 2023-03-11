@@ -106,39 +106,35 @@ connectors:
   # BMS
   #
 
-  BMS_J1:
-    type: unknown
-    subtype: male
+  BMS_X1_A:
     pinlabels:
-      - 12V
-      - GND
-
-  BMS_J2:
-    pinlabels:
-      - MAIN_CAN_H
-      - MAIN_CAN_L
-
-  BMS_J3:
-    pinlabels:
-      - BATT1_CAN_H
-      - BATT1_CAN_L
-
-  BMS_J4:
-    pinlabels:
-      - BATT2_CAN_H
-      - BATT2_CAN_L
-
-  BMS_J5:
-    pinlabels:
-      - IGNITION_ON_IN
+      - IN_3
+      - IN_1
       - CHARGE_ENABLE_IN
-
-  # low side switches. Can turn off contactors when in charge mode (but not in drive mode).
-  # => front-12v
-  BMS_J6:
-    pinlabels:
+      - OUT_3
+      - OUT_1
       - BATT2_INHIBIT
       - BATT1_INHIBIT
+      - OUT_2
+      - OUT_4
+      - IGNITION_ON_IN
+      - IN_2
+      - IN_4
+
+  BMS_X1_B:
+    pinlabels:
+      - BATT2_CAN_H
+      - BATT1_CAN_H
+      - MAIN_CAN_H
+      - GND
+      - 12V
+      - GND2
+      - 5V
+      - 5V
+      - GND3
+      - MAIN_CAN_L
+      - BATT1_CAN_L
+      - BATT2_CAN_L
 
   #
   # 12v-front
@@ -219,7 +215,5 @@ connectors:
       - GND
       - IGNITION_12V
       - CHARGER_ON_SIGNAL
-
-  
 
   

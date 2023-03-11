@@ -62,7 +62,7 @@ cables:
 
   # BMS power from 12v-rear
   Z12:
-    gauge: 1 mm2
+    gauge: 0.5 mm2
     wirecount: 2
     colors: [ RD, BK ]
 
@@ -99,8 +99,15 @@ cables:
 
   Z19:
     gauge: 70 mm2
+    wirecount: 2
+    colors: [ OG, OG ]
+
+
+  # 12v-front => inverter (2)
+  Z21:
+    gauge: 0.5 mm2
     wirecount: 1
-    colors: [ OG ]
+    colors: [ PK ]
 
 
 

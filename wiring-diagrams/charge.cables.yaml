@@ -161,34 +161,20 @@ cables:
 
   X30:
     gauge: 1 mm2
-    wirecount: 1
-    colors: [ BK ]
+    wirecount: 4
+    colors: [ PK, YE, GN, BU ]
 
-  X31:
+  X34:
     gauge: 1 mm2
     wirecount: 1
     colors: [ BK ]
 
-  X32:
-    gauge: 1 mm2
-    wirecount: 1
-    colors: [ RD ]
-
-  X33:
-    gauge: 1 mm2
-    wirecount: 1
-    colors: [ RD ]
-
-
-  Z20:
+  X35:
     gauge: 70 mm2
     wirecount: 2
     colors: [ OG, OG ]
 
 
-  Z21:
-    gauge: 1 mm2
-    wirecount: 1
-    colors: [ BK ]
+  
 
 

@@ -58,13 +58,6 @@ connections:
     - HVJB:
       - CONTACTORS_12V
 
-  #
-  #-
-  #  - PRECHARGE_CONTACTOR:
-  #    - HV_A
-  #  - Z
-  #  - HVJB:
-  #    - 
 
   # 12v-front <=> 12v-rear, ignition and charge_enable signals
   -
@@ -105,14 +98,15 @@ connections:
       - HV_B
 
   # bms,  battery inhibit signals => 12v-front
-  -
-    - BMS_J6:
+  - 
+    - BMS_X1_A:
       - BATT2_INHIBIT
     - Z09: [ 1 ]
     - 12V_FRONT_J8:
       - REAR_BATTERY_INHIBIT
+
   -
-    - BMS_J6:
+    - BMS_X1_A:
       - BATT1_INHIBIT
     - Z09: [ 2 ]
     - 12V_FRONT_J9:
@@ -120,7 +114,7 @@ connections:
 
   # bms can => battery can
   -
-    - BMS_J3:
+    - BMS_X1_B:
       - BATT1_CAN_H
       - BATT1_CAN_L
     - Z10: [ 1, 2 ]
@@ -129,7 +123,7 @@ connections:
       - CAN_L
 
   -
-    - BMS_J4:
+    - BMS_X1_B:
       - BATT2_CAN_H
       - BATT2_CAN_L
     - Z11: [ 1, 2 ]
@@ -139,7 +133,7 @@ connections:
 
   # BMS power
   -
-    - BMS_J1:
+    - BMS_X1_B:
       - 12V
       - GND
     - Z12: [ 1, 2 ]
@@ -154,7 +148,7 @@ connections:
       - IGNITION_12V
       - CHARGER_ON_SIGNAL
     - Z13: [ 1, 2 ]
-    - BMS_J5:
+    - BMS_X1_A:
       - IGNITION_ON_IN
       - CHARGE_ENABLE_IN
 
@@ -209,19 +203,13 @@ connections:
 
   -
     - PRECHARGE_CONTACTOR:
+      - HV_A
       - HV_B
-    - Z19: [ 1 ]
+    - Z19: [ 1, 2 ]
     - MAIN_CONTACTOR:
+      - HV_A
       - HV_B
 
-
-
-
-
-
-
-
-
-
+  
 
 

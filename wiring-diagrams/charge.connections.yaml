@@ -240,22 +240,6 @@ connections:
     - CCS_NEG_CONTACTOR:
       - HV_A
 
-
-  # CCS HVJB DC HV => HVJB
-  #-
-  #  - CCS_POS_CONTACTOR:
-  #    - HV_B
-  #  - X17: [ 1 ]
-  #  - HVJB:
-  #    - CHARGE_CONT_HV_POS
-
-  #-
-  #  - CCS_NEG_CONTACTOR:
-  #    - HV_B
-  #  - X17: [ 2 ]
-  #  - HVJB:
-  #    - CHARGE_CONT_HV_NEG
-
   # CHADEMO charge port => HVJB
   -
     - CHADEMO_CHARGE_PORT:
@@ -385,49 +369,39 @@ connections:
   -
     - HVJB:
       - GND
-    - X30: [ 1 ]
-    - CHARGE_CONTACTOR_POS:
-      - GND
-
-  -
-    - HVJB:
-      - GND
-    - X31: [ 1 ]
-    - CHARGE_CONTACTOR_NEG:
-      - GND
-
-  -
-    - HVJB:
       - CHARGE_CONTACTORS_12V
-    - X32: [ 1 ]
+    - X30: [ 1, 2 ]
     - CHARGE_CONTACTOR_POS:
+      - GND
       - 12V
 
   -
     - HVJB:
+      - GND
       - CHARGE_CONTACTORS_12V
-    - X33: [ 1 ]
+    - X30: [ 3, 4 ]
     - CHARGE_CONTACTOR_NEG:
+      - GND
       - 12V
 
   -
     - CHARGE_CONTACTOR_POS:
       - HV_B
-    - Z20: [ 1 ]
+    - X35: [ 1 ]
     - MAIN_CONTACTOR:
       - HV_A
 
   -
     - CHARGE_CONTACTOR_NEG:
       - HV_B
-    - Z20: [ 2 ]
+    - X35: [ 2 ]
     - ISA_SHUNT:
       - HV_A
 
   -
     - TESLA_CHARGER_B:
       - B7_GND
-    - Z21: [ 1 ]
+    - X34: [ 1 ]
     - CCS_HVJB:
       - GND
 

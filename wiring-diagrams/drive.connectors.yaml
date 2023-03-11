@@ -36,6 +36,18 @@ connectors:
       - NEUTRAL # 7
       - DRIVE   # 8
 
+  # brake pedal
+  BRAKE_PEDAL:
+    pinlabels:
+      - 12V
+      - BRAKE_SIGNAL
+
+  # cruise button
+  CRUISE_BUTTON:
+    pinlabels:
+      - CRUISE_SEND
+      - CRUISE_RETURN
+
   # 12v-front => inverter 
   12V_FRONT_J2:
     type: Molex MegaFit
@@ -46,13 +58,15 @@ connectors:
       - INVERTER_FWD
       - INVERTER_GND
 
-  # 12v-front => ignition switch
+  # 12v-front => ignition switch + cruise button
   12V_FRONT_J5:
     type: Molex MegaFit
     subtype: male
     pinlabels:
       - IGNITION_SWITCH_A
       - IGNITION_SWITCH_B
+      - CRUISE_BUTTON_SEND
+      - CRUISE_BUTTON_RETURN
 
   # 12V-front => shifter
   12V_FRONT_J6:
@@ -64,4 +78,18 @@ connectors:
       - SHIFTER_12V
       - SHIFTER_REV
 
+  # 12v-front => brake pedal
+  12V_FRONT_J10:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - BRAKE_SWITCH_SEND
+      - BRAKE_SWITCH_RETURN
 
+  # 12v-front => inverter (2)
+  12V_FRONT_J11:
+    type: Molex MegaFit
+    subtype: male
+    pinlabels:
+      - INVERTER_BRAKE
+      - INVERTER_CRUISE
