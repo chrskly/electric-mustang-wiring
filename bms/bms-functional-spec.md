@@ -1,12 +1,16 @@
 # Functional Spec for BMS
 
-Battery pack will be made up of two BMW PHEV battery packs.
+## Overview
 
-BMS will always be on.
+The BMS is always on.
 
-BMS will be able to enable/disable HV for each pack separately via contactors.
+The battery is made up of two BMW PHEV battery packs.
 
-BMS will have states of : standby, drive, and charge.
+Each battery pack has a positive and negative contactor which are controlled by either the ignition key or the charger.
+
+The BMS is able to inhibit the closing of the contactors in each battery pack individually. It only does this when the contactors are already open.
+
+The car will also have precharge and main contactors in the HVJB. These will be controlled by the inverter.
 
 ## State machine
 
@@ -14,10 +18,8 @@ BMS will have states of : standby, drive, and charge.
 * standby
 * drive
 * charging
-* overTempFault
-* overVoltageFault
-* underVoltageFault
-* unknownFault
+* batteryEmpty
+* fault
 
 ### Events
 * E_TEMPERATURE_UPDATE  - the readings from the battery temperature sensors have
@@ -27,6 +29,7 @@ BMS will have states of : standby, drive, and charge.
 * E_IGNITION_ON         - the ignition has been turned on.
 * E_IGNITION_OFF        - the ignition has been turned off.
 * E_CHARGING_INITIATED  - charging has been initiated.
+* E_CHARGING_TERMINATED - charging has been stopped.
 * E_EMERGENCY_SHUTDOWN  - some bad has happened. Shut down as soon as possible.
 
 ## Functionality
@@ -89,11 +92,13 @@ BMS will have states of : standby, drive, and charge.
 
 - [ ] Fetch SoC from shunt and store in memory
 - [ ] Broadcast BMS mode
-- [ ] CHARGE_ENABLE input
-- [ ] IGNITION_ON input
+- [x] CHARGE_ENABLE input
+- [x] IGNITION_ON input
 - [ ] DRIVE_INHIBIT output
 - [ ] Use other core for comms?
 - [ ] Implement balancing
+- [ ] Implement watchdog
+- [ ] On startup, properly detect the state we should start in and immediately switch to that state
 
 ## Credits
 
