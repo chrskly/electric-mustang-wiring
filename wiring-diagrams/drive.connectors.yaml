@@ -63,8 +63,8 @@ connectors:
     type: Molex MegaFit
     subtype: male
     pinlabels:
-      - IGNITION_SWITCH_A
       - IGNITION_SWITCH_B
+      - IGNITION_SWITCH_A
       - CRUISE_BUTTON_SEND
       - CRUISE_BUTTON_RETURN
 
@@ -86,10 +86,4 @@ connectors:
       - BRAKE_SWITCH_SEND
       - BRAKE_SWITCH_RETURN
 
-  # 12v-front => inverter (2)
-  12V_FRONT_J11:
-    type: Molex MegaFit
-    subtype: male
-    pinlabels:
-      - INVERTER_BRAKE
-      - INVERTER_CRUISE
+

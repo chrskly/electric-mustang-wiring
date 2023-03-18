@@ -274,14 +274,6 @@ connections:
       - 12V
       - GND
 
-  # 12v-rear => enable charge contactors
-  -
-    - 12V_REAR_J1:
-      - CHARGE_CONTACTORS_12V
-    - X21: [ 1 ]
-    - HVJB:
-      - CHARGE_CONTACTORS_12V
-
   # LIM GND
   -
     - CCS_HVJB:
@@ -309,14 +301,6 @@ connections:
     - LIM_1B:
       - PT_CAN_H
       - PT_CAN_L
-
-  # CCS charge controller, main CAN
-  #-
-  #  - CCS_CONTROLLER_J3:
-  #    - MAIN_CAN_H
-  #    - MAIN_CAN_L
-  #  - X25: [ 1, 2 ]
-  #  - ??
 
   # CCS charge conrtoller, Tesla CAN
   -

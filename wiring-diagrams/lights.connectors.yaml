@@ -1,42 +1,93 @@
 
 connectors:
 
-  12V_LIGHTING_J03:
+  12V_LIGHTING_J1:
+    pinlabels:
+      - GND
+      - 12V
+
+  12V_LIGHTING_J2:
+    pinlabels:
+      - BRAKE_SIGNAL_IN
+      - IGNITION_ON_IN
+
+  12V_LIGHTING_J3:
     pinlabels:
       - LH_HEADLIGHT
-      - LH_FRONT_INDICATOR
       - LH_HIGHBEAM
+      - NONE
       - LH_GND
 
-  12V_LIGHTING_J04:
+  12V_LIGHTING_J4:
     pinlabels:
       - RH_HEADLIGHT
-      - RH_FRONT_INDICATOR
       - RH_HIGHBEAM
       - RH_GND
+      - NONE
 
+  12V_LIGHTING_J5:
+    pinlabels:
+      - FLASHER_A
+      - FLASHER_B
+
+  12V_LIGHTING_J6:
+    pinlabels:
+      - LH_REAR_INDICATOR
+      - RH_REAR_INDICATOR
+      - TAIL_LIGHT
+      - BRAKE_LIGHT
+
+  12V_LIGHTING_J7:
+    pinlabels:
+      - LH_INDICATOR_SWITCH_RETURN
+      - RH_INDICATOR_SWITCH_RETURN
+      - HAZARD_SWITCH_RETURN
+      - HEADLIGHT_SWITCH_SEND
+
+  12V_LIGHTING_J8:
+    pinlabels:
+      - HIGHBEAM_SWITCH_RETURN
+      - HEADLIGHT_SWITCH_RETURN
+      - HIGHBEAM_SWITCH_SEND
+      - HEADLIGHT_SWITCH_SEND
+
+  12V_LIGHTING_J9:
+    pinlabels:
+      - GND
+      - DASH_HIGHBEAM_INDICATOR
+      - NONE
+      - DASH_INDICATOR_INDICATOR
+
+  12V_LIGHTING_J10:
+    pinlabels:
+      - LH_FRONT_INDICATOR
+      - RH_FRONT_INDICATOR
+
+  12V_LIGHTING_J11:
+    pinlabels:
+      - CABIN_LIGHT
+      - CABIN_LIGHT_SWITCH_SEND
+      - CABIN_LIGHT_SWITCH_RETURN
+      - NONE
 
   # front
 
   LH_HEADLIGHT:
     pinlabels:
-      - 12V
+      - HEADLIGHT
+      - HIGHBEAM
       - GND
 
   RH_HEADLIGHT:
     pinlabels:
-      - 12V
+      - HEADLIGHT
+      - HIGHBEAM
       - GND
 
-  LH_HIGHBEAM:
+  FLASHER:
     pinlabels:
-      - 12V
-      - GND
-
-  RH_HIGHBEAM:
-    pinlabels:
-      - 12V
-      - GND
+      - SEND
+      - RETURN
 
   LH_FRONT_INDICATOR:
     pinlabels:
@@ -54,11 +105,17 @@ connectors:
     pinlabels:
       - 12V
       - GND
+      - FLASH
+      - BRAKE
+      - LIGHTS
 
   RH_REAR_INDICATOR:
     pinlabels:
       - 12V
-      - GND  
+      - GND
+      - FLASH
+      - BRAKE
+      - LIGHTS
 
   REVERSE_LIGHT:
     pinlabels:
@@ -71,6 +128,37 @@ connectors:
       - GND
 
 
+  HEADLIGHT_SWITCH:
+    pinlabels:
+      - IN
+      - OUT
 
+  HIGHBEAM_SWITCH:
+    pinlabels:
+      - IN
+      - OUT
+
+  INDICATOR_SWITCH:
+    pinlabels:
+      - IN
+      - LH_OUT
+      - RH_OUT
+
+  FLASHER_SWITCH:
+    pinlabels:
+      - IN
+      - OUT
+
+  DASH:
+    pinlabels:
+      - INDICATOR_LIGHT
+      - HIGHBEAM_LIGHT
+      - GND
+
+  CABIN:
+    pinlabels:
+      - CABIN_LIGHT
+      - CABIN_LIGHT_SWITCH_SEND
+      - CABIN_LIGHT_SWITCH_RETURN
 
 

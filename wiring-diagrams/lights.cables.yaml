@@ -1,15 +1,99 @@
 
 cables:
 
+
+  # 12V
   L01:
     gauge: 2.5 mm2
-    wirecount: 4
+    wirecount: 2
     colors: [ RD, BK ]
 
   L02:
+    gauge: 1 mm2
+    wirecount: 1
+    colors: [ GN ]
+
+  # Ignition on in
+  L03:
+    gauge: 0.5 mm2
+    wirecount: 1
+    colors: [ PK ]
+
+  # LH headlight
+  L04:
     gauge: 2.5 mm2
-    wirecount: 4
-    colors: [ RD, BK ]
+    wirecount: 3
+    colors: [ RD, OG, BK ]
+
+  # RH headlight
+  L05:
+    gauge: 2.5 mm2
+    wirecount: 3
+    colors: [ RD, OG, BK ]
+
+  # Flasher
+  L06:
+    gauge: 2.5 mm2
+    wirecount: 2
+    colors: [ BK, BK ]
+
+  # LH indicator
+  L07:
+    gauge: 2.5 mm2
+    wirecount: 1
+    colors: [ GN ]
+
+  # RH indicator
+  L08:
+    gauge: 2.5 mm2
+    wirecount: 3
+    colors: [ BU, RD, PK ]
+
+  # indicator switches returns
+  L09:
+    gauge: 2.5 mm2
+    wirecount: 2
+    colors: [ BU, RD ]
+
+  # 
+  L10:
+    gauge: 2.5 mm2
+    wirecount: 2
+    colors: [ BU, RD]
+
+  L11:
+    gauge: 2.5 mm2
+    wirecount: 2
+    colors: [ WH, GY ]
+
+  L12:
+    gauge: 0.5 mm2
+    wirecount: 3
+    colors: [ VT, PK, GN ]
+
+  # LH front indicator
+  L13:
+    gauge: 2.5 mm2
+    wirecount: 1
+    colors: [ RD ]
+
+  # RH front indicator
+  L14:
+    gauge: 2.5 mm2
+    wirecount: 1
+    colors: [ RD ]
+
+  # Cabin lights
+  L15:
+    gauge: 1 mm2
+    wirecount: 3
+    colors: [ WH, BN, YE ]
+
+  # hazard light switch
+  L16:
+    gauge: 0.5 mm2
+    wirecount: 2
+    colors: [ WH, BN ]
 
 
 

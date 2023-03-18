@@ -2,14 +2,17 @@
 connectors:
 
   #
-  # 12v-rear LV box
+  # 12v-front LV box
   #
 
-  # 12v-rear => enable charge contactors
-  12V_REAR_J1:
+  12V_FRONT_J12:
     type: Molex MegaFit
     pinlabels:
-      - CHARGE_CONTACTORS_12V
+      - CHG_CONTACTORS_12V
+
+  #
+  # 12v-rear LV box
+  #
 
   # 12v-rear => Tesla 12V supply
   12V_REAR_J2:

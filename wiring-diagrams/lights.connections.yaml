@@ -1,18 +1,166 @@
 
 connections:
 
+  # 12V battery feed in
   -
-    - 12V_LIGHTING_J03:
-      - LH_HEADLIGHT
-
-      - LH_GND
-    - LH_HEADLIGHT:
-      - 12V
+    - 12V_LIGHTING_J1:
       - GND
-    - L01: [ 1, 2 ]
-    - 
+      - 12V
+    - L01: [ 2, 1 ]
+    - 12VBATT:
+      - GND
+      - 12V
 
+  # Brake signal in
   -
-    - 12V_LIGHTING_J03:
-      - LH_FRONT_INDICATOR
+    - 12V_LIGHTING_J2:
+      - BRAKE_SIGNAL_IN
+    - L02: [ 1 ]
+    - 12V_FRONT_J11:
+      - BRAKE_SIGNAL
+
+  # Ignition signal in
+  -
+    - 12V_LIGHTING_J2:
+      - IGNITION_ON_IN
+    - L03: [ 1 ]
+    - 12V_FRONT_J4:
+      - IGNITION_12V
+
+  # LH headlight
+  - 
+    - 12V_LIGHTING_J3:
+      - LH_HEADLIGHT
       - LH_HIGHBEAM
+      - LH_GND
+    - L04: [ 1, 2, 3 ]
+    - LH_HEADLIGHT:
+      - HEADLIGHT
+      - HIGHBEAM
+      - GND
+
+  # RH headlight
+  - 
+    - 12V_LIGHTING_J4:
+      - RH_HEADLIGHT
+      - RH_HIGHBEAM
+      - RH_GND
+    - L05: [ 1, 2, 3 ]
+    - RH_HEADLIGHT:
+      - HEADLIGHT
+      - HIGHBEAM
+      - GND
+
+  # Flasher
+  -
+    - 12V_LIGHTING_J5:
+      - FLASHER_A
+      - FLASHER_B
+    - L06: [ 1, 2 ]
+    - FLASHER:
+      - SEND
+      - RETURN
+
+  # LH rear indicator
+  -
+    - 12V_LIGHTING_J6:
+      - LH_REAR_INDICATOR
+    - L07: [ 1 ]
+    - LH_REAR_INDICATOR:
+      - FLASH
+
+  # RH rear indicator
+  -
+    - 12V_LIGHTING_J6:
+      - RH_REAR_INDICATOR
+      - TAIL_LIGHT
+      - BRAKE_LIGHT
+    - L08: [ 1, 2, 3 ]
+    - RH_REAR_INDICATOR:
+      - FLASH
+      - LIGHTS
+      - BRAKE
+
+  # dash controls
+  -
+    - 12V_LIGHTING_J7:
+      - LH_INDICATOR_SWITCH_RETURN
+      - RH_INDICATOR_SWITCH_RETURN
+    - L09: [ 1, 2 ]
+    - INDICATOR_SWITCH:
+      - LH_OUT
+      - RH_OUT
+
+  # flasher switch
+  -
+    - 12V_LIGHTING_J7:
+      - HEADLIGHT_SWITCH_SEND
+      - HAZARD_SWITCH_RETURN
+    - L16: [ 1, 2 ]
+    - FLASHER_SWITCH:
+      - IN
+      - OUT
+
+  # highbeam foot switch
+  -
+    - 12V_LIGHTING_J8:
+      - HIGHBEAM_SWITCH_SEND
+      - HIGHBEAM_SWITCH_RETURN
+    - L10: [ 1, 2 ]
+    - HIGHBEAM_SWITCH:
+      - IN
+      - OUT
+
+  # headlight switch
+  -
+    - 12V_LIGHTING_J8:
+      - HEADLIGHT_SWITCH_SEND
+      - HEADLIGHT_SWITCH_RETURN
+    - L11: [ 1, 2 ]
+    - HEADLIGHT_SWITCH:
+      - IN
+      - OUT
+
+  # dashboard lights
+  -
+    - 12V_LIGHTING_J9:
+      - DASH_HIGHBEAM_INDICATOR
+      - DASH_INDICATOR_INDICATOR
+      - GND
+    - L12: [ 1, 2, 3 ]
+    - DASH:
+      - HIGHBEAM_LIGHT
+      - INDICATOR_LIGHT
+      - GND
+
+  # LH front indicator
+  -
+    - 12V_LIGHTING_J10:
+      - LH_FRONT_INDICATOR
+    - L13: [ 1 ]
+    - LH_FRONT_INDICATOR:
+      - 12V
+
+  # RH front indicator
+  -
+    - 12V_LIGHTING_J10:
+      - RH_FRONT_INDICATOR
+    - L14: [ 1 ]
+    - RH_FRONT_INDICATOR:
+      - 12V
+
+  # Cabin lights
+  -
+    - 12V_LIGHTING_J11:
+      - CABIN_LIGHT
+      - CABIN_LIGHT_SWITCH_SEND
+      - CABIN_LIGHT_SWITCH_RETURN
+    - L15: [ 1, 2, 3 ]
+    - CABIN:
+      - CABIN_LIGHT
+      - CABIN_LIGHT_SWITCH_SEND
+      - CABIN_LIGHT_SWITCH_RETURN
+
+
+
+

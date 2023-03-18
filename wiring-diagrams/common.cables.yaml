@@ -1,16 +1,19 @@
 
 cables:
 
-  # 12V supply to battery boxes
+  # rear battery enable
   Z01:
-    gauge: 1 mm2
-    wirecount: 2
-    colors: [ RD, BK ]
+    gauge: 0.5 mm2
+    wirecount: 1
+    colors: [ VT ]
+    length: 2
 
+  # front battery enable
   Z02:
-    gauge: 1 mm2
-    wirecount: 2
-    colors: [ RD, BK ]
+    gauge: 0.5 mm2
+    wirecount: 1
+    colors: [ VT ]
+    length: 1
 
   # 12v-front <=> 12V batt
   Z03:
@@ -42,11 +45,7 @@ cables:
     wirecount: 2
     colors: [ OG, OG ]
 
-  # bms battery inhibit signals => 12v-front
-  Z09:
-    gauge: 1 mm2
-    wirecount: 2
-    colors: [ PK, VT ]
+
 
   # bms CAN to battery
   Z10:
@@ -102,13 +101,15 @@ cables:
     wirecount: 2
     colors: [ OG, OG ]
 
+  Z20:
+    gauge: 0.5 mm2
+    wirecount: 1
+    colors: [ BU ]
 
-  # 12v-front => inverter (2)
   Z21:
     gauge: 0.5 mm2
     wirecount: 1
-    colors: [ PK ]
-
+    colors: [ BU ]
 
 
 

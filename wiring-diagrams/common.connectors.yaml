@@ -155,7 +155,7 @@ connectors:
     pinlabels:
       - CHARGER_ENABLE_IN
       - IGNITION_ENABLE_OUT
-      - NONE
+      - REVERSE_SIGNAL
       - NONE
 
   # 12v-front => hvjb
@@ -163,8 +163,8 @@ connectors:
     type: Molex MegaFit
     subtype: male
     pinlabels:
-      - ISA_SHUNT_12V
       - IGNITION_12V
+      - ISA_SHUNT_12V
       - HVJB_GND
       - CONTACTORS_12V
 
@@ -176,25 +176,27 @@ connectors:
       - COOLANT_GND
       - COOLANT_12V
 
-  # 12v-front => rear battery box
-  12V_FRONT_J8:
+  # 12v-front => inverter (2)
+  12V_FRONT_J11:
     type: Molex MegaFit
     subtype: male
     pinlabels:
-      - REAR_BATTERY_INHIBIT
-      - NONE
-      - REAR_BATTERY_12V
-      - GND
+      - BRAKE_SIGNAL
+      - INVERTER_CRUISE
 
-  # 12v-front => front battery box
-  12V_FRONT_J9:
+  # 12v-front => rear battery
+  12V_FRONT_J14:
     type: Molex MegaFit
-    subtype: male
     pinlabels:
+      - REAR_BATTERY_ENABLE
+      - REAR_BATTERY_INHIBIT
+
+  # 12v-front => front battery
+  12V_FRONT_J15:
+    type: Molex MegaFit
+    pinlabels:
+      - FRONT_BATTERY_ENABLE
       - FRONT_BATTERY_INHIBIT
-      - NONE
-      - FRONT_BATTERY_12V
-      - GND
 
   #
   # 12v-rear
@@ -215,5 +217,7 @@ connectors:
       - GND
       - IGNITION_12V
       - CHARGER_ON_SIGNAL
+
+
 
   

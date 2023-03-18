@@ -61,7 +61,7 @@ connections:
 
   -
     - 12V_FRONT_J11:
-      - INVERTER_BRAKE
+      - BRAKE_SIGNAL
       - INVERTER_CRUISE
     - D09: [ 1, 2 ]
     - AMPSEAL_35_1:

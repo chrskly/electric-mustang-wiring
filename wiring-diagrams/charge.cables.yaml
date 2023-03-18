@@ -53,7 +53,7 @@ cables:
   X10:
     gauge: 2.5 mm2
     wirecount: 3
-    colors: [ OG, OG, OG ]
+    colors: [ BU, BU, BU ]
 
   # MCBs => tesla
   X11:
@@ -83,7 +83,7 @@ cables:
   X15:
     gauge: 1 mm2
     wirecount: 2
-    colors: [ OG, PK ]
+    colors: [ VT, PK ]
 
   # CCS charge port HV => CCS HVJB
   X16:
@@ -109,12 +109,6 @@ cables:
     gauge: 6 mm2
     wirecount: 2
     colors: [ RD, BK ]
-
-  # 12v-rear => enable charge contactors
-  X21:
-    gauge: 1 mm2
-    wirecount: 1
-    colors: [ PK ]
 
   # LIM GND
   X22:

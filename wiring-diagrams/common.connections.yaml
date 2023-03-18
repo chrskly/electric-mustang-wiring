@@ -1,30 +1,21 @@
 
 connections:
 
-  # Battery box 12V supply (contactors)
-  -
-    - 12V_FRONT_J8:
-      - REAR_BATTERY_12V
-      - GND
-    - Z01: [ 1, 2 ]
-    - REAR_BATTERY_BOX:
-      - BATTERY_ENABLE
-      - GND
-
-  -
-    - 12V_FRONT_J9:
-      - FRONT_BATTERY_12V
-      - GND
-    - Z02: [ 1, 2 ]
-    - FRONT_BATTERY_BOX:
-      - BATTERY_ENABLE
-      - GND
-
   # 12v-front battery power
   -
     - 12VBATT: [ 1, 2 ]
     - Z03: [ 1, 2 ]
     - 12V_FRONT_J1: [ 2, 1 ]
+
+  # 12v-front <=> 12v-rear, ignition and charge_enable signals
+  -
+    - 12V_FRONT_J3:
+      - CHARGER_ENABLE_IN
+      - IGNITION_ENABLE_OUT
+    - Z06: [ 1, 2 ]
+    - 12V_REAR_J10:
+      - CHARGER_ON_SIGNAL
+      - IGNITION_12V
 
   # 12V supply to shunt
   -
@@ -58,16 +49,21 @@ connections:
     - HVJB:
       - CONTACTORS_12V
 
-
-  # 12v-front <=> 12v-rear, ignition and charge_enable signals
+  # rear battery enable
   -
-    - 12V_FRONT_J3:
-      - CHARGER_ENABLE_IN
-      - IGNITION_ENABLE_OUT
-    - Z06: [ 1, 2 ]
-    - 12V_REAR_J10:
-      - CHARGER_ON_SIGNAL
-      - IGNITION_12V
+    - 12V_FRONT_J14:
+      - REAR_BATTERY_ENABLE
+    - Z01: [ 1 ]
+    - REAR_BATTERY_BOX:
+      - BATTERY_ENABLE
+
+  # front battery enable
+  -
+    - 12V_FRONT_J15:
+      - FRONT_BATTERY_ENABLE
+    - Z02: [ 1 ]
+    - FRONT_BATTERY_BOX:
+      - BATTERY_ENABLE
 
   # Battery boxes to HVJB
   -
@@ -96,21 +92,6 @@ connections:
     - Z08: [ 2 ]
     - ISA_SHUNT:
       - HV_B
-
-  # bms,  battery inhibit signals => 12v-front
-  - 
-    - BMS_X1_A:
-      - BATT2_INHIBIT
-    - Z09: [ 1 ]
-    - 12V_FRONT_J8:
-      - REAR_BATTERY_INHIBIT
-
-  -
-    - BMS_X1_A:
-      - BATT1_INHIBIT
-    - Z09: [ 2 ]
-    - 12V_FRONT_J9:
-      - FRONT_BATTERY_INHIBIT
 
   # bms can => battery can
   -
@@ -141,6 +122,19 @@ connections:
       - BMS_12V
       - BMS_GND
 
+  # BMS inhibit
+  -
+    - 12V_FRONT_J14:
+      - REAR_BATTERY_INHIBIT
+    - Z20: [ 1 ]
+    - BMS_X1_A:
+      - BATT1_INHIBIT
+  -
+    - 12V_FRONT_J15:
+      - FRONT_BATTERY_INHIBIT
+    - Z21: [ 1 ]
+    - BMS_X1_A:
+      - BATT2_INHIBIT
 
   # ignition on, charge on signals from 12v-rear to bms
   -
