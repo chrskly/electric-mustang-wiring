@@ -1,5 +1,5 @@
 /*
- * This file is part of the ev mustang bms project.
+ * This file is part of the ev mustang charge controller project.
  *
  * Copyright (C) 2022 Christian Kelly <chrskly@chrskly.com>
  *
@@ -16,4 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include <stdio.h>
+
+using namespace std;
+
+bool battery_over_voltage() {
+    //
+    return false;
+}
+
+bool battery_under_voltage() {
+    //
+    return false;
+}
+
+bool battery_voltage_deviation_error() {
+    //
+    return false;
+}
+
+bool battery_current_deviation_error() {
+    //
+    return false;
+}
 

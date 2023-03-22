@@ -36,5 +36,8 @@
 #define CHADEMO_OUT1_PIN 99
 #define CHADEMO_OUT2_PIN 99
 
+// Messages from EVSE
+#define EVSE_CAPABILITIES_MESSAGE_ID 0x108
+#define EVSE_STATUS_MESSAGE_ID 0x109
 
 #endif

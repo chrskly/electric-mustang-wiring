@@ -1,5 +1,5 @@
 /*
- * This file is part of the ev mustang bms project.
+ * This file is part of the ev mustang charge controller project.
  *
  * Copyright (C) 2022 Christian Kelly <chrskly@chrskly.com>
  *
@@ -25,8 +25,31 @@ class Chademo {
     private:
         ChademoState* state;
 
+        uint8_t controlProtocolNumber;          // Chademo protocol version
+
+        // control signals
+        bool chargingEnabled;                   //
+        bool chargingStopRequest;               //
+        bool chargingSystemFault;               //
+
+        // error conditions
+        bool highBatteryTemperature;            //
+
+        // charging params
+        uint8_t chargingCurrentRequest;         //
+        uint8_t chargingRateIndication;         //
+        uint8_t maximumChargingTimeSeconds;     //
+        uint8_t maximumChargingTimeMinutes;     //
+        uint8_t estimatedChargingTimeRemaining; //
+        uint8_t chargingRate;                   //
+
     public:
         Chademo();
+
+        bool battery_over_voltage();
+        bool battery_under_voltage();
+        bool battery_voltage_deviation_error();
+        bool battery_current_deviation_error();
 }
 
 #endif
