@@ -17,25 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
 
-#include "ccsstatemachine.h"
+#ifndef LED_H
+#define LED_H
 
-using namespace std;
+enum LED_MODE {
+    STANDBY,
+    DRIVE,
+    CHARGING,
+    FAULT
+};
 
-void ccs_state_standby(CCSEvent event) {
-/*
-    switch (event) {
 
-        case E_TEMPERATURE_UPDATE:
-            //
+class StatusLight {
 
-        case E_CELL_VOLTAGE_UPDATE:
-            //
+    private:
+        bool LEDon;
+        int LEDcounter;
+        int LEDonDuration;
+        int LEDoffDuration;
 
-    }
-*/
-}
 
+    public:
+        void led_set_mode(LED_MODE newMode);
+        void led_blink();
+        bool process_led_blink_step();
+
+};
+
+
+
+void enable_led_blink();
+
+#endif
 
 

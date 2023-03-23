@@ -1,5 +1,5 @@
 /*
- * This file is part of the ev mustang bms project.
+ * This file is part of the ev mustang charge controller project.
  *
  * Copyright (C) 2022 Christian Kelly <chrskly@chrskly.com>
  *
@@ -17,25 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
-
-#include "ccsstatemachine.h"
-
-using namespace std;
-
-void ccs_state_standby(CCSEvent event) {
 /*
-    switch (event) {
+void ignition_on_callback(uint gpio, uint32_t events);
+void enable_listen_for_ignition_signal();
 
-        case E_TEMPERATURE_UPDATE:
-            //
-
-        case E_CELL_VOLTAGE_UPDATE:
-            //
-
-    }
+void charge_enable_callback(uint gpio, uint32_t events);
+void enable_listen_for_charge_enable_signal();
 */
-}
 
-
-
+void enable_listen_for_IN1_signal();
+void enable_listen_for_IN2_signal();

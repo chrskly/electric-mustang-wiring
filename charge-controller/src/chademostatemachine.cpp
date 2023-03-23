@@ -1,5 +1,5 @@
 /*
- * This file is part of the ev mustang bms project.
+ * This file is part of the ev mustang charge controller project.
  *
  * Copyright (C) 2022 Christian Kelly <chrskly@chrskly.com>
  *
@@ -28,7 +28,13 @@ using namespace std;
  *  - Vehicle unconnected
  */
 void chademo_state_A(ChademoEvent event) {
-    //
+    switch (event) {
+        case E_PLUG_INSERTED:
+            // start sending messages
+            break;
+        default:
+            printf("Received unknown event");
+    }
 }
 
 /*
@@ -53,7 +59,14 @@ void chademo_state_A(ChademoEvent event) {
  *  - Vehicle charging enabled
  */
 void chademo_state_B1(ChademoEvent event) {
-    //
+    switch (event) {
+        case E_EVSE_CAPABILITIES_UPDATED:
+            break;
+        case E_EVSE_STATUS_UPDATED:
+            break;
+        default:
+            printf("Received unknown event");
+    }
 }
 
 /*

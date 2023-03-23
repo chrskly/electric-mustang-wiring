@@ -28,6 +28,17 @@
 #define UART_TX_PIN      0 // pin 1
 #define UART_RX_PIN      1 // pin 2
 
+// SPI
+#define SPI_PORT      spi0
+#define SPI_MISO        16 // pin 21
+#define SPI_CLK         18 // pin 24
+#define SPI_MOSI        19 // pin 25
+#define CAN_CLK_PIN     21 // pin 27
+
+#define MAIN_CAN_CS     17
+#define CHADEMO_CAN_CS  15
+#define CCS_CAN_CS      20
+
 #define CHARGE_INHIBIT_PIN 99
 
 // Chademo pins

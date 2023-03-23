@@ -20,6 +20,9 @@
 #ifndef CCS_H
 #define CCS_H
 
+#include "ccsstatemachine.h"
+
+
 class CCS {
 
     private:
@@ -27,6 +30,6 @@ class CCS {
 
     public:
         CCS();
-}
+};
 
 #endif

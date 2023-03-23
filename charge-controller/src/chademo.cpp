@@ -19,24 +19,28 @@
 
 #include <stdio.h>
 
+#include "chademo.h"
+
 using namespace std;
 
-bool battery_over_voltage() {
+Chademo::Chademo() {}
+
+bool Chademo::battery_over_voltage() {
     //
     return false;
 }
 
-bool battery_under_voltage() {
+bool Chademo::battery_under_voltage() {
     //
     return false;
 }
 
-bool battery_voltage_deviation_error() {
+bool Chademo::battery_voltage_deviation_error() {
     //
     return false;
 }
 
-bool battery_current_deviation_error() {
+bool Chademo::battery_current_deviation_error() {
     //
     return false;
 }

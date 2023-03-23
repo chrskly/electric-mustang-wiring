@@ -28,11 +28,25 @@ using namespace std;
 #include "hardware/clocks.h"
 
 #include "mcp2515/mcp2515.h"
+#include "settings.h"
+#include "chademo.h"
+#include "chademostatemachine.h"
+#include "ccs.h"
+#include "ccsstatemachine.h"
+#include "ccscomms.h"
+#include "chademocomms.h"
+#include "comms.h"
+#include "led.h"
 
 MCP2515 mainCAN(SPI_PORT, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
+MCP2515 chademoCAN(SPI_PORT, CHADEMO_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
+MCP2515 cssCAN(SPI_PORT, CCS_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 
+Chademo chademo;
 ChademoState chademoState;
-CSSState cssState;
+CCS ccs;
+CCSState ccsState;
+StatusLight statusLight;
 
 int main() {
     stdio_init_all();
@@ -64,6 +78,20 @@ int main() {
     mainCAN.setNormalMode();
     printf("Enabling handling of inbound CAN messages on main bus\n");
     enable_handle_main_CAN_messages();
+
+    printf("Setting up Chademo CAN port (BITRATE:%d:%d)\n", CAN_500KBPS, MCP_8MHZ);
+    chademoCAN.reset();
+    chademoCAN.setBitrate(CAN_500KBPS, MCP_8MHZ);
+    chademoCAN.setNormalMode();
+    printf("Enabling handling of inbound CAN messages on chademo bus\n");
+    enable_handle_chademo_CAN_messages();
+
+    printf("Setting up CCS CAN port (BITRATE:%d:%d)\n", CAN_500KBPS, MCP_8MHZ);
+    cssCAN.reset();
+    cssCAN.setBitrate(CAN_500KBPS, MCP_8MHZ);
+    cssCAN.setNormalMode();
+    printf("Enabling handling of inbound CAN messages on CCS bus\n");
+    enable_handle_ccs_CAN_messages();
 
     while(true) {
     }

@@ -1,5 +1,5 @@
 /*
- * This file is part of the ev mustang bms project.
+ * This file is part of the ev mustang charge controller project.
  *
  * Copyright (C) 2022 Christian Kelly <chrskly@chrskly.com>
  *
@@ -17,25 +17,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
-
-#include "ccsstatemachine.h"
-
-using namespace std;
-
-void ccs_state_standby(CCSEvent event) {
-/*
-    switch (event) {
-
-        case E_TEMPERATURE_UPDATE:
-            //
-
-        case E_CELL_VOLTAGE_UPDATE:
-            //
-
-    }
-*/
-}
-
-
-
+bool handle_css_CAN_messages(struct repeating_timer *t);
+void enable_handle_ccs_CAN_messages();

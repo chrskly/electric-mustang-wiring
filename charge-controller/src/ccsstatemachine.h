@@ -17,11 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef CCSSTATEMACHINE_H
+#define CCSSTATEMACHINE_H
+
 enum CCSEvent {
-    E_IDLE,
-    E_ERROR,
+    E_CCS_IDLE,
+    E_CCS_ERROR,
 };
 
 typedef void (*CCSState)(CCSEvent);
 
 void ccs_state_standby(CCSEvent event);
+
+#endif

@@ -17,8 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #ifndef CHADEMO_H
 #define CHADEMO_H
+
+#include "chademostatemachine.h"
 
 class Chademo {
 
@@ -46,10 +49,29 @@ class Chademo {
     public:
         Chademo();
 
+        // evse capabilities
+        bool evseWeldDetectionSupported;        //
+        uint16_t evseMaximumVoltageAvailable;   //
+        uint8_t evseAvailableCurrent;           //
+        uint16_t evseThresholdVoltage;          //
+
+        // evse status
+        uint8_t evseControlProtocolNumber;      //
+        uint16_t evseOutputVoltage;             //
+        uint8_t evseOutputCurrent;              //
+        uint8_t evseTimeRemainingSeconds;       //
+        uint8_t evseTimeRemainingMinutes;       //
+        bool stationStatus;                     //
+        bool stationMalfunction;                //
+        bool vehicleConnectorLock;              //
+        bool batteryIncompatability;            //
+        bool chargingSystemMalfunction;         //
+        bool chargerStopControl;                //
+
         bool battery_over_voltage();
         bool battery_under_voltage();
         bool battery_voltage_deviation_error();
         bool battery_current_deviation_error();
-}
+};
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * This file is part of the ev mustang bms project.
+ * This file is part of the ev mustang charge controller project.
  *
  * Copyright (C) 2022 Christian Kelly <chrskly@chrskly.com>
  *
@@ -18,24 +18,31 @@
  */
 
 #include <stdio.h>
+#include "pico/stdlib.h"
 
-#include "ccsstatemachine.h"
+#include "mcp2515/mcp2515.h"
+#include "settings.h"
 
 using namespace std;
 
-void ccs_state_standby(CCSEvent event) {
-/*
-    switch (event) {
+struct can_frame cssCANInbound;
+struct repeating_timer handleCssCANMessageTimer;
 
-        case E_TEMPERATURE_UPDATE:
-            //
+bool handle_css_CAN_messages(struct repeating_timer *t) {
 
-        case E_CELL_VOLTAGE_UPDATE:
-            //
+    extern MCP2515 cssCAN;
 
+    if ( cssCAN.readMessage(&cssCANInbound) == MCP2515::ERROR_OK ) {
+        switch ( cssCANInbound.can_id ) {
+            case EVSE_CAPABILITIES_MESSAGE_ID:
+                //
+            break;
+        }
     }
-*/
+
+    return true;
 }
 
-
-
+void enable_handle_ccs_CAN_messages() {
+    add_repeating_timer_ms(10, handle_css_CAN_messages, NULL, &handleCssCANMessageTimer);
+}

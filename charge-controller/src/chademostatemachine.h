@@ -17,9 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef CHADEMOSTATEMACHINE_H
+#define CHADEMOSTATEMACHINE_H
+
 enum ChademoEvent {
-    E_IDLE,
-    E_ERROR,
+    E_PLUG_INSERTED,
+    E_IN1_WENT_HIGH,
+    E_IN1_WENT_LOW,
+    E_IN2_WENT_HIGH,
+    E_IN2_WENT_LOW,
+    E_EVSE_CAPABILITIES_UPDATED,
+    E_EVSE_STATUS_UPDATED,
 };
 
 typedef void (*ChademoState)(ChademoEvent);
@@ -34,3 +42,5 @@ void chademo_state_Bprime1(ChademoEvent event);
 void chademo_state_Bprime2(ChademoEvent event);
 void chademo_state_Bprime3(ChademoEvent event);
 void chademo_event_Bprime4(ChademoEvent event);
+
+#endif

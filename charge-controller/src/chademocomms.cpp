@@ -17,6 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+#include "pico/stdlib.h"
+
+#include "mcp2515/mcp2515.h"
+#include "settings.h"
+#include "chademo.h"
+
+using namespace std;
+
 
 /*
  * byte 4 + 5 : maximum battery voltage (V). 1 V/bit
@@ -30,9 +39,9 @@ void chademo_send_100() {
     frame.data[1] = 0x00;
     frame.data[2] = 0x00;
     frame.data[3] = 0x00;
-    frame.data[4] = max voltage;
-    frame.data[5] = max voltage;
-    frame.data[6] = SOC;
+    frame.data[4] = 0x00; // <- max voltge
+    frame.data[5] = 0x00; // <- max voltage;
+    frame.data[6] = 0x00; // <- SOC;
     frame.data[7] = 0x00;
 }
 
@@ -74,47 +83,65 @@ void chademo_send_102() {
 
 
 
+//// ----
+//
+// Handler for inbound messages on ChaDeMo CAN bus
+//
+//// ----
 
+struct can_frame chademoInboundFrame;
+struct repeating_timer handleChademoCANMessageTimer;
 
+bool handle_chademo_CAN_messages(struct repeating_timer *t) {
 
+    extern MCP2515 chademoCAN;
+    extern ChademoState chademoState;
+    extern Chademo chademo;
 
-void read_message() {
-    can_frame frame;
+    if ( chademoCAN.readMessage(&chademoInboundFrame) == MCP2515::ERROR_OK ) {
 
-    if ( CAN.readMessage(&frame) == MCP2515::ERROR_OK ) {
-        if ( frame.can_id == EVSE_CAPABILITIES_MESSAGE_ID ) {
-            evseWeldDetectionSupported = frame.data[0];
-            // 1V/bit (0 to 600V)
-            evseMaximumVoltageAvailable = frame.data[1] + frame.data[2] << 8;
-            // 1A/bit (0 to 255A)
-            evseAvailableCurrent = frame.data[3];
-            // 1V/bit (0 to 600V)
-            evseThresholdVoltage = frame.data[4] + frame.data[5] << 8;
-        }
-        if ( frame.can_id == EVSE_STATUS_MESSAGE_ID ) {
-            evseControlProtocolNumber = frame.data[0]; // chademo protocol version
-            // 1V/bit (0 to 600V)
-            evseOutputVoltage = frame.data[1] + frame.data[2] << 8;
-            // 1A/bit (0 to 255A)
-            evseOutputCurrent = frame.data[3];
-            // 10s/bit (0 to 2540s)
-            evseTimeRemainingSeconds = frame.data[6];
-            // 1min/bit (0 to 255min)
-            evseTimeRemainingMinutes = frame.data[7];
-            stationStatus = frame.data[5] & 1;
-            stationMalfuction = (frame.data[5] & ( 1 << 1 )) >> 1;
-            vehicleConnectorLock = (frame.data[5] & ( 1 << 2 )) >> 2;
-            batteryIncompatabiltiy = (frame.data[5] & ( 1 << 3 )) >> 3;
-            chargingSystemMalfuction = (frame.data[5] & ( 1 << 4 )) >> 4;
-            chargerStopControl = (frame.data[5] & ( 1 << 5 )) >> 5;
+        switch ( chademoInboundFrame.can_id ) {
+
+            case EVSE_CAPABILITIES_MESSAGE_ID:
+                chademo.evseWeldDetectionSupported = chademoInboundFrame.data[0];
+                // 1V/bit (0 to 600V)
+                chademo.evseMaximumVoltageAvailable = chademoInboundFrame.data[1] + chademoInboundFrame.data[2] << 8;
+                // 1A/bit (0 to 255A)
+                chademo.evseAvailableCurrent = chademoInboundFrame.data[3];
+                // 1V/bit (0 to 600V)
+                chademo.evseThresholdVoltage = chademoInboundFrame.data[4] + chademoInboundFrame.data[5] << 8;
+
+                chademoState(E_EVSE_CAPABILITIES_UPDATED);
+
+            case EVSE_STATUS_MESSAGE_ID:
+                chademo.evseControlProtocolNumber = chademoInboundFrame.data[0]; // chademo protocol version
+                // 1V/bit (0 to 600V)
+                chademo.evseOutputVoltage = chademoInboundFrame.data[1] + chademoInboundFrame.data[2] << 8;
+                // 1A/bit (0 to 255A)
+                chademo.evseOutputCurrent = chademoInboundFrame.data[3];
+                // 10s/bit (0 to 2540s)
+                chademo.evseTimeRemainingSeconds = chademoInboundFrame.data[6];
+                // 1min/bit (0 to 255min)
+                chademo.evseTimeRemainingMinutes = chademoInboundFrame.data[7];
+                chademo.stationStatus = chademoInboundFrame.data[5] & 1;                             // bit 0
+                chademo.stationMalfunction = (chademoInboundFrame.data[5] & ( 1 << 1 )) >> 1;        // bit 1
+                chademo.vehicleConnectorLock = (chademoInboundFrame.data[5] & ( 1 << 2 )) >> 2;      // bit 2
+                chademo.batteryIncompatability = (chademoInboundFrame.data[5] & ( 1 << 3 )) >> 3;    // bit 3
+                chademo.chargingSystemMalfunction = (chademoInboundFrame.data[5] & ( 1 << 4 )) >> 4; // bit 4
+                chademo.chargerStopControl = (chademoInboundFrame.data[5] & ( 1 << 5 )) >> 5;        // bit 5
+
+                chademoState(E_EVSE_STATUS_UPDATED);
+
+            break;
 
         }
     }
+
+    return true;
 }
 
-
-
-
-
+void enable_handle_chademo_CAN_messages() {
+    add_repeating_timer_ms(10, handle_chademo_CAN_messages, NULL, &handleChademoCANMessageTimer);
+}
 
 
