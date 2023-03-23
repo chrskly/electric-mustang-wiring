@@ -41,12 +41,11 @@ using namespace std;
 #include "hardware/gpio.h"
 #include "hardware/clocks.h"
 #include "hardware/pll.h"
-
+#include "hardware/watchdog.h"
 
 #include "mcp2515/mcp2515.h"
 
 #include "battery.h"
-
 #include "update.h"
 #include "bms.h"
 #include "statemachine.h"
@@ -60,11 +59,28 @@ struct can_frame rx;
 // receive frame
 struct can_frame frame;
 
+// error frame
+struct can_frame errorFrame;
+
 State state;
 StatusLight statusLight;
 
 Battery battery(NUM_PACKS);
 MCP2515 mainCAN(SPI_PORT, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
+
+
+// Watchdog
+
+struct repeating_timer watchdogKeepaliveTimer;
+
+bool watchdog_keepalive(struct repeating_timer *t) {
+    watchdog_update();
+    return true;
+}
+
+void enable_watchdog_keepalive() {
+    add_repeating_timer_ms(5000, watchdog_keepalive, NULL, &watchdogKeepaliveTimer);
+}
 
 
 int main() {
@@ -98,6 +114,18 @@ int main() {
     mainCAN.setNormalMode();
     printf("Enabling handling of inbound CAN messages on main bus\n");
     enable_handle_main_CAN_messages();
+
+    // Check for unexpected reboot
+    if (watchdog_caused_reboot()) {
+        printf("Rebooted by Watchdog!\n");
+        errorFame.can_id = ;
+        mainCAN.sendMessage();
+        return 0;
+    } else {
+        printf("Clean boot\n");
+    }
+    watchdog_enable(100, 1);
+    enable_watchdog_keepalive();
 
     battery.print();
     battery.send_test_message();
