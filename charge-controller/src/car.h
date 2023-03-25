@@ -17,19 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "chademo.h"
-#include "ccs.h"
+#ifndef CAR_H
+#define CAR_H
 
-
-#ifndef BATTERY_H
-#define BATTERY_H
-
-class Charger {
+class Car {
     private:
-        Chademo chademo;
-        CSS css;
+        uint8_t chademoControlProtocolNumber;
+        uint16_t batteryCapacity;  // 0.11 kWh/bit
+        uint16_t maximumBatteryVoltage;
+        uint8_t maximumChargingTimeMinutes;
+        uint8_t maximumChargingTimeSeconds;
+        uint16_t targetBatteryVoltage;
+        bool vehicleChargingEnabled;
+        bool highBatteryTemperature;
     public:
-        void 
-};
+        Car();
+        uint8_t calculate_charging_time();
+}
 
 #endif

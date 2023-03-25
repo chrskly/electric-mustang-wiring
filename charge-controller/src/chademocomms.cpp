@@ -54,7 +54,17 @@ void chademo_send_100() {
  * byte 5 + 6 : capacity of battery (kWh). 0.11 kWh/bit
  */
 void chademo_send_101() {
-    //
+    struct can_frame frame;
+    frame.can_id = 0x101;
+    frame.can_dlc = 8;
+    frame.data[0] = 0x00;
+    frame.data[1] = 0x00;
+    frame.data[2] = 0x00;
+    frame.data[3] = 0x00;
+    frame.data[4] = 0x00;
+    frame.data[5] = 0x00;
+    frame.data[6] = 0x00;
+    frame.data[7] = 0x00;
 }
 
 
@@ -82,6 +92,19 @@ void chademo_send_102() {
 }
 
 
+struct repeating_timer outboundCANMessageTimer;
+
+bool send_outbound_CAN_messages(struct repeating_timer *t) {
+    chademo_send_100();
+    chademo_send_101();
+    chademo_send_102();
+}
+
+void enable_handle_chademo_CAN_messages() {
+    add_repeating_timer_ms(100, send_outbound_CAN_messages, NULL, &outboundCANMessageTimer);
+}
+
+
 
 //// ----
 //
@@ -103,26 +126,26 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
         switch ( chademoInboundFrame.can_id ) {
 
             case EVSE_CAPABILITIES_MESSAGE_ID:
-                chademo.evseWeldDetectionSupported = chademoInboundFrame.data[0];
+                chademo.evse.weldDetectionSupported = chademoInboundFrame.data[0];
                 // 1V/bit (0 to 600V)
-                chademo.evseMaximumVoltageAvailable = chademoInboundFrame.data[1] + chademoInboundFrame.data[2] << 8;
+                chademo.evse.maximumVoltageAvailable = chademoInboundFrame.data[1] + chademoInboundFrame.data[2] << 8;
                 // 1A/bit (0 to 255A)
-                chademo.evseAvailableCurrent = chademoInboundFrame.data[3];
+                chademo.evse.availableCurrent = chademoInboundFrame.data[3];
                 // 1V/bit (0 to 600V)
-                chademo.evseThresholdVoltage = chademoInboundFrame.data[4] + chademoInboundFrame.data[5] << 8;
+                chademo.evse.thresholdVoltage = chademoInboundFrame.data[4] + chademoInboundFrame.data[5] << 8;
 
                 chademoState(E_EVSE_CAPABILITIES_UPDATED);
 
             case EVSE_STATUS_MESSAGE_ID:
-                chademo.evseControlProtocolNumber = chademoInboundFrame.data[0]; // chademo protocol version
+                chademo.evse.ControlProtocolNumber = chademoInboundFrame.data[0]; // chademo protocol version
                 // 1V/bit (0 to 600V)
-                chademo.evseOutputVoltage = chademoInboundFrame.data[1] + chademoInboundFrame.data[2] << 8;
+                chademo.evse.OutputVoltage = chademoInboundFrame.data[1] + chademoInboundFrame.data[2] << 8;
                 // 1A/bit (0 to 255A)
-                chademo.evseOutputCurrent = chademoInboundFrame.data[3];
+                chademo.evse.OutputCurrent = chademoInboundFrame.data[3];
                 // 10s/bit (0 to 2540s)
-                chademo.evseTimeRemainingSeconds = chademoInboundFrame.data[6];
+                chademo.evse.TimeRemainingSeconds = chademoInboundFrame.data[6];
                 // 1min/bit (0 to 255min)
-                chademo.evseTimeRemainingMinutes = chademoInboundFrame.data[7];
+                chademo.evse.timeRemainingMinutes = chademoInboundFrame.data[7];
                 chademo.stationStatus = chademoInboundFrame.data[5] & 1;                             // bit 0
                 chademo.stationMalfunction = (chademoInboundFrame.data[5] & ( 1 << 1 )) >> 1;        // bit 1
                 chademo.vehicleConnectorLock = (chademoInboundFrame.data[5] & ( 1 << 2 )) >> 2;      // bit 2

@@ -17,19 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "chademo.h"
-#include "ccs.h"
+#include "car.h"
 
-
-#ifndef BATTERY_H
-#define BATTERY_H
-
-class Charger {
-    private:
-        Chademo chademo;
-        CSS css;
-    public:
-        void 
-};
-
-#endif
+/*
+ * Given our current SoC and a charge current, calculate how long we think it
+ * will take to charge to 100% SoC.
+ */
+uint8_t Car::calculate_charging_time(uint8_t current) {
+    //
+    
+}

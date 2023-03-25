@@ -17,19 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "chademo.h"
-#include "ccs.h"
+#ifndef CHADEMOSTATION_H
+#define CHADEMOSTATION_H
 
+class ChademoStation {
 
-#ifndef BATTERY_H
-#define BATTERY_H
-
-class Charger {
     private:
-        Chademo chademo;
-        CSS css;
+
     public:
-        void 
-};
+
+        // capabilites
+        bool weldDetectionSupported;
+        uint16_t maximumVoltageAvailable;
+        uint8_t availableCurrent;
+        uint16_t thresholdVoltage;
+
+        // status
+        uint8_t controlProtocolNumber;
+        uint16_t outputVoltage;
+        uint8_t outputCurrent;
+        uint8_t timeRemainingSeconds;
+        uint8_t timeRemainingMinutes;
+        bool stationStatus;
+        bool stationMalfunction;
+        bool vehicleConnectorLock;
+        bool batteryIncompatability;
+        uint8_t chargingCurrentRequest;
+        bool chargerStopControl;
+
+        void reinitialise();
+        bool initial_parameter_exchange_complete();
+
+
+}
 
 #endif

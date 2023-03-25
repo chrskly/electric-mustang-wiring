@@ -19,31 +19,32 @@
 
 #include <stdio.h>
 
-#include "chademo.h"
+#include "chademostation.h"
 
 using namespace std;
 
+ChademoStation::ChademoStation() {}
 
-Chademo::Chademo() {}
-
-
-bool Chademo::battery_over_voltage() {
-    //
-    return false;
+/*
+ * When kicking off the charging process, we initialise these variables to zero
+ * to ensure we get fresh values from the charging station.
+ */
+void reinitialise() {
+    controlProtocolNumber = 0;
+    evseMaximumVoltageAvailable = 0;
+    evseAvailableCurrent = 0;
 }
 
-bool Chademo::battery_under_voltage() {
-    //
-    return false;
+/*
+ * According to the spec the initial params we need to see from the station
+ * before we can switch from B1->B2 are:
+ *   - controlProtocolNumber
+ *   - maximumVoltageAvailable
+ *   - availableCurrent
+ *   - batteryIncompatability
+ */
+bool ChademoStation::initial_parameter_exchange_complete() {
+    return ( controlProtocolNumber != 0 && \
+             evseMaximumVoltageAvailable != 0 && \
+             evseAvailableCurrent != 0 );
 }
-
-bool Chademo::battery_voltage_deviation_error() {
-    //
-    return false;
-}
-
-bool Chademo::battery_current_deviation_error() {
-    //
-    return false;
-}
-

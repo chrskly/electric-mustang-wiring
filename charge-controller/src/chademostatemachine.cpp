@@ -28,12 +28,21 @@ using namespace std;
  *  - Vehicle unconnected
  */
 void chademo_state_A(ChademoEvent event) {
+
+    extern ChademoStation chademoStation;
+    extern ChademoState chademoState;
+
     switch (event) {
+
         case E_PLUG_INSERTED:
-            // start sending messages
+            chademoStation.reinitialise();
+            // being sending
+            chademoState = chademo_state_B1;
             break;
+
         default:
-            printf("Received unknown event");
+            printf("WARNING : received invalid event\n");
+
     }
 }
 
@@ -45,27 +54,35 @@ void chademo_state_A(ChademoEvent event) {
  *  - Communication established, parameters exchanged, and compatability checked
  *
  * Charging station sends:
- *  - Control protocol number
- *  - Available output voltage
- *  - Available output current
- *  - Battery incompatability
+ *  - Control protocol number (0x109)
+ *  - Available output voltage (0x108)
+ *  - Available output current (0x108)
+ *  - Battery incompatability (0x109)
  *
  * Car sends:
- *  - Control protocol number
- *  - Rated capacity of battery
- *  - Maximum battery voltage
- *  - Maximum charging time
- *  - Target battery voltage
- *  - Vehicle charging enabled
+ *  - Control protocol number (0x102)
+ *  - Rated capacity of battery (0x101)
+ *  - Maximum battery voltage (0x100)
+ *  - Maximum charging time (0x101)
+ *  - Target battery voltage (0x102)
+ *  - Vehicle charging enabled (0x102)
  */
 void chademo_state_B1(ChademoEvent event) {
+
+    extern ChademoStation station;
+
     switch (event) {
+
         case E_EVSE_CAPABILITIES_UPDATED:
+            station.initial_parameter_exchange_complete();
             break;
+
         case E_EVSE_STATUS_UPDATED:
             break;
+
         default:
             printf("Received unknown event");
+
     }
 }
 

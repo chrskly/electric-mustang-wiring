@@ -23,50 +23,28 @@
 
 #include "chademostatemachine.h"
 
+
 class Chademo {
 
     private:
         ChademoState* state;
-
-        uint8_t controlProtocolNumber;          // Chademo protocol version
 
         // control signals
         bool chargingEnabled;                   //
         bool chargingStopRequest;               //
         bool chargingSystemFault;               //
 
-        // error conditions
-        bool highBatteryTemperature;            //
-
         // charging params
-        uint8_t chargingCurrentRequest;         //
         uint8_t chargingRateIndication;         //
-        uint8_t maximumChargingTimeSeconds;     //
-        uint8_t maximumChargingTimeMinutes;     //
         uint8_t estimatedChargingTimeRemaining; //
         uint8_t chargingRate;                   //
 
     public:
         Chademo();
+        void initialise_state();
 
-        // evse capabilities
-        bool evseWeldDetectionSupported;        //
-        uint16_t evseMaximumVoltageAvailable;   //
-        uint8_t evseAvailableCurrent;           //
-        uint16_t evseThresholdVoltage;          //
-
-        // evse status
-        uint8_t evseControlProtocolNumber;      //
-        uint16_t evseOutputVoltage;             //
-        uint8_t evseOutputCurrent;              //
-        uint8_t evseTimeRemainingSeconds;       //
-        uint8_t evseTimeRemainingMinutes;       //
-        bool stationStatus;                     //
-        bool stationMalfunction;                //
-        bool vehicleConnectorLock;              //
-        bool batteryIncompatability;            //
-        bool chargingSystemMalfunction;         //
-        bool chargerStopControl;                //
+        Evse evse;
+        Car car;
 
         bool battery_over_voltage();
         bool battery_under_voltage();
