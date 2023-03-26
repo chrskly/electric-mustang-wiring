@@ -22,23 +22,30 @@
 
 #include "mcp2515/mcp2515.h"
 #include "settings.h"
+#include "car.h"
 
 using namespace std;
 
-struct can_frame mainCANInbound;
+struct can_frame mainCANInboundFrame;
 struct repeating_timer handleMainCANMessageTimer;
 
+/*
+ * Process inbound messages on the main CANbus
+ */
 bool handle_main_CAN_messages(struct repeating_timer *t) {
 
     extern MCP2515 mainCAN;
+    extern Car car;
 
-    if ( mainCAN.readMessage(&mainCANInbound) == MCP2515::ERROR_OK ) {
-        switch ( mainCANInbound.can_id ) {
-            case EVSE_CAPABILITIES_MESSAGE_ID:
-                //
-            case EVSE_STATUS_MESSAGE_ID:
-                //
+    if ( mainCAN.readMessage(&mainCANInboundFrame) == MCP2515::ERROR_OK ) {
+
+        switch ( mainCANInboundFrame.can_id ) {
+
+            case BMS_MESSAGE_ID:
+                car.soc = mainCANInboundFrame.data[0];
+
             break;
+
         }
     }
 
@@ -48,3 +55,4 @@ bool handle_main_CAN_messages(struct repeating_timer *t) {
 void enable_handle_main_CAN_messages() {
     add_repeating_timer_ms(10, handle_main_CAN_messages, NULL, &handleMainCANMessageTimer);
 }
+

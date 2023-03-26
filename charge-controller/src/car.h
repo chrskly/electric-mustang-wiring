@@ -21,18 +21,24 @@
 #define CAR_H
 
 class Car {
+
     private:
         uint8_t chademoControlProtocolNumber;
-        uint16_t batteryCapacity;  // 0.11 kWh/bit
         uint16_t maximumBatteryVoltage;
         uint8_t maximumChargingTimeMinutes;
         uint8_t maximumChargingTimeSeconds;
         uint16_t targetBatteryVoltage;
         bool vehicleChargingEnabled;
         bool highBatteryTemperature;
+
     public:
+        uint16_t batteryCapacity;  // 0.11 kWh/bit
+        uint8_t soc; // Battery SoC, received from BMS
+
         Car();
-        uint8_t calculate_charging_time();
-}
+        uint8_t calculate_charging_time_minutes(uint8_t current);
+        uint8_t calculate_max_charging_time_minutes(uint8_t current);
+
+};
 
 #endif

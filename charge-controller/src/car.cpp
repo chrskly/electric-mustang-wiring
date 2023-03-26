@@ -17,13 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+
 #include "car.h"
 
+using namespace std;
+
+Car::Car() {}
+
 /*
- * Given our current SoC and a charge current, calculate how long we think it
- * will take to charge to 100% SoC.
+ * Based on our SoC and a given charge current, calculate how many minutes we
+ * think it will take to charge to 100% SoC.
+ *
+ * FIXME : this is not correct
  */
-uint8_t Car::calculate_charging_time(uint8_t current) {
-    //
-    
+uint8_t Car::calculate_charging_time_minutes(uint8_t current) {
+    uint16_t batteryCapacityInWattMinutes = batteryCapacity * 0.11 * 1000 * 60;
+    uint32_t chargingWatts = current * targetBatteryVoltage;
+    return batteryCapacityInWattMinutes / chargingWatts;
+}
+
+/*
+ * Calculate max charging time based on estimated charging time.
+ */
+uint8_t Car::calculate_max_charging_time_minutes(uint8_t current) {
+    return calculate_charging_time_minutes(current);
 }

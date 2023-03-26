@@ -47,8 +47,17 @@
 #define CHADEMO_OUT1_PIN 99
 #define CHADEMO_OUT2_PIN 99
 
-// Messages from EVSE
+// Messages from ChaDeMo station
 #define EVSE_CAPABILITIES_MESSAGE_ID 0x108
 #define EVSE_STATUS_MESSAGE_ID 0x109
+
+// Messages from BMS
+#define BMS_MESSAGE_ID 0x355
+
+// This scaling factor is used to calculate max charging time from the estimated charging time
+#define MAX_CHARGING_TIME_SCALING_FACTOR 1.2
+
+// Battery settings
+#define BATTERY_MAX_VOLTAGE 350 //fixme put in proper value
 
 #endif

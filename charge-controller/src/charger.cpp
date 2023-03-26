@@ -37,16 +37,16 @@ using namespace std;
 #include "chademocomms.h"
 #include "comms.h"
 #include "led.h"
+#include "car.h"
 
 MCP2515 mainCAN(SPI_PORT, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 MCP2515 chademoCAN(SPI_PORT, CHADEMO_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 MCP2515 cssCAN(SPI_PORT, CCS_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 
 Chademo chademo;
-ChademoState chademoState;
 CCS ccs;
-CCSState ccsState;
 StatusLight statusLight;
+Car car;
 
 int main() {
     stdio_init_all();
@@ -59,9 +59,6 @@ int main() {
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
     printf("Charger starting up ...\n");
-
-    chademoState = &chademo_state_B1;
-    ccsState = &ccs_state_standby;
 
     // Set up blinky LED
     gpio_init(PICO_DEFAULT_LED_PIN);

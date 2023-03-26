@@ -20,11 +20,15 @@
 #include <stdio.h>
 
 #include "chademo.h"
+#include "car.h"
+#include "chademostatemachine.h"
 
 using namespace std;
 
 
-Chademo::Chademo() {}
+Chademo::Chademo() {
+    state = &chademo_state_B1;
+}
 
 
 bool Chademo::battery_over_voltage() {

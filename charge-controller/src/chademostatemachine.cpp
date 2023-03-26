@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include "chademostatemachine.h"
+#include "chademo.h"
 
 using namespace std;
 
@@ -29,15 +30,14 @@ using namespace std;
  */
 void chademo_state_A(ChademoEvent event) {
 
-    extern ChademoStation chademoStation;
-    extern ChademoState chademoState;
+    extern Chademo chademo;
 
     switch (event) {
 
         case E_PLUG_INSERTED:
-            chademoStation.reinitialise();
+            chademo.station.reinitialise();
             // being sending
-            chademoState = chademo_state_B1;
+            chademo.state = chademo_state_B1;
             break;
 
         default:
@@ -69,12 +69,12 @@ void chademo_state_A(ChademoEvent event) {
  */
 void chademo_state_B1(ChademoEvent event) {
 
-    extern ChademoStation station;
+    extern Chademo chademo;
 
     switch (event) {
 
         case E_EVSE_CAPABILITIES_UPDATED:
-            station.initial_parameter_exchange_complete();
+            chademo.station.initial_parameter_exchange_complete();
             break;
 
         case E_EVSE_STATUS_UPDATED:

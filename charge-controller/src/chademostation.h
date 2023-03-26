@@ -44,11 +44,13 @@ class ChademoStation {
         bool batteryIncompatability;
         uint8_t chargingCurrentRequest;
         bool chargerStopControl;
+        bool chargingSystemMalfunction;
 
+        ChademoStation();
         void reinitialise();
         bool initial_parameter_exchange_complete();
 
 
-}
+};
 
 #endif

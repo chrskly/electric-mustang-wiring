@@ -24,6 +24,8 @@ add_executable(charger
         chademocomms.cpp
         chademostatemachine.h
         chademostatemachine.cpp
+        chademostation.h
+        chademostation.cpp
         charger.h
         charger.cpp
         ccscomms.h
@@ -34,6 +36,8 @@ add_executable(charger
         led.cpp
         inputs.h
         inputs.cpp
+        car.h
+        car.cpp
         )
 
 pico_add_extra_outputs(charger)

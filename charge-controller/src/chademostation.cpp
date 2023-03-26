@@ -29,13 +29,15 @@ ChademoStation::ChademoStation() {}
  * When kicking off the charging process, we initialise these variables to zero
  * to ensure we get fresh values from the charging station.
  */
-void reinitialise() {
+void ChademoStation::reinitialise() {
     controlProtocolNumber = 0;
-    evseMaximumVoltageAvailable = 0;
-    evseAvailableCurrent = 0;
+    maximumVoltageAvailable = 0;
+    availableCurrent = 0;
 }
 
 /*
+ * Have we received the initial params from the station?
+ *
  * According to the spec the initial params we need to see from the station
  * before we can switch from B1->B2 are:
  *   - controlProtocolNumber
@@ -45,6 +47,6 @@ void reinitialise() {
  */
 bool ChademoStation::initial_parameter_exchange_complete() {
     return ( controlProtocolNumber != 0 && \
-             evseMaximumVoltageAvailable != 0 && \
-             evseAvailableCurrent != 0 );
+             maximumVoltageAvailable != 0 && \
+             availableCurrent != 0 );
 }

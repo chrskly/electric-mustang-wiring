@@ -22,13 +22,13 @@
 #define CHADEMO_H
 
 #include "chademostatemachine.h"
-
+#include "chademostation.h"
+#include "car.h"
 
 class Chademo {
 
     private:
-        ChademoState* state;
-
+        
         // control signals
         bool chargingEnabled;                   //
         bool chargingStopRequest;               //
@@ -40,16 +40,17 @@ class Chademo {
         uint8_t chargingRate;                   //
 
     public:
+
+        ChademoState state;
+        ChademoStation station;
+
         Chademo();
         void initialise_state();
-
-        Evse evse;
-        Car car;
-
         bool battery_over_voltage();
         bool battery_under_voltage();
         bool battery_voltage_deviation_error();
         bool battery_current_deviation_error();
+
 };
 
 #endif
