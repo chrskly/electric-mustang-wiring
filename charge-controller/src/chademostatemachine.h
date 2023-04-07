@@ -22,12 +22,14 @@
 
 enum ChademoEvent {
     E_PLUG_INSERTED,
-    E_IN1_WENT_HIGH,
-    E_IN1_WENT_LOW,
+    E_PLUG_REMOVED,
+    E_IN1_ACTIVATED,
+    E_IN1_DEACTIVATED,
     E_IN2_WENT_HIGH,
     E_IN2_WENT_LOW,
     E_EVSE_CAPABILITIES_UPDATED,
     E_EVSE_STATUS_UPDATED,
+    E_EVSE_INCOMPATIBLE,         // 
 };
 
 typedef void (*ChademoState)(ChademoEvent);

@@ -35,6 +35,9 @@ class Car {
         uint16_t batteryCapacity;  // 0.11 kWh/bit
         uint8_t soc; // Battery SoC, received from BMS
 
+        uint8_t maximumChargingCurrent; // Maximum charging current from BMS
+        uint8_t targetChargingCurrent;  // charging current to request to EVSE
+
         Car();
         uint8_t calculate_charging_time_minutes(uint8_t current);
         uint8_t calculate_max_charging_time_minutes(uint8_t current);

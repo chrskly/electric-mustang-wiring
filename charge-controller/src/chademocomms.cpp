@@ -30,10 +30,12 @@ using namespace std;
 
 
 /*
+ * ID : 0x100
+ *
  * byte 4 + 5 : maximum battery voltage (V). 1 V/bit
  * byte 6     : Charging rate indication (%). 1% bit, 100%
  */
-void chademo_send_100() {
+void send_limits_message() {
 
     extern ChademoStation station;
     extern Car car;
@@ -59,6 +61,8 @@ void chademo_send_100() {
 
 
 /*
+ * ID : 0x101
+ *
  * Send charging time data to charging station.
  #
  * byte 1     : Maximum charging time permitted by EV (seconds). 10 s/bit (0 -> 2540s)
@@ -66,7 +70,7 @@ void chademo_send_100() {
  * byte 3     : Estimated charging time remaining.  1 min/bit (0 -> 254min)
  * byte 5 + 6 : capacity of battery (kWh). 0.11 kWh/bit
  */
-void chademo_send_101() {
+void send_charge_time_message() {
 
     extern ChademoStation station;
     extern Car car;
@@ -92,6 +96,8 @@ void chademo_send_101() {
 
 
 /*
+ * ID : 0x102
+ * 
  * byte 0     : Control protocol number, (0 -> 255)
  * byte 1 + 2 : Target battery voltage. 1 V/bit (0 -> 600V)
  * byte 3     : Charging current request. 1 A/bit (0 -> 255A)
@@ -109,8 +115,14 @@ void chademo_send_101() {
  *   bit 4    : Normal stop request before charging. 0:no request, 1:request to stop
  * byte 6     : Charging rate. 1 %/bit (0% -> 100%)
  */
-void chademo_send_102() {
+void send_status_message() {
+
+    extern ChademoStation station;
+    extern Car car;
+    extern MCP2515 chademoCAN;
+
     struct can_frame frame;
+
     frame.can_id = 0x102;
     frame.can_dlc = 8;
     frame.data[0] = 1;    // protocol version 0.9
@@ -122,15 +134,17 @@ void chademo_send_102() {
     frame.data[6] = 0x00; // charging rate
     frame.data[7] = 0x00; // unused
 
+    chademoCAN.sendMessage(&frame);
+
 }
 
 
 struct repeating_timer outboundCANMessageTimer;
 
 bool send_outbound_CAN_messages(struct repeating_timer *t) {
-    chademo_send_100();
-    chademo_send_101();
-    chademo_send_102();
+    send_limits_message();
+    send_charge_time_message();
+    send_status_message();
     return true;
 }
 
@@ -152,7 +166,8 @@ struct repeating_timer handleChademoCANMessageTimer;
 bool handle_chademo_CAN_messages(struct repeating_timer *t) {
 
     extern MCP2515 chademoCAN;
-    //extern ChademoState chademoState;
+    extern ChademoState state;
+    extern ChademoStation station;
     extern Chademo chademo;
     //extern ChademoStation station;
 
@@ -169,7 +184,10 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
                 // 1V/bit (0 to 600V)
                 chademo.station.thresholdVoltage = chademoInboundFrame.data[4] + chademoInboundFrame.data[5] << 8;
 
+                station.lastUpdateFromEVSE = ;
+
                 chademo.state(E_EVSE_CAPABILITIES_UPDATED);
+                break;
 
             case EVSE_STATUS_MESSAGE_ID:
                 chademo.station.controlProtocolNumber = chademoInboundFrame.data[0]; // chademo protocol version
@@ -189,8 +207,7 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
                 chademo.station.chargerStopControl = (chademoInboundFrame.data[5] & ( 1 << 5 )) >> 5;        // bit 5
 
                 chademo.state(E_EVSE_STATUS_UPDATED);
-
-            break;
+                break;
 
         }
     }

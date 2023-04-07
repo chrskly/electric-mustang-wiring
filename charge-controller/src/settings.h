@@ -46,18 +46,25 @@
 #define CHADEMO_IN2_PIN 99
 #define CHADEMO_OUT1_PIN 99
 #define CHADEMO_OUT2_PIN 99
+#define CHADEMO_CS_PIN 99
+
+// Version of ChaDeMo protocol to use. 1 == v0.9, 2 == v1.0
+#define CHADEMO_PROTOCOL_VERSION 2
 
 // Messages from ChaDeMo station
 #define EVSE_CAPABILITIES_MESSAGE_ID 0x108
 #define EVSE_STATUS_MESSAGE_ID 0x109
 
 // Messages from BMS
-#define BMS_MESSAGE_ID 0x355
+#define BMS_STATUS_MESSAGE_ID 0x355
+#define BMS_LIMITS_MESSAGE_ID 0x102
 
 // This scaling factor is used to calculate max charging time from the estimated charging time
 #define MAX_CHARGING_TIME_SCALING_FACTOR 1.2
 
 // Battery settings
-#define BATTERY_MAX_VOLTAGE 350 //fixme put in proper value
+#define BATTERY_MAX_VOLTAGE 350         // fixme put in proper value
+#define BATTERY_MAX_CURRENT 10          // fixme put in proper value
+#define BATTERY_MAX_CURRENT_FAILSAFE 10 // maximum current to use if we lose communication with the BMS
 
 #endif

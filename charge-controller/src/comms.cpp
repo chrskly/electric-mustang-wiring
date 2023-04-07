@@ -41,8 +41,11 @@ bool handle_main_CAN_messages(struct repeating_timer *t) {
 
         switch ( mainCANInboundFrame.can_id ) {
 
-            case BMS_MESSAGE_ID:
+            case BMS_STATUS_MESSAGE_ID:
                 car.soc = mainCANInboundFrame.data[0];
+
+            case BMS_LIMITS_MESSAGE_ID:
+                car.maximumChargingCurrent = mainCANInboundFrame.data[3];
 
             break;
 

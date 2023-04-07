@@ -46,6 +46,8 @@ class ChademoStation {
         bool chargerStopControl;
         bool chargingSystemMalfunction;
 
+        uint16_t lastUpdateFromEVSE;
+
         ChademoStation();
         void reinitialise();
         bool initial_parameter_exchange_complete();

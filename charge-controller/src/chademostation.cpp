@@ -23,6 +23,9 @@
 
 using namespace std;
 
+extern ChademoState state;
+extern Car car;
+
 ChademoStation::ChademoStation() {}
 
 /*
@@ -50,3 +53,66 @@ bool ChademoStation::initial_parameter_exchange_complete() {
              maximumVoltageAvailable != 0 && \
              availableCurrent != 0 );
 }
+
+/*
+ * Process capabilities update
+ *  - weldDetectionSupported
+ *  - maximumVoltageAvailable
+ *  - availableCurrent
+ *  - thresholdVoltage
+ */
+void ChademoStation::process_capabilities_update() {
+
+    // Check voltage available at EVSE is enough
+    if ( maximumVoltageAvailable < BATTERY_MAX_VOLTAGE ) {
+        printf("ERROR maximum EVSE voltage is insufficient");
+        state(E_EVSE_INCOMPATIBLE);
+        return;
+    }
+
+    //
+    car.targetChargingCurrent = min(availableCurrent, maximumChargingCurrent);
+
+}
+
+/*
+ * Process status update
+ *  - controlProtocolNumber
+ *  - outputVoltage
+ *  - outputCurrent
+ *  - timeRemainingSeconds
+ *  - timeRemainingMinutes
+ *  - stationStatus
+ *  - stationMalfunction
+ *  - vehicleConnectorLock
+ *  - batteryIncompatability
+ *  - chargingSystemMalfunction
+ *  - chargerStopControl
+ */
+void ChademoStation::process_status_update() {
+
+    // Check for communication protocol mismatch
+    if ( controlProtocolNumber >= CHADEMO_PROTOCOL_VERSION ) {
+        state(E_EVSE_INCOMPATIBLE);
+        return;
+    }
+
+    // Check for voltage mismatch
+
+    // Check for current mismatch
+
+    // Check for station status problem
+
+    // Check for station malfunction
+
+    // Check for battery incompatability
+
+    // Check for charging systme malfunction
+
+    // Check for charger stop control
+
+}
+
+
+
+

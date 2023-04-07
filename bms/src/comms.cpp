@@ -80,21 +80,28 @@ struct can_frame statusFrame;
 
 struct repeating_timer statusMessageTimer;
 
+// https://openinverter.org/wiki/CAN_table_CAN_STD
+
 bool send_status_message(struct repeating_timer *t) {
+
     extern State state;
     extern MCP2515 mainCAN;
+
     statusFrame.can_id = STATUS_MSG_ID;
-    statusFrame.can_dlc = 1;
+    statusFrame.can_dlc = 8;
+
+    statusFrame.data[0] = 50; // FIXME soc
+
     if ( state == state_standby ) {
-        statusFrame.data[0] = 0x00 << 4;
+        statusFrame.data[1] = 0x00 << 4;
     } else if ( state == state_drive ) {
-        statusFrame.data[0] = 0x01 << 4;
+        statusFrame.data[1] = 0x01 << 4;
     } else if ( state == state_charging ) {
-        statusFrame.data[0] = 0x02 << 4;
+        statusFrame.data[1] = 0x02 << 4;
     } else if ( state == state_batteryEmpty ) {
-        statusFrame.data[0] = 0x03 << 4;
+        statusFrame.data[1] = 0x03 << 4;
     } else if ( state == state_fault ) {
-        statusFrame.data[0] = 0x04 << 4;
+        statusFrame.data[1] = 0x04 << 4;
     } else {
         //
     }

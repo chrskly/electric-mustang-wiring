@@ -45,6 +45,10 @@ class Chademo {
         ChademoStation station;
 
         Chademo();
+        bool Chademp::plug_is_in();
+        bool Chademo::in1_is_active();
+        bool Chademo::in2_is_active();
+
         void initialise_state();
         bool battery_over_voltage();
         bool battery_under_voltage();

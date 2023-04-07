@@ -30,6 +30,26 @@ Chademo::Chademo() {
     state = &chademo_state_B1;
 }
 
+/*
+ * Return true if plug is inserted in car.
+ */
+bool Chademp::plug_is_in() {
+    return ( gpio_get(CHADEMO_CS_PIN) == 0 );
+}
+
+/*
+ * Return true if IN1 signal is active (high)
+ */
+bool Chademo::in1_is_active() {
+    return ( gpio_get(CHADEMO_IN1_PIN) == 1 );
+}
+
+/*
+ * Return true if IN2 signal is active (low)
+ */
+bool Chademo::in2_is_active() {
+    return ( gpio_get(CHADEMO_IN2_PIN) == 0 );
+}
 
 bool Chademo::battery_over_voltage() {
     //

@@ -24,22 +24,37 @@
 #include "chademostatemachine.h"
 #include "settings.h"
 
+
+/*
+ * IN1 (a.k.a 'f'), d1 enable signal, plug pin 2
+ * IN2 (a.k.a 'g'), d2 enable signal, plug pin 10
+ * CS  (a.k.a 'h'), pilot signal, plug pin 7 -- relay + enable signal?
+ */
+
 void gpio_callback(uint gpio, uint32_t events) {
     extern ChademoState chademoState;
 
     if ( gpio == CHADEMO_IN1_PIN ) {
         if ( gpio_get(CHADEMO_IN1_PIN) == 1 ) {
-            chademoState(E_IN1_WENT_HIGH);
+            chademoState(E_IN1_ACTIVATED);
         } else {
-            chademoState(E_IN1_WENT_LOW);
+            chademoState(E_IN1_DEACTIVATED);
         }
     }
 
     if ( gpio == CHADEMO_IN2_PIN ) {
-        if ( gpio_get(CHADEMO_IN2_PIN) == 1 ) {
-            chademoState(E_IN2_WENT_HIGH);
+        if ( gpio_get(CHADEMO_IN2_PIN) == 0 ) {
+            chademoState(E_IN2_ACTIVATED);
         } else {
-            chademoState(E_IN2_WENT_LOW);
+            chademoState(E_IN2_DEACTIVATED);
+        }
+    }
+
+    if ( gpio == CHADEMO_CS_PIN ) {
+        if ( gpio_get(CHADEMO_CS_PIN) == 0 ) {
+            chademoState(E_PLUG_INSERTED);
+        } else {
+            chademoState(E_PLUG_REMOVED);
         }
     }
 
@@ -52,3 +67,8 @@ void enable_listen_for_IN1_signal() {
 void enable_listen_for_IN2_signal() {
     gpio_set_irq_enabled(CHADEMO_IN2_PIN, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true);
 }
+
+void enable_listen_for_CS_signal() {
+    gpio_set_irq_enabled(CHADEMO_CS_PIN, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true);
+}
+

@@ -24,21 +24,40 @@
 
 using namespace std;
 
-/*
- * State : DC-A
- *  - Vehicle unconnected
- */
-void chademo_state_A(ChademoEvent event) {
+extern Chademo chademo;
+extern ChademoState state;
+extern ChademoStation station;
 
-    extern Chademo chademo;
+/*
+ * State : idle
+ *  - plug out
+ *
+ * Transitions:
+ *  => handshaking
+ *     - plug must be inserted
+ *     - IN1 must be active (high)
+ */
+void chademo_state_idle(ChademoEvent event) {
 
     switch (event) {
 
         case E_PLUG_INSERTED:
-            chademo.station.reinitialise();
-            // being sending
-            chademo.state = chademo_state_B1;
-            break;
+            if ( chademo.in1_is_active() ) {
+                chademo.station.reinitialise();
+                // being sending messages needed for handshaking
+                enable_send_outbound_CAN_messages()
+                chademo.state = chademo_state_handshaking;
+                break;
+            }
+
+        case E_IN1_ACTIVATED:
+            if ( chademo.plug_is_in() ) {
+                chademo.station.reinitialise();
+                // being sending messages needed for handshaking
+                enable_send_outbound_CAN_messages()
+                chademo.state = chademo_state_handshaking;
+                break;
+            }
 
         default:
             printf("WARNING : received invalid event\n");
@@ -47,11 +66,8 @@ void chademo_state_A(ChademoEvent event) {
 }
 
 /*
- * State : DC-B1
- *  - Connector plugged in
- *  - Wake up of DCCCF and VCCF
- *  - Communicaton data initialisation
- *  - Communication established, parameters exchanged, and compatability checked
+ * State : handshaking
+ *  - exchanging params with evse
  *
  * Charging station sends:
  *  - Control protocol number (0x109)
@@ -66,10 +82,80 @@ void chademo_state_A(ChademoEvent event) {
  *  - Maximum charging time (0x101)
  *  - Target battery voltage (0x102)
  *  - Vehicle charging enabled (0x102)
+ *
+ * Transitions:
+ *  => idle
+ *     - plug removed
+ */
+void chademo_state_handshaking(ChademoEvent event) {
+
+    switch (event) {
+
+        case E_EVSE_CAPABILITIES_UPDATED:
+            if ( station.initial_parameter_exchange_complete() ) {
+                state = chademo_state_charge_prep;
+            }
+            break;
+
+        case E_CAPABILITIES_MISMATCH:
+            state = chademo_state_error;
+
+        case E_EVSE_STATUS_UPDATED:
+            if ( station.initial_parameter_exchange_complete() ) {
+                state = chademo_state_charge_prep;
+            }
+            break;
+
+        case E_PLUG_REMOVED:
+            state = chademo_state_idle;
+            break;
+
+        default:
+            printf("WARNING : received invalid event\n");
+    }
+}
+
+
+
+/*
+ * State : charge_prep
+ *
+ */
+void chademo_state_charge_prep(ChademoEvent event) {
+
+    switch (event) {
+        case FOO:
+            break;
+    }
+}
+
+
+
+/*
+ * State : error
+ *
+ */
+void chademo_state_error(ChademoEvent event) {
+    //
+}
+
+
+
+
+
+/*
+ * State : DC-B1
+ *  - Connector plugged in
+ *  - Wake up of DCCCF and VCCF
+ *  - Communicaton data initialisation
+ *  - Communication established, parameters exchanged, and compatability checked
+ *
+
+ *
+ * Transitions
+ *  - ...
  */
 void chademo_state_B1(ChademoEvent event) {
-
-    extern Chademo chademo;
 
     switch (event) {
 

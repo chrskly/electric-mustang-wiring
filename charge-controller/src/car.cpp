@@ -23,7 +23,10 @@
 
 using namespace std;
 
-Car::Car() {}
+Car::Car() {
+    maximumBatteryVoltage = BATTERY_MAX_VOLTAGE;
+    maximumChargingCurrent = BATTERY_MAX_CURRENT;
+}
 
 /*
  * Based on our SoC and a given charge current, calculate how many minutes we
