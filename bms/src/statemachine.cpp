@@ -17,13 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using namespace std;
+
 #include <stdio.h>
 
 #include "statemachine.h"
 #include "battery.h"
 #include "led.h"
 
-using namespace std;
+extern Battery battery;
+extern State state;
+extern StatusLight statusLight;
 
 
 /*
@@ -36,10 +40,6 @@ using namespace std;
  * charge inhibit : off
  */
 void state_standby(Event event) {
-
-    extern Battery battery;
-    extern State state;
-    extern StatusLight statusLight;
 
     switch (event) {
 
@@ -126,10 +126,6 @@ void state_standby(Event event) {
  * charge inhibit : off
  */
 void state_drive(Event event) {
-
-    extern Battery battery;
-    extern State state;
-    extern StatusLight statusLight;
 
     switch (event) {
 
@@ -230,10 +226,6 @@ void state_drive(Event event) {
  * charge inhibit : off
  */
 void state_charging(Event event) {
-
-    extern Battery battery;
-    extern State state;
-    extern StatusLight statusLight;
 
     switch (event) {
 
@@ -339,10 +331,6 @@ void state_charging(Event event) {
  */
 void state_batteryEmpty(Event event) {
 
-    extern Battery battery;
-    extern State state;
-    extern StatusLight statusLight;
-
     switch (event) {
 
         case E_TEMPERATURE_UPDATE:
@@ -425,10 +413,6 @@ void state_batteryEmpty(Event event) {
  *   - Batteries are too hot
  */
 void state_fault(Event event) {
-
-    extern Battery battery;
-    extern State state;
-    extern StatusLight statusLight;
 
     switch (event) {
 
