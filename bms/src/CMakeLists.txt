@@ -7,7 +7,6 @@ include(pico_sdk_import.cmake)
 
 project(bms)
 
-#set(PICO_ENABLE_CXX_EXCEPTIONS 1)
 set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
 pico_sdk_init()

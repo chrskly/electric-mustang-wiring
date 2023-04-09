@@ -252,6 +252,16 @@ void BatteryPack::update_voltage() {
     voltage = newVoltage;
 }
 
+// Get the max permissable voltage of the whole pack
+float BatteryPack::get_max_voltage() {
+    return CELL_FULL_VOLTAGE * CELLS_PER_MODULE * MODULES_PER_PACK;
+}
+
+// Get the min permissable voltage of the whole pack
+float BatteryPack::get_min_voltage() {
+    return CELL_EMPTY_VOLTAGE * CELLS_PER_MODULE * MODULES_PER_PACK;
+}
+
 // Return the voltage of the lowest cell in the pack
 float BatteryPack::get_lowest_cell_voltage() {
     float lowestCellVoltage = 10.0000f;
@@ -389,11 +399,11 @@ bool BatteryPack::has_temperature_sensor_over_max() {
 }
 
 // Return the maximum current we can charge the pack with.
-int BatteryPack::get_max_charging_current() {
+int BatteryPack::get_max_charge_current() {
     int maxChargeCurrent = 0;
     for ( int m = 0; m < numModules; m++ ) {
-        if ( modules[m].get_max_charging_current() < maxChargeCurrent ) {
-            maxChargeCurrent = modules[m].get_max_charging_current();
+        if ( modules[m].get_max_charge_current() < maxChargeCurrent ) {
+            maxChargeCurrent = modules[m].get_max_charge_current();
         }
     }
     return maxChargeCurrent;

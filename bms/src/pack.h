@@ -64,6 +64,8 @@ class BatteryPack {
         // Voltage
         float get_voltage();
         void update_voltage();
+        float get_max_voltage();
+        float get_min_voltage();
         float get_lowest_cell_voltage();
         void update_cell_delta();
         bool has_empty_cell();
@@ -76,7 +78,7 @@ class BatteryPack {
 
         // Temperature
         bool has_temperature_sensor_over_max();
-        int get_max_charging_current();
+        int get_max_charge_current();
         float get_lowest_temperature();
         void decode_temperatures(can_frame *temperatureMessageFrame);
 

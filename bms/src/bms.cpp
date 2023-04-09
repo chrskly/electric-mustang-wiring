@@ -118,8 +118,8 @@ int main() {
     // Check for unexpected reboot
     if (watchdog_caused_reboot()) {
         printf("Rebooted by Watchdog!\n");
-        errorFame.can_id = ;
-        mainCAN.sendMessage();
+        //errorFame.can_id = ;
+        //mainCAN.sendMessage();
         return 0;
     } else {
         printf("Clean boot\n");

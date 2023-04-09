@@ -263,7 +263,7 @@ void state_charging(Event event) {
             }
 
             // Recalculate max charging current
-            battery.update_max_charging_current();
+            battery.update_max_charge_current();
             break;
 
         case E_CELL_VOLTAGE_UPDATE:

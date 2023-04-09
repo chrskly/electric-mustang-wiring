@@ -79,13 +79,6 @@ int Battery::print () {
     return 0;
 }
 
-
-/*
-char[] Battery::get_state() {
-    return bmsState;
-}
-*/
-
 void Battery::request_data() {
     for ( int p = 0; p < numPacks; p++ ) {
         packs[p].request_data();
@@ -111,6 +104,20 @@ void Battery::send_test_message() {
     }
 }
 
+//// ----
+//
+// SoC
+//
+//// ----
+
+float Battery::get_soc() {
+    return soc;
+}
+
+void Battery::set_soc(float new_soc) {
+    soc = new_soc;
+}
+
 
 //// ----
 //
@@ -132,6 +139,28 @@ void Battery::update_voltage() {
         }
     }
     voltage = newVoltage;
+}
+
+// Return the maximum allowed voltage of the pack(s)
+float Battery::get_max_voltage() {
+    float max_voltage = packs[0].get_max_voltage();
+    for ( int p = 1; p < numPacks; p++ ) {
+        if ( packs[p].get_max_voltage() < max_voltage ) {
+            max_voltage = packs[p].get_max_voltage();
+        }
+    }
+    return max_voltage;
+}
+
+// Return the minimum allowed voltage of the pack(s)
+float Battery::get_min_voltage() {
+    float min_voltage = packs[0].get_min_voltage();
+    for ( int p = 1; p < numPacks; p++ ) {
+        if ( packs[p].get_min_voltage() > min_voltage ) {
+            min_voltage = packs[p].get_min_voltage();
+        }
+    }
+    return min_voltage;
 }
 
 // Update the value we have stored for an individual cell in the pack
@@ -267,6 +296,10 @@ bool Battery::packs_are_imbalanced() {
 //
 //// ----
 
+float Battery::get_highest_cell_temperature() {
+    return highestCellTemperature;
+}
+
 // Return true if any sensor in the pack is over the max temperature
 bool Battery::has_temperature_sensor_over_max() {
     for ( int p = 0; p < numPacks; p++ ) {
@@ -277,14 +310,22 @@ bool Battery::has_temperature_sensor_over_max() {
     return false;
 }
 
-void Battery::update_max_charging_current() {
-    int _maxChargingCurrent = CHARGE_CURRENT_MAX;
+void Battery::update_max_charge_current() {
+    int _maxChargeCurrent = CHARGE_CURRENT_MAX;
     for ( int p = 0; p < numPacks; p++ ) {
-        if ( packs[p].get_max_charging_current() < _maxChargingCurrent ) {
-            _maxChargingCurrent = packs[p].get_max_charging_current();
+        if ( packs[p].get_max_charge_current() < _maxChargeCurrent ) {
+            _maxChargeCurrent = packs[p].get_max_charge_current();
         }
     }
-    maxChargingCurrent = _maxChargingCurrent;
+    maxChargeCurrent = _maxChargeCurrent;
+}
+
+/*
+ * Recalculate the maximum current which may be drawn from the pack.
+ */
+void Battery::update_max_discharge_current() {
+    // FIXME
+    maxDischargeCurrent = 1;
 }
 
 float Battery::get_lowest_temperature() {
@@ -344,8 +385,12 @@ void Battery::disable_inhibit_charge() {
     gpio_put(CHARGE_INHIBIT_PIN, 0);
 }
 
-float Battery::get_max_charging_current() {
-    return maxChargingCurrent;
+float Battery::get_max_charge_current() {
+    return maxChargeCurrent;
+}
+
+float Battery::get_max_discharge_current() {
+    return maxDischargeCurrent;
 }
 
 //// ----

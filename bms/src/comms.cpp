@@ -30,13 +30,14 @@
 
 using namespace std;
 
+extern MCP2515 mainCAN;
+extern Battery battery;
 
 // FIXME move somewhere else
 
 struct repeating_timer statusPrintTimer;
 
 bool status_print(struct repeating_timer *t) {
-    extern Battery battery;
     battery.print();
     return true;
 }
@@ -52,13 +53,12 @@ void enable_status_print() {
 //
 //// ----
 
-struct can_frame pollModuleFrame;
+//struct can_frame pollModuleFrame;
 
 struct repeating_timer pollModuleTimer;
 
 // Send request to each pack to ask for a data update
 bool poll_packs_for_data(struct repeating_timer *t) {
-    extern Battery battery;
     battery.request_data();
     return true;
 }
@@ -70,42 +70,132 @@ void enable_module_polling() {
 
 //// ----
 //
-// status messages
+// Outbound status messages
 //
 //// ----
 
-// CAN frame to hold status message sent out to rest of car
-// bit 0-4 = state (0=standby, 1=drive, 2=charging, 3=overTempFault, 4=underVoltageFault ) 
+
+/*
+ * Limits message 0x351
+ *
+ * Follows the SimpBMS format.
+ *
+ * byte 0 = Charge voltage LSB, scale 0.1, unit V
+ * byte 1 = Charge voltage MSB, scale 0.1, unit V
+ * byte 2 = Charge current LSB, scale 0.1, unit A
+ * byte 3 = Charge current MSB, scale 0.1, unit A
+ * byte 4 = Discharge current LSB, scale 0.1, unit A
+ * byte 5 = Discharge current MSB, scale 0.1, unit A
+ * byte 6 = Discharge voltage LSB, scale 0.1, unit V
+ * byte 7 = Discharge voltage MSB, scale 0.1, unit V
+ */
+
+struct can_frame limitsFrame;
+
+struct repeating_timer limitsMessageTimer;
+
+bool send_limits_message(struct repeating_timer *t) {
+
+    limitsFrame.can_id = BMS_LIMITS_MSG_ID;
+    limitsFrame.can_dlc = 8;
+
+    limitsFrame.data[0] = ( (int)battery.get_max_voltage() && 0xFF ) * 10;
+    limitsFrame.data[1] = ( (int)battery.get_max_voltage() >> 8 ) * 10;
+    limitsFrame.data[2] = ( (int)battery.get_max_charge_current() && 0xFF ) * 10;
+    limitsFrame.data[3] = ( (int)battery.get_max_charge_current() >> 8 ) * 10 ;
+    limitsFrame.data[4] = ( (int)battery.get_max_discharge_current() && 0xFF ) * 10;
+    limitsFrame.data[5] = ( (int)battery.get_max_discharge_current() >> 8 ) * 10;
+    limitsFrame.data[6] = ( (int)battery.get_min_voltage() && 0xFF ) * 10;
+    limitsFrame.data[7] = ( (int)battery.get_min_voltage() >> 8 ) * 10;
+
+    mainCAN.sendMessage(&limitsFrame);
+
+    return true;
+}
+
+void enable_limits_messages() {
+    add_repeating_timer_ms(1000, send_limits_message, NULL, &limitsMessageTimer);
+}
+
+void disable_limits_messages() {
+      //
+}
+
+
+/*
+ * SoC message 0x355
+ *
+ * Follows the SimpBMS format.
+ *
+ * byte 0 = SoC LSB, scale 1, unit %
+ * byte 1 = SoC MSB, scale 1, unit %
+ * byte 2 = SoH LSB, scale 1, unit %
+ * byte 3 = SoH MSB, scale 1, unit %
+ * byte 4 = SoC LSB, scale 0.01, unit %
+ * byte 5 = SoC MSB, scale 0.01, unit %
+ * byte 6 = unused
+ * byte 7 = unused
+ */
+
+struct can_frame socFrame;
+
+struct repeating_timer socMessageTimer;
+
+bool send_soc_message(struct repeating_timer *t) {
+
+    socFrame.can_id = BMS_SOC_MSG_ID;
+    socFrame.can_dlc = 8;
+
+    socFrame.data[0] = battery.get_soc() && 0xFF;
+    socFrame.data[1] = (int)battery.get_soc() >> 8;
+    socFrame.data[2] = 0x00; // not implemented
+    socFrame.data[3] = 0x00; // not implemented
+    socFrame.data[4] = ( battery.get_soc() && 0xFF ) * 100;
+    socFrame.data[5] = ( (int)battery.get_soc() >> 8 ) * 100;
+    socFrame.data[6] = 0x00; // unused
+    socFrame.data[7] = 0x00; // unused
+
+    mainCAN.sendMessage(&socFrame);
+    return true;
+}
+
+void enable_soc_messages() {
+    add_repeating_timer_ms(1000, send_soc_message, NULL, &socMessageTimer);
+}
+
+
+/*
+ * Status message 0x356
+ *
+ * Follows the SimpBMS format.
+ *
+ * byte 0 = Voltage LSB, scale 0.01, unit V
+ * byte 1 = Voltage MSB, scale 0.01, unit V
+ * byte 2 = Current LSB, scale 0.1, unit A
+ * byte 3 = Current MSB, scale 0.1, unit A
+ * byte 4 = Temperature LSB, scale 0.1, unit C
+ * byte 5 = Temperature MSB, scale 0.1, unit C
+ * byte 6 = unused
+ * byte 7 = unused
+ */
+
 struct can_frame statusFrame;
 
 struct repeating_timer statusMessageTimer;
 
-// https://openinverter.org/wiki/CAN_table_CAN_STD
-
 bool send_status_message(struct repeating_timer *t) {
 
-    extern State state;
-    extern MCP2515 mainCAN;
-
-    statusFrame.can_id = STATUS_MSG_ID;
+    statusFrame.can_id = BMS_STATUS_MSG_ID;
     statusFrame.can_dlc = 8;
 
-    statusFrame.data[0] = 50; // FIXME soc
-
-    if ( state == state_standby ) {
-        statusFrame.data[1] = 0x00 << 4;
-    } else if ( state == state_drive ) {
-        statusFrame.data[1] = 0x01 << 4;
-    } else if ( state == state_charging ) {
-        statusFrame.data[1] = 0x02 << 4;
-    } else if ( state == state_batteryEmpty ) {
-        statusFrame.data[1] = 0x03 << 4;
-    } else if ( state == state_fault ) {
-        statusFrame.data[1] = 0x04 << 4;
-    } else {
-        //
-    }
-    // do pack dead check
+    statusFrame.data[0] = battery.get_voltage() && 0xFF;
+    statusFrame.data[1] = (int)battery.get_voltage() >> 8;
+    statusFrame.data[2] = 0x00; // FIXME get from shunt
+    statusFrame.data[3] = 0x00; // FIXME get from shunt
+    statusFrame.data[4] = battery.get_highest_cell_temperature() && 0xFF;
+    statusFrame.data[5] = (int)battery.get_highest_cell_temperature() >> 8;
+    statusFrame.data[6] = 0x00; // unused
+    statusFrame.data[7] = 0x00; // unused
 
     mainCAN.sendMessage(&statusFrame);
     return true;
@@ -116,60 +206,87 @@ void enable_status_messages() {
 }
 
 
-//// ----
-// 
-// send charge limits message (id = 0x102)
-//
-//// ----
+/*
+ * Alarms message 0x35A
+ *
+ * Follows the SimpBMS format. Note the docs disagree with the code. So,
+ * following the code.
+ *
+ * First 4 bytes are alarms, second 4 bytes are warnings.
+ *
+ * byte 0
+ *   bit 0
+ *   bit 1
+ *   bit 2 = high cell alarm
+ *   bit 3
+ *   bit 4 = low cell alarm
+ *   bit 5
+ *   bit 6 = high temp alarm
+ *   bit 7
+ * byte 1
+ *   bit 0 = low temp alarm
+ * byte 2
+ * byte 3
+ *   bit 0 = cell delta alarm
+ * byte 4
+ *   bit 0
+ *   bit 1
+ *   bit 2 = high cell warn
+ *   bit 3
+ *   bit 4 = low cell warn
+ *   bit 5
+ *   bit 6 = high temp warn
+ * byte 5
+ *   bit 0 = low temp warn
+ * byte 6
+ * byte 7
+ */
 
-// CAN frame to hold charge limits message
-// byte 0 = 0x0
-// byte 1 = DC voltage limit MSB
-// byte 2 = DC voltage limit LSB
-// byte 3 = DC current set point
-// byte 4 = 1 == enable charging
-// byte 5 = SoC
-// byte 6 = 0x0
-// byte 7 = 0x0
-// From https://openinverter.org/wiki/Tesla_Model_S/X_GEN2_Charger
-struct can_frame chargeLimitsFrame;
+struct can_frame alarmFrame;
 
-struct repeating_timer chargeLimitsMessageTimer;
+struct repeating_timer alarmMessageTimer;
 
-bool send_charge_limits_message(struct repeating_timer *t) {
+bool send_alarm_message(struct repeating_timer *t) {
 
-    extern Battery battery;
+    alarmFrame.can_id = BMS_ALARM_MSG_ID;
+    alarmFrame.can_dlc = 3;
 
-    chargeLimitsFrame.can_id = 0x102;
-    chargeLimitsFrame.can_dlc = 8;
+    alarmFrame.data[0] = 0x00;
 
-    // byte 0
-    chargeLimitsFrame.data[0] = 0x0;
-    // byte 1 -- DC voltage limit MSB
-    chargeLimitsFrame.data[1] = 0x0; //fixme
-    // byte 2 -- DC voltage limit LSB
-    chargeLimitsFrame.data[2] = 0x0; //fixme
-    // byte 3 -- DC current set point
-    chargeLimitsFrame.data[3] = (__u8)battery.get_max_charging_current();
-    // byte 4 -- 1 == enable charging
-    chargeLimitsFrame.data[4] = 0x0; //fixme
-    // byte 5 -- SoC
-    chargeLimitsFrame.data[5] = 0x0; //fixme
-    // byte 6 -- 0x0
-    chargeLimitsFrame.data[6] = 0x0;
-    // byte 7 -- 0x0
-    chargeLimitsFrame.data[7] = 0x0;
+    // Set undervolt bit (3)
+    if ( battery.has_empty_cell() ) {
+        alarmFrame.data[0] |= 0x04;
+    }
 
+    // Set overvolt bit (4)
+    if ( battery.has_full_cell() ) {
+        alarmFrame.data[0] |= 0x08;
+    }
+
+    alarmFrame.data[1] = 0x00;
+
+    // Set over temp bit (7)
+    if ( battery.has_temperature_sensor_over_max() ) {
+        alarmFrame.data[1] |= 0x40;
+    }
+
+    alarmFrame.data[2] = 0x00;
+    alarmFrame.data[3] = 0x00;
+    alarmFrame.data[4] = 0x00;
+    alarmFrame.data[5] = 0x00;
+    alarmFrame.data[6] = 0x00;
+    alarmFrame.data[7] = 0x00;
+
+    mainCAN.sendMessage(&alarmFrame);
     return true;
 }
 
-void enable_charge_limits_messages() {
-    add_repeating_timer_ms(1000, send_charge_limits_message, NULL, &chargeLimitsMessageTimer);
+void enable_alarm_messages() {
+    add_repeating_timer_ms(1000, send_alarm_message, NULL, &alarmMessageTimer);
 }
 
-void disable_charge_limits_messages() {
-      //
-}
+
+
 
 
 //// ----
@@ -178,18 +295,60 @@ void disable_charge_limits_messages() {
 //
 //// ----
 
-struct can_frame mainCANInbound;
+
+struct can_frame m;
 struct repeating_timer handleMainCANMessageTimer;
+
 
 bool handle_main_CAN_messages(struct repeating_timer *t) {
 
-    extern MCP2515 mainCAN;
+    if ( mainCAN.readMessage(&m) == MCP2515::ERROR_OK ) {
 
-    if ( mainCAN.readMessage(&mainCANInbound) == MCP2515::ERROR_OK ) {
-        if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_WH ) {
-            // process Wh data
-        } else if ( mainCANInbound.can_id == CAN_ID_ISA_SHUNT_AH ) {
-            // process Ah data
+        switch ( m.can_id ) {
+
+            // ISA shunt amps
+            case 0x521:
+                battery.amps = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) );
+                break;
+
+            // ISA shunt voltage 1
+            case 0x522:
+                battery.shuntVoltage1 = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
+                break;
+
+            // ISA shunt voltage 2
+            case 0x523:
+                battery.shuntVoltage2 = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
+                break;
+
+            // ISA shunt voltage 3
+            case 0x524:
+                battery.shuntVoltage3 = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
+                break;
+
+            // ISA shunt temperature
+            case 0x525:
+                battery.shuntTemperature = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 10;
+                break;
+
+            // ISA shunt kilowatts
+            case 0x526:
+                battery.watts = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
+                break;
+
+            // ISA shunt amp-hours
+            case 0x527:
+                battery.ampSeconds = (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]);
+                break;
+
+            // ISA shunt kilowatt-hours
+            case 0x528:
+                battery.wattHours = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) );
+                break;
+
+            default:
+                break;
+
         }
     }
 
@@ -205,7 +364,6 @@ void enable_handle_main_CAN_messages() {
 struct repeating_timer handleBatteryCANMessagesTimer;
 
 bool handle_battery_CAN_messages(struct repeating_timer *t) {
-    extern Battery battery;
     battery.read_message();
     return true;
 }
@@ -214,3 +372,5 @@ void enable_handle_battery_CAN_messages() {
     add_repeating_timer_ms(10, handle_battery_CAN_messages, NULL, &handleBatteryCANMessagesTimer);
 }
 
+
+// https://openinverter.org/wiki/CAN_table_CAN_STD

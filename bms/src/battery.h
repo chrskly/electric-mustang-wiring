@@ -34,7 +34,8 @@ class Battery {
         float lowestCellTemperature;
         float highestCellTemperature;
 
-        float maxChargingCurrent;
+        float maxChargeCurrent;
+        float maxDischargeCurrent;
 
         // Outputs
         bool heaterEnabled;            // Indicates that the battery heater is currently enabled
@@ -46,6 +47,17 @@ class Battery {
         bool chargeEnable;             // Charger is asking to charge
 
     public:
+        // Readings from ISA shunt
+        float soc;
+        long amps;
+        long shuntVoltage1;
+        long shuntVoltage2;
+        long shuntVoltage3;
+        long shuntTemperature;
+        long watts;
+        long ampSeconds;
+        long wattHours;
+
         Battery (int _numPacks);
         void initialise();
         int print();
@@ -54,10 +66,16 @@ class Battery {
         void read_message();
         void send_test_message();
 
+        float get_soc();
+        void set_soc(float new_soc);
+
         // Voltage
         float get_voltage();
         void set_voltage(float voltage) { this->voltage = voltage; }
         void update_voltage();
+        float get_max_voltage();
+        float get_min_voltage();
+
         void update_cell_voltage(int packIndex, int moduleIndex, int cellIndex, float newCellVoltage);
         int get_index_of_high_pack();
         int get_index_of_low_pack();
@@ -70,10 +88,12 @@ class Battery {
         float voltage_delta_between_packs();
         BatteryPack* get_pack_with_highest_voltage();
         bool packs_are_imbalanced();
+        float get_highest_cell_temperature();
 
         // Temperature
         bool has_temperature_sensor_over_max();
-        void update_max_charging_current();
+        void update_max_charge_current();
+        void update_max_discharge_current();
         float get_lowest_temperature();
         bool too_cold_to_charge();
 
@@ -83,7 +103,8 @@ class Battery {
         void disable_heater();
         void enable_inhibit_charge();
         void disable_inhibit_charge();
-        float get_max_charging_current();
+        float get_max_charge_current();
+        float get_max_discharge_current();
         void enable_inhibit_drive();
         void disable_inhibit_drive();
         bool drive_is_inhibited();

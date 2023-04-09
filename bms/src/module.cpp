@@ -224,7 +224,7 @@ bool BatteryModule::temperature_at_warning_level() {
 //// ----
 
 // Return the maximum current the charger may push into the module
-int BatteryModule::get_max_charging_current() {
+int BatteryModule::get_max_charge_current() {
     float highestTemperature = get_highest_temperature();
     if ( highestTemperature > CHARGE_THROTTLE_TEMP_LOW ) {
         float degreesOver = highestTemperature - CHARGE_THROTTLE_TEMP_LOW;

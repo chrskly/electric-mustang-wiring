@@ -91,8 +91,14 @@ const int INHIBIT_CONTACTOR_PINS[2] = { 2, 3 };    // Low-side switch to disallo
 
 //// ---- CAN message IDs
 
-#define STATUS_MSG_ID 0x355                         // Status message emitted by the BMS
+#define BMS_LIMITS_MSG_ID 0x351                     // Charge/discharge limits message
+#define BMS_SOC_MSG_ID 0x355                        // SoC status message
+#define BMS_STATUS_MSG_ID 0x356                     // Status message emitted by the BMS
+#define BMS_ALARM_MSG_ID 0x35A                      // Warning message emitted by the BMS
+
 #define CAN_ID_ISA_SHUNT_AH 0x527                   // Message ISA shunt sends which contains Ah data.
 #define CAN_ID_ISA_SHUNT_WH 0x528                   // Message ISA shunt sends which contains Wh data.
 
 #endif
+
+
