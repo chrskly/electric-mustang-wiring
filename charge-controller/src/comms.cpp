@@ -32,7 +32,7 @@ struct repeating_timer handleMainCANMessageTimer;
 /*
  * Process inbound messages on the main CANbus
  */
-bool handle_main_CAN_messages(struct repeating_timer *t) {
+bool handle_main_CAN_message(struct repeating_timer *t) {
 
     extern MCP2515 mainCAN;
     extern Car car;
@@ -56,6 +56,6 @@ bool handle_main_CAN_messages(struct repeating_timer *t) {
 }
 
 void enable_handle_main_CAN_messages() {
-    add_repeating_timer_ms(10, handle_main_CAN_messages, NULL, &handleMainCANMessageTimer);
+    add_repeating_timer_ms(10, handle_main_CAN_message, NULL, &handleMainCANMessageTimer);
 }
 

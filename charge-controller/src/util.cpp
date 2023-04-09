@@ -17,11 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <time.h>
+#include <stdio.h>
+#include <pico/stdlib.h>
 
-#ifndef INPUTS_H
-#define INPUTS_H
-
-void enable_listen_for_IN1_signal();
-void enable_listen_for_IN2_signal();
-
-#endif
+clock_t get_clock() {
+    return (clock_t) time_us_64() / 10000;
+}

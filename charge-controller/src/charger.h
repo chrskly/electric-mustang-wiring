@@ -17,12 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "chademo.h"
-#include "ccs.h"
-
-
 #ifndef BATTERY_H
 #define BATTERY_H
+
+#include "chademo.h"
+#include "ccs.h"
 
 class Charger {
     private:

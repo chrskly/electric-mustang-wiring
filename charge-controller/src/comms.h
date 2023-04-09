@@ -17,5 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef COMMS_H
+#define COMMS_H
+
 bool handle_main_CAN_messages(struct repeating_timer *t);
 void enable_handle_main_CAN_messages();
+
+#endif

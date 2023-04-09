@@ -11,3 +11,4 @@ cmake_install.cmake
 elf2uf2/
 generated/
 pico-sdk/
+build

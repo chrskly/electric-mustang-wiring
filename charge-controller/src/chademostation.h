@@ -51,6 +51,8 @@ class ChademoStation {
         ChademoStation();
         void reinitialise();
         bool initial_parameter_exchange_complete();
+        void process_capabilities_update();
+        void process_status_update();
 
 
 };

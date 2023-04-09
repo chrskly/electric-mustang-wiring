@@ -19,21 +19,24 @@
 
 #include <stdio.h>
 
+#include "hardware/gpio.h"
+
 #include "chademo.h"
 #include "car.h"
 #include "chademostatemachine.h"
+#include "settings.h"
 
 using namespace std;
 
 
 Chademo::Chademo() {
-    state = &chademo_state_B1;
+    state = &chademo_state_idle;
 }
 
 /*
  * Return true if plug is inserted in car.
  */
-bool Chademp::plug_is_in() {
+bool Chademo::plug_is_in() {
     return ( gpio_get(CHADEMO_CS_PIN) == 0 );
 }
 

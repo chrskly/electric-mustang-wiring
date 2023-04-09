@@ -20,6 +20,8 @@
 #include <stdio.h>
 
 #include "chademostatemachine.h"
+
+#include "chademocomms.h"
 #include "chademo.h"
 
 using namespace std;
@@ -45,7 +47,7 @@ void chademo_state_idle(ChademoEvent event) {
             if ( chademo.in1_is_active() ) {
                 chademo.station.reinitialise();
                 // being sending messages needed for handshaking
-                enable_send_outbound_CAN_messages()
+                enable_send_outbound_CAN_messages();
                 chademo.state = chademo_state_handshaking;
                 break;
             }
@@ -54,7 +56,7 @@ void chademo_state_idle(ChademoEvent event) {
             if ( chademo.plug_is_in() ) {
                 chademo.station.reinitialise();
                 // being sending messages needed for handshaking
-                enable_send_outbound_CAN_messages()
+                enable_send_outbound_CAN_messages();
                 chademo.state = chademo_state_handshaking;
                 break;
             }
@@ -89,6 +91,9 @@ void chademo_state_idle(ChademoEvent event) {
  */
 void chademo_state_handshaking(ChademoEvent event) {
 
+    extern ChademoStation station;
+    extern ChademoState state;
+
     switch (event) {
 
         case E_EVSE_CAPABILITIES_UPDATED:
@@ -97,7 +102,7 @@ void chademo_state_handshaking(ChademoEvent event) {
             }
             break;
 
-        case E_CAPABILITIES_MISMATCH:
+        case E_EVSE_INCOMPATIBLE:
             state = chademo_state_error;
 
         case E_EVSE_STATUS_UPDATED:
@@ -124,7 +129,7 @@ void chademo_state_handshaking(ChademoEvent event) {
 void chademo_state_charge_prep(ChademoEvent event) {
 
     switch (event) {
-        case FOO:
+        case E_PLUG_REMOVED:
             break;
     }
 }
@@ -136,7 +141,10 @@ void chademo_state_charge_prep(ChademoEvent event) {
  *
  */
 void chademo_state_error(ChademoEvent event) {
-    //
+    switch (event) {
+        case E_PLUG_REMOVED:
+            state = chademo_state_idle;
+    }
 }
 
 

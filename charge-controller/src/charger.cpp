@@ -44,6 +44,9 @@ MCP2515 chademoCAN(SPI_PORT, CHADEMO_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000
 MCP2515 cssCAN(SPI_PORT, CCS_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 
 Chademo chademo;
+ChademoState state;
+ChademoStation station;
+
 CCS ccs;
 StatusLight statusLight;
 Car car;

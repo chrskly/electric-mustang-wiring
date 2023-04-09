@@ -25,8 +25,15 @@
 #include "chademo.h"
 #include "chademostation.h"
 #include "car.h"
+#include "util.h"
 
 using namespace std;
+
+extern ChademoStation station;
+extern Car car;
+extern MCP2515 chademoCAN;
+extern Chademo chademo;
+extern ChademoState state;
 
 
 /*
@@ -36,10 +43,6 @@ using namespace std;
  * byte 6     : Charging rate indication (%). 1% bit, 100%
  */
 void send_limits_message() {
-
-    extern ChademoStation station;
-    extern Car car;
-    extern MCP2515 chademoCAN;
 
     struct can_frame frame;
 
@@ -71,10 +74,6 @@ void send_limits_message() {
  * byte 5 + 6 : capacity of battery (kWh). 0.11 kWh/bit
  */
 void send_charge_time_message() {
-
-    extern ChademoStation station;
-    extern Car car;
-    extern MCP2515 chademoCAN;
 
     struct can_frame frame;
 
@@ -116,10 +115,6 @@ void send_charge_time_message() {
  * byte 6     : Charging rate. 1 %/bit (0% -> 100%)
  */
 void send_status_message() {
-
-    extern ChademoStation station;
-    extern Car car;
-    extern MCP2515 chademoCAN;
 
     struct can_frame frame;
 
@@ -165,12 +160,6 @@ struct repeating_timer handleChademoCANMessageTimer;
 
 bool handle_chademo_CAN_messages(struct repeating_timer *t) {
 
-    extern MCP2515 chademoCAN;
-    extern ChademoState state;
-    extern ChademoStation station;
-    extern Chademo chademo;
-    //extern ChademoStation station;
-
     if ( chademoCAN.readMessage(&chademoInboundFrame) == MCP2515::ERROR_OK ) {
 
         switch ( chademoInboundFrame.can_id ) {
@@ -184,7 +173,7 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
                 // 1V/bit (0 to 600V)
                 chademo.station.thresholdVoltage = chademoInboundFrame.data[4] + chademoInboundFrame.data[5] << 8;
 
-                station.lastUpdateFromEVSE = ;
+                station.lastUpdateFromEVSE = get_clock();
 
                 chademo.state(E_EVSE_CAPABILITIES_UPDATED);
                 break;
@@ -205,6 +194,8 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
                 chademo.station.batteryIncompatability = (chademoInboundFrame.data[5] & ( 1 << 3 )) >> 3;    // bit 3
                 chademo.station.chargingSystemMalfunction = (chademoInboundFrame.data[5] & ( 1 << 4 )) >> 4; // bit 4
                 chademo.station.chargerStopControl = (chademoInboundFrame.data[5] & ( 1 << 5 )) >> 5;        // bit 5
+
+                station.lastUpdateFromEVSE = get_clock();
 
                 chademo.state(E_EVSE_STATUS_UPDATED);
                 break;

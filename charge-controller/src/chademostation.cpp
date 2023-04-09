@@ -18,8 +18,13 @@
  */
 
 #include <stdio.h>
+#include <algorithm>
 
 #include "chademostation.h"
+#include "chademostatemachine.h"
+#include "car.h"
+
+#include "settings.h"
 
 using namespace std;
 
@@ -70,8 +75,8 @@ void ChademoStation::process_capabilities_update() {
         return;
     }
 
-    //
-    car.targetChargingCurrent = min(availableCurrent, maximumChargingCurrent);
+    // 
+    car.targetChargingCurrent = min(availableCurrent, car.maximumChargingCurrent);
 
 }
 

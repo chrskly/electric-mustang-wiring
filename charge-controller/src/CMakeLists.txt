@@ -12,32 +12,34 @@ set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 pico_sdk_init()
 
 add_executable(charger
-        settings.h
-        mcp2515/mcp2515.cpp
-        ccs.h
-        ccs.cpp
-        ccsstatemachine.h
-        ccsstatemachine.cpp
-        chademo.h
-        chademo.cpp
-        chademocomms.h
-        chademocomms.cpp
-        chademostatemachine.h
-        chademostatemachine.cpp
-        chademostation.h
-        chademostation.cpp
-        charger.h
-        charger.cpp
-        ccscomms.h
-        ccscomms.cpp
-        comms.h
-        comms.cpp
-        led.h
-        led.cpp
-        inputs.h
-        inputs.cpp
-        car.h
         car.cpp
+        car.h
+        ccs.cpp
+        ccs.h
+        ccscomms.cpp
+        ccscomms.h
+        ccsstatemachine.cpp
+        ccsstatemachine.h
+        chademo.cpp
+        chademo.h
+        chademocomms.cpp
+        chademocomms.h
+        chademostatemachine.cpp
+        chademostatemachine.h
+        chademostation.cpp
+        chademostation.h
+        charger.cpp
+        charger.h
+        comms.cpp
+        comms.h
+        inputs.cpp
+        inputs.h
+        led.cpp
+        led.h
+        settings.h
+        util.cpp
+        util.h
+        mcp2515/mcp2515.cpp
         )
 
 pico_add_extra_outputs(charger)

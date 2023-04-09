@@ -17,11 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef UTIL_H
+#define UTIL_H
 
-#ifndef INPUTS_H
-#define INPUTS_H
-
-void enable_listen_for_IN1_signal();
-void enable_listen_for_IN2_signal();
+clock_t get_clock();
 
 #endif

@@ -17,5 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef CCSCOMMS_H
+#define CCSCOMMS_H
+
 bool handle_css_CAN_messages(struct repeating_timer *t);
 void enable_handle_ccs_CAN_messages();
+
+#endif

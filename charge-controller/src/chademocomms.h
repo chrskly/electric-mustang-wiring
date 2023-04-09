@@ -17,6 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef CHADEMOCOMMS_H
+#define CHADEMOCOMMS_H
+
 bool handle_chademo_CAN_messages(struct repeating_timer *t);
 void enable_handle_chademo_CAN_messages();
 void enable_send_outbound_CAN_messages();
+void enable_handle_chademo_CAN_messages();
+
+#endif

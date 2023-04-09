@@ -20,6 +20,9 @@
 #include <stdio.h>
 
 #include "car.h"
+#include "util.h"
+
+#include "settings.h"
 
 using namespace std;
 

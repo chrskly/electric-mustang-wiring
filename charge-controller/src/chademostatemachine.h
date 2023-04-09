@@ -25,8 +25,8 @@ enum ChademoEvent {
     E_PLUG_REMOVED,
     E_IN1_ACTIVATED,
     E_IN1_DEACTIVATED,
-    E_IN2_WENT_HIGH,
-    E_IN2_WENT_LOW,
+    E_IN2_ACTIVATED,
+    E_IN2_DEACTIVATED,
     E_EVSE_CAPABILITIES_UPDATED,
     E_EVSE_STATUS_UPDATED,
     E_EVSE_INCOMPATIBLE,         // 
@@ -34,15 +34,9 @@ enum ChademoEvent {
 
 typedef void (*ChademoState)(ChademoEvent);
 
-void chademo_state_A(ChademoEvent event);
-void chademo_state_B1(ChademoEvent event);
-void chademo_state_B2(ChademoEvent event);
-void chademo_state_B3(ChademoEvent event);
-void chademo_state_C(ChademoEvent event);
-void chademo_state_D(ChademoEvent event);
-void chademo_state_Bprime1(ChademoEvent event);
-void chademo_state_Bprime2(ChademoEvent event);
-void chademo_state_Bprime3(ChademoEvent event);
-void chademo_event_Bprime4(ChademoEvent event);
+void chademo_state_idle(ChademoEvent event);
+void chademo_state_handshaking(ChademoEvent event);
+void chademo_state_charge_prep(ChademoEvent event);
+void chademo_state_error(ChademoEvent event);
 
 #endif
