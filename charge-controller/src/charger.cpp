@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 using namespace std;
 
 #include <stdio.h>
@@ -43,13 +42,12 @@ MCP2515 mainCAN(SPI_PORT, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 MCP2515 chademoCAN(SPI_PORT, CHADEMO_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 MCP2515 cssCAN(SPI_PORT, CCS_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 
-Chademo chademo;
-ChademoState state;
-ChademoStation station;
-
-CCS ccs;
-StatusLight statusLight;
 Car car;
+StatusLight statusLight;
+
+Chademo chademo;
+CCS ccs;
+
 
 int main() {
     stdio_init_all();

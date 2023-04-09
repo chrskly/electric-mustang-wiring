@@ -17,11 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using namespace std;
+
 #include <stdio.h>
 
 #include "ccs.h"
-
-using namespace std;
 
 CCS::CCS() {
     //

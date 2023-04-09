@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using namespace std;
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 
@@ -24,7 +26,9 @@
 #include "settings.h"
 #include "car.h"
 
-using namespace std;
+extern MCP2515 mainCAN;
+extern Car car;
+
 
 struct can_frame mainCANInboundFrame;
 struct repeating_timer handleMainCANMessageTimer;
@@ -33,9 +37,6 @@ struct repeating_timer handleMainCANMessageTimer;
  * Process inbound messages on the main CANbus
  */
 bool handle_main_CAN_message(struct repeating_timer *t) {
-
-    extern MCP2515 mainCAN;
-    extern Car car;
 
     if ( mainCAN.readMessage(&mainCANInboundFrame) == MCP2515::ERROR_OK ) {
 

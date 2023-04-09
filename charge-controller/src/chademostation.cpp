@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using namespace std;
+
 #include <stdio.h>
 #include <algorithm>
 
@@ -26,7 +28,6 @@
 
 #include "settings.h"
 
-using namespace std;
 
 extern ChademoState state;
 extern Car car;

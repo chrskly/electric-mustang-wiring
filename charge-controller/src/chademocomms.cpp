@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using namespace std;
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 
@@ -27,13 +29,10 @@
 #include "car.h"
 #include "util.h"
 
-using namespace std;
 
-extern ChademoStation station;
 extern Car car;
 extern MCP2515 chademoCAN;
 extern Chademo chademo;
-extern ChademoState state;
 
 
 /*
@@ -81,8 +80,8 @@ void send_charge_time_message() {
     frame.can_dlc = 8;
     frame.data[0] = 0x00; // unused
     frame.data[1] = 0xFF; // Don't declare max charge time in seconds
-    frame.data[2] = car.calculate_max_charging_time_minutes(station.availableCurrent);
-    frame.data[3] = car.calculate_charging_time_minutes(station.availableCurrent);
+    frame.data[2] = car.calculate_max_charging_time_minutes(chademo.station.availableCurrent);
+    frame.data[3] = car.calculate_charging_time_minutes(chademo.station.availableCurrent);
     frame.data[4] = 0x00; // unused
     frame.data[5] = car.batteryCapacity & 0xFF; // lsb
     frame.data[6] = car.batteryCapacity >> 8;  // msb
@@ -173,7 +172,7 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
                 // 1V/bit (0 to 600V)
                 chademo.station.thresholdVoltage = chademoInboundFrame.data[4] + chademoInboundFrame.data[5] << 8;
 
-                station.lastUpdateFromEVSE = get_clock();
+                chademo.station.lastUpdateFromEVSE = get_clock();
 
                 chademo.state(E_EVSE_CAPABILITIES_UPDATED);
                 break;
@@ -195,7 +194,7 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
                 chademo.station.chargingSystemMalfunction = (chademoInboundFrame.data[5] & ( 1 << 4 )) >> 4; // bit 4
                 chademo.station.chargerStopControl = (chademoInboundFrame.data[5] & ( 1 << 5 )) >> 5;        // bit 5
 
-                station.lastUpdateFromEVSE = get_clock();
+                chademo.station.lastUpdateFromEVSE = get_clock();
 
                 chademo.state(E_EVSE_STATUS_UPDATED);
                 break;

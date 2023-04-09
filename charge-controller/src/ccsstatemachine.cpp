@@ -17,11 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using namespace std;
+
 #include <stdio.h>
 
 #include "ccsstatemachine.h"
 
-using namespace std;
 
 void ccs_state_standby(CCSEvent event) {
 /*

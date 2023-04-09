@@ -17,13 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using namespace std;
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 
 #include "mcp2515/mcp2515.h"
 #include "settings.h"
 
-using namespace std;
 
 struct can_frame cssCANInbound;
 struct repeating_timer handleCssCANMessageTimer;

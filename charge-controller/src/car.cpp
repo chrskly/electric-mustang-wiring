@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using namespace std;
+
 #include <stdio.h>
 
 #include "car.h"
@@ -24,7 +26,6 @@
 
 #include "settings.h"
 
-using namespace std;
 
 Car::Car() {
     maximumBatteryVoltage = BATTERY_MAX_VOLTAGE;

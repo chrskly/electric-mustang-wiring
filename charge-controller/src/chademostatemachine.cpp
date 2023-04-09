@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using namespace std;
+
 #include <stdio.h>
 
 #include "chademostatemachine.h"
@@ -24,11 +26,8 @@
 #include "chademocomms.h"
 #include "chademo.h"
 
-using namespace std;
 
 extern Chademo chademo;
-extern ChademoState state;
-extern ChademoStation station;
 
 /*
  * State : idle
@@ -91,28 +90,25 @@ void chademo_state_idle(ChademoEvent event) {
  */
 void chademo_state_handshaking(ChademoEvent event) {
 
-    extern ChademoStation station;
-    extern ChademoState state;
-
     switch (event) {
 
         case E_EVSE_CAPABILITIES_UPDATED:
-            if ( station.initial_parameter_exchange_complete() ) {
-                state = chademo_state_charge_prep;
+            if ( chademo.station.initial_parameter_exchange_complete() ) {
+                chademo.state = chademo_state_charge_prep;
             }
             break;
 
         case E_EVSE_INCOMPATIBLE:
-            state = chademo_state_error;
+            chademo.state = chademo_state_error;
 
         case E_EVSE_STATUS_UPDATED:
-            if ( station.initial_parameter_exchange_complete() ) {
-                state = chademo_state_charge_prep;
+            if ( chademo.station.initial_parameter_exchange_complete() ) {
+                chademo.state = chademo_state_charge_prep;
             }
             break;
 
         case E_PLUG_REMOVED:
-            state = chademo_state_idle;
+            chademo.state = chademo_state_idle;
             break;
 
         default:
@@ -143,7 +139,7 @@ void chademo_state_charge_prep(ChademoEvent event) {
 void chademo_state_error(ChademoEvent event) {
     switch (event) {
         case E_PLUG_REMOVED:
-            state = chademo_state_idle;
+            chademo.state = chademo_state_idle;
     }
 }
 

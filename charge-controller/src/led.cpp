@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using namespace std;
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 
 #include "led.h"
-
-using namespace std;
 
 
 // Switch status light to a different mode
