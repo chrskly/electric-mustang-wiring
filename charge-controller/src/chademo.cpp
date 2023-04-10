@@ -28,6 +28,8 @@ using namespace std;
 #include "chademostatemachine.h"
 #include "settings.h"
 
+extern Car car;
+
 
 Chademo::Chademo() {
     state = &chademo_state_idle;
@@ -73,4 +75,23 @@ bool Chademo::battery_current_deviation_error() {
     //
     return false;
 }
+
+////----
+//
+// Handshaking checks
+//
+////----
+
+
+bool Chademo::car_and_station_protocol_compatible() {
+    return ( car.chademoControlProtocolNumber >= station.controlProtocolNumber );
+}
+
+
+bool Chademo::car_and_station_voltage_compatible() {
+    return ( car.maximumBatteryVoltage < station.outputVoltage );
+}
+
+
+
 

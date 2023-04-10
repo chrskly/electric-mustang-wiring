@@ -42,17 +42,21 @@ class ChademoStation {
         bool stationMalfunction;
         bool vehicleConnectorLock;
         bool batteryIncompatability;
-        uint8_t chargingCurrentRequest;
-        bool chargerStopControl;
         bool chargingSystemMalfunction;
+        bool chargerStopControl;
 
-        uint16_t lastUpdateFromEVSE;
+        //uint8_t chargingCurrentRequest;
+        
+        clock_t lastUpdateFromEVSE;
 
         ChademoStation();
         void reinitialise();
         bool initial_parameter_exchange_complete();
         void process_capabilities_update();
         void process_status_update();
+
+        void heartbeat();
+        bool is_alive();
 
 
 };

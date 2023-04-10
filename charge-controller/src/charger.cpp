@@ -19,6 +19,7 @@
 
 using namespace std;
 
+#include <time.h>
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
@@ -37,16 +38,25 @@ using namespace std;
 #include "comms.h"
 #include "led.h"
 #include "car.h"
+#include "charger.h"
 
 MCP2515 mainCAN(SPI_PORT, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 MCP2515 chademoCAN(SPI_PORT, CHADEMO_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 MCP2515 cssCAN(SPI_PORT, CCS_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 
 Car car;
+Charger charger;
 StatusLight statusLight;
 
-Chademo chademo;
-CCS ccs;
+Charger::Charger(){}
+
+void Charger::bms_heartbeat() {
+    bmsLastUpdate = get_clock();
+}
+
+bool Charger::bms_is_alive() {
+    return ( ((double)(get_clock() - bmsLastUpdate) / CLOCKS_PER_SEC) < BMS_TTL );
+}
 
 
 int main() {

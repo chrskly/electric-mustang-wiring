@@ -59,6 +59,12 @@
 #define BMS_STATUS_MESSAGE_ID 0x355
 #define BMS_LIMITS_MESSAGE_ID 0x102
 
+// If we don't see the BMS in this number of seconds, then something is wrong
+#define BMS_TTL 5
+
+// If we don't see the ChaDeMo station in this number of seconds, then something is wrong
+#define CHADEMO_STATION_TTL 2
+
 // This scaling factor is used to calculate max charging time from the estimated charging time
 #define MAX_CHARGING_TIME_SCALING_FACTOR 1.2
 

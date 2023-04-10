@@ -19,12 +19,14 @@
 
 using namespace std;
 
+#include <time.h>
 #include <stdio.h>
 #include <algorithm>
 
 #include "chademostation.h"
 #include "chademostatemachine.h"
 #include "car.h"
+#include "util.h"
 
 #include "settings.h"
 
@@ -77,7 +79,7 @@ void ChademoStation::process_capabilities_update() {
     }
 
     // 
-    car.targetChargingCurrent = min(availableCurrent, car.maximumChargingCurrent);
+    car.targetChargingCurrent = min((uint16_t)availableCurrent, car.maximumChargeCurrent);
 
 }
 
@@ -120,5 +122,13 @@ void ChademoStation::process_status_update() {
 }
 
 
+// Mark the chademo station as seen right now
+void ChademoStation::heartbeat() {
+    lastUpdateFromEVSE = get_clock();
+}
 
+// Return true if station was seen recently enough to be considered alive
+bool ChademoStation::is_alive() {
+    return ( ((double)(get_clock() - lastUpdateFromEVSE) / CLOCKS_PER_SEC) < BMS_TTL );
+}
 

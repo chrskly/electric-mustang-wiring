@@ -56,6 +56,9 @@ class Chademo {
         bool battery_voltage_deviation_error();
         bool battery_current_deviation_error();
 
+        bool car_and_station_protocol_compatible();
+        bool car_and_station_voltage_compatible();
+
 };
 
 #endif

@@ -22,13 +22,21 @@
 
 #include "chademo.h"
 #include "ccs.h"
+#include "util.h"
 
 class Charger {
+
     private:
-        Chademo chademo;
-        CSS css;
+        clock_t bmsLastUpdate;
+
     public:
-        void 
+        Chademo chademo;
+        CCS css;
+
+        Charger();
+        void bms_heartbeat();
+        bool bms_is_alive();
+
 };
 
 #endif

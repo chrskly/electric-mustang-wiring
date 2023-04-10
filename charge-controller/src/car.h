@@ -23,8 +23,6 @@
 class Car {
 
     private:
-        uint8_t chademoControlProtocolNumber;
-        uint16_t maximumBatteryVoltage;
         uint8_t maximumChargingTimeMinutes;
         uint8_t maximumChargingTimeSeconds;
         uint16_t targetBatteryVoltage;
@@ -32,11 +30,18 @@ class Car {
         bool highBatteryTemperature;
 
     public:
-        uint16_t batteryCapacity;  // 0.11 kWh/bit
-        uint8_t soc; // Battery SoC, received from BMS
+        uint8_t chademoControlProtocolNumber;
 
-        uint8_t maximumChargingCurrent; // Maximum charging current from BMS
+        // Received from BMS
+        uint16_t soc; // Battery SoC, received from BMS
+        uint16_t maximumBatteryVoltage;
+        uint16_t maximumChargeCurrent; // Maximum charging current from BMS
+        uint16_t maximumDischargeCurrent;
+        uint16_t minimumBatteryVoltage;
+
         uint8_t targetChargingCurrent;  // charging current to request to EVSE
+
+        uint16_t batteryCapacity;  // 0.11 kWh/bit
 
         Car();
         uint8_t calculate_charging_time_minutes(uint8_t current);

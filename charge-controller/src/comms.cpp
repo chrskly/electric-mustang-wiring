@@ -25,9 +25,11 @@ using namespace std;
 #include "mcp2515/mcp2515.h"
 #include "settings.h"
 #include "car.h"
+#include "charger.h"
 
 extern MCP2515 mainCAN;
 extern Car car;
+extern Charger charger;
 
 
 struct can_frame mainCANInboundFrame;
@@ -43,10 +45,16 @@ bool handle_main_CAN_message(struct repeating_timer *t) {
         switch ( mainCANInboundFrame.can_id ) {
 
             case BMS_STATUS_MESSAGE_ID:
-                car.soc = mainCANInboundFrame.data[0];
+                car.soc = mainCANInboundFrame.data[0] | mainCANInboundFrame.data[1] << 8;
+                charger.bms_heartbeat();
+                // FIXME record msg received time
 
             case BMS_LIMITS_MESSAGE_ID:
-                car.maximumChargingCurrent = mainCANInboundFrame.data[3];
+                car.maximumBatteryVoltage = mainCANInboundFrame.data[0] | mainCANInboundFrame.data[1] << 8;
+                car.maximumChargeCurrent = mainCANInboundFrame.data[2] | mainCANInboundFrame.data[3] << 8;
+                car.maximumDischargeCurrent = mainCANInboundFrame.data[4] | mainCANInboundFrame.data[5] << 8;
+                car.minimumBatteryVoltage = mainCANInboundFrame.data[6] | mainCANInboundFrame.data[7] << 8;
+                // FIXME record msg received time
 
             break;
 

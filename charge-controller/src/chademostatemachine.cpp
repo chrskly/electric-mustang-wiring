@@ -22,12 +22,11 @@ using namespace std;
 #include <stdio.h>
 
 #include "chademostatemachine.h"
-
 #include "chademocomms.h"
-#include "chademo.h"
+#include "charger.h"
 
 
-extern Chademo chademo;
+extern Charger charger;
 
 /*
  * State : idle
@@ -43,20 +42,20 @@ void chademo_state_idle(ChademoEvent event) {
     switch (event) {
 
         case E_PLUG_INSERTED:
-            if ( chademo.in1_is_active() ) {
-                chademo.station.reinitialise();
-                // being sending messages needed for handshaking
+            if ( charger.chademo.in1_is_active() ) {
+                charger.chademo.station.reinitialise();
+                // begin sending messages needed for handshaking
                 enable_send_outbound_CAN_messages();
-                chademo.state = chademo_state_handshaking;
+                charger.chademo.state = chademo_state_handshaking;
                 break;
             }
 
         case E_IN1_ACTIVATED:
-            if ( chademo.plug_is_in() ) {
-                chademo.station.reinitialise();
-                // being sending messages needed for handshaking
+            if ( charger.chademo.plug_is_in() ) {
+                charger.chademo.station.reinitialise();
+                // begin sending messages needed for handshaking
                 enable_send_outbound_CAN_messages();
-                chademo.state = chademo_state_handshaking;
+                charger.chademo.state = chademo_state_handshaking;
                 break;
             }
 
@@ -93,22 +92,23 @@ void chademo_state_handshaking(ChademoEvent event) {
     switch (event) {
 
         case E_EVSE_CAPABILITIES_UPDATED:
-            if ( chademo.station.initial_parameter_exchange_complete() ) {
-                chademo.state = chademo_state_charge_prep;
+            // validate parameters
+            if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
+                charger.chademo.state = chademo_state_charge_prep;
             }
             break;
 
         case E_EVSE_INCOMPATIBLE:
-            chademo.state = chademo_state_error;
+            charger.chademo.state = chademo_state_error;
 
         case E_EVSE_STATUS_UPDATED:
-            if ( chademo.station.initial_parameter_exchange_complete() ) {
-                chademo.state = chademo_state_charge_prep;
+            if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
+                charger.chademo.state = chademo_state_charge_prep;
             }
             break;
 
         case E_PLUG_REMOVED:
-            chademo.state = chademo_state_idle;
+            charger.chademo.state = chademo_state_idle;
             break;
 
         default:
@@ -139,7 +139,7 @@ void chademo_state_charge_prep(ChademoEvent event) {
 void chademo_state_error(ChademoEvent event) {
     switch (event) {
         case E_PLUG_REMOVED:
-            chademo.state = chademo_state_idle;
+            charger.chademo.state = chademo_state_idle;
     }
 }
 
@@ -164,7 +164,7 @@ void chademo_state_B1(ChademoEvent event) {
     switch (event) {
 
         case E_EVSE_CAPABILITIES_UPDATED:
-            chademo.station.initial_parameter_exchange_complete();
+            charger.chademo.station.initial_parameter_exchange_complete();
             break;
 
         case E_EVSE_STATUS_UPDATED:

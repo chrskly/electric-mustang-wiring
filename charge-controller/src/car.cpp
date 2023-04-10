@@ -29,7 +29,7 @@ using namespace std;
 
 Car::Car() {
     maximumBatteryVoltage = BATTERY_MAX_VOLTAGE;
-    maximumChargingCurrent = BATTERY_MAX_CURRENT;
+    maximumChargeCurrent = BATTERY_MAX_CURRENT;
 }
 
 /*
