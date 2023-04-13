@@ -30,7 +30,7 @@ using namespace std;
 /*
  * IN1 (a.k.a 'f'), d1 enable signal, plug pin 2
  * IN2 (a.k.a 'g'), d2 enable signal, plug pin 10
- * CS  (a.k.a 'h'), pilot signal, plug pin 7 -- relay + enable signal?
+ * CS  (a.k.a 'h'), pilot signal, plug pin 7
  */
 
 void gpio_callback(uint gpio, uint32_t events) {

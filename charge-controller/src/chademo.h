@@ -58,6 +58,7 @@ class Chademo {
 
         bool car_and_station_protocol_compatible();
         bool car_and_station_voltage_compatible();
+        bool car_and_station_capabilities_match();
 
 };
 

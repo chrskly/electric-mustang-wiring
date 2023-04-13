@@ -44,6 +44,7 @@ void ChademoStation::reinitialise() {
     controlProtocolNumber = 0;
     maximumVoltageAvailable = 0;
     availableCurrent = 0;
+    vehicleConnectorLock = false;
 }
 
 /*
@@ -57,9 +58,12 @@ void ChademoStation::reinitialise() {
  *   - batteryIncompatability
  */
 bool ChademoStation::initial_parameter_exchange_complete() {
-    return ( controlProtocolNumber != 0 && \
-             maximumVoltageAvailable != 0 && \
-             availableCurrent != 0 );
+    return (
+        controlProtocolNumber != 0 && 
+        maximumVoltageAvailable != 0 && 
+        availableCurrent != 0 && 
+        ! batteryIncompatability
+    );
 }
 
 /*
@@ -131,4 +135,13 @@ void ChademoStation::heartbeat() {
 bool ChademoStation::is_alive() {
     return ( ((double)(get_clock() - lastUpdateFromEVSE) / CLOCKS_PER_SEC) < BMS_TTL );
 }
+
+
+bool ChademoStation::connector_is_locked() {
+    return vehicleConnectorLock;
+}
+
+
+
+
 

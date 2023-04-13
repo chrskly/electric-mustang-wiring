@@ -42,26 +42,28 @@ void chademo_state_idle(ChademoEvent event) {
     switch (event) {
 
         case E_PLUG_INSERTED:
-            if ( charger.chademo.in1_is_active() ) {
-                charger.chademo.station.reinitialise();
-                // begin sending messages needed for handshaking
-                enable_send_outbound_CAN_messages();
-                charger.chademo.state = chademo_state_handshaking;
-                break;
-            }
-
-        case E_IN1_ACTIVATED:
-            if ( charger.chademo.plug_is_in() ) {
-                charger.chademo.station.reinitialise();
-                // begin sending messages needed for handshaking
-                enable_send_outbound_CAN_messages();
-                charger.chademo.state = chademo_state_handshaking;
-                break;
-            }
+            charger.chademo.station.reinitialise();
+            // begin sending messages needed for handshaking
+            enable_send_outbound_CAN_messages();
+            charger.chademo.state = chademo_state_handshaking;
+            break;
 
         default:
             printf("WARNING : received invalid event\n");
 
+    }
+}
+
+/*
+ * Wait for go-ahead from station
+ */
+void chademo_plug_in(ChademoEvent event) {
+    switch (event) {
+        case E_IN1_ACTIVATED:
+            charger.chademo.state = chademo_state_handshaking;
+            break;
+        default:
+            printf("WARNING : received invalid event\n");
     }
 }
 
@@ -92,20 +94,57 @@ void chademo_state_handshaking(ChademoEvent event) {
     switch (event) {
 
         case E_EVSE_CAPABILITIES_UPDATED:
-            // validate parameters
+
+            // Can the charger provide us with enough voltage?
+            if ( ! charger.chademo.car_and_station_voltage_compatible() ) {
+                printf("ERROR : Insufficient voltage available at station. Stopping\n");
+                // FIXME what to do here?
+            }
+
+            // If we have received all of the params we need from the station, move to the next step
             if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
-                charger.chademo.state = chademo_state_charge_prep;
+                // Activate OUT1/CP3 to indicate to station that we can proceed
+                charger.chademo.activate_out1();
+                charger.chademo.state = chademo_await_connector_lock;
+            }
+
+            break;
+
+        case E_EVSE_STATUS_UPDATED:
+
+            // Check for control protocol compatibility
+            if ( ! charger.chademo.car_and_station_protocol_compatible() ) {
+                printf("ERROR : chademo protocol version mismatch. Stopping\n");
+                // FIXME what to do here?
+            }
+
+            // Check stationMalfunction
+            if ( charger.chademo.station_malfunction() ) {
+                printf("ERROR : station reports malfunction. Stopping\n");
+                // FIXME what to do here?
+            }
+
+            // Check batteryCompatible
+            if ( charger.chademo.battery_incompatible() ) {
+                printf("ERROR : station reports battery incompatible. Stopping\n");
+                // FIXME what to do here?
+            }
+
+            // Check for station malfunction
+            if ( charger.chademo.charging_system_malfunction() ) {
+                printf("ERROR : station reports malfunction. Stopping\n");
+                // FIXME what do do here?
+            }
+
+            if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
+                // Activate OUT1/CP3 to indicate to station that we can proceed
+                charger.chademo.activate_out1();
+                charger.chademo.state = chademo_await_connector_lock;
             }
             break;
 
         case E_EVSE_INCOMPATIBLE:
             charger.chademo.state = chademo_state_error;
-
-        case E_EVSE_STATUS_UPDATED:
-            if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
-                charger.chademo.state = chademo_state_charge_prep;
-            }
-            break;
 
         case E_PLUG_REMOVED:
             charger.chademo.state = chademo_state_idle;
@@ -116,20 +155,61 @@ void chademo_state_handshaking(ChademoEvent event) {
     }
 }
 
-
-
 /*
- * State : charge_prep
- *
+ * State : await_lock
  */
-void chademo_state_charge_prep(ChademoEvent event) {
+void chademo_await_connector_lock(ChademoEvent event) {
 
     switch (event) {
-        case E_PLUG_REMOVED:
+
+        case E_EVSE_STATUS_UPDATED:
+            // check if lock is complete
+            if ( charger.station.connector_is_locked() ) {
+                charger.chademo.state = chademo_await_insulation_test;
+            }
             break;
+
+        default:
+            printf("WARNING : received invalid event\n");
+
     }
 }
 
+
+
+/*
+ * State : chademo_await_insulation_test
+ *
+ */
+void chademo_await_insulation_test(ChademoEvent event) {
+
+    switch (event) {
+
+        case E_PLUG_REMOVED:
+            break;
+
+        default:
+            printf("WARNING : received invalid event\n");
+
+    }
+}
+
+/*
+ * State : energy_transfer
+ */
+void chademo_energy_transfer(ChademoEvent event) {
+
+    switch (event) {
+
+        case E_PLUG_REMOVED:
+            break;
+
+        default:
+            printf("WARNING : received invalid event\n");
+
+    }
+
+}
 
 
 /*
@@ -144,163 +224,6 @@ void chademo_state_error(ChademoEvent event) {
 }
 
 
-
-
-
-/*
- * State : DC-B1
- *  - Connector plugged in
- *  - Wake up of DCCCF and VCCF
- *  - Communicaton data initialisation
- *  - Communication established, parameters exchanged, and compatability checked
- *
-
- *
- * Transitions
- *  - ...
- */
-void chademo_state_B1(ChademoEvent event) {
-
-    switch (event) {
-
-        case E_EVSE_CAPABILITIES_UPDATED:
-            charger.chademo.station.initial_parameter_exchange_complete();
-            break;
-
-        case E_EVSE_STATUS_UPDATED:
-            break;
-
-        default:
-            printf("Received unknown event");
-
-    }
-}
-
-/*
- * State : DC-B2
- *  - Connector locked
- *
- * Charging station sends:
- *  - Vehicle connector lock
- */
-void chademo_state_B2(ChademoEvent event) {
-    //
-}
-
-/*
- * State : DC-B3
- *  - Insulation test for d.c. power line
- *  - pre-charge
- *
- * Charging station sends:
- *  - Charging system malfunction
- */
-void chademo_state_B3(ChademoEvent event) {
-    //
-}
-
-/*
- * State : DC-C
- *  - Vehicle side contactors closed
- *  - Charging by current demand (for CCC)
- *  - Current suppression
- *
- * Charging station sends:
- *  - Station status
- *  - Output voltage
- *  - Output current
- *  - Remaining charging time
- *  - Station malfunction
- *  - Charging system malfunction
- *  - Charging stop control
- *
- * Car sends:
- *  - Charging current request
- *  - Charging system fault
- *  - Vehicle shift lever position
- *  - Vehicle charging enabled
- */
-void chademo_state_C(ChademoEvent event) {
-    //
-}
-
-/*
- * State : DC-D
- *  - Vehicle side contactors closed
- *  - Charging by current demand (for CVC)
- *  - Current suppression
- *
- * Charging station sends:
- *  - Station status
- *  - Output voltage
- *  - Output current
- *  - Remaining charging time
- *  - Station malfunction
- *  - Charging system malfunction
- *  - Charging stop control
- *
- * Car sends:
- *  - Charging current request
- *  - Charging system fault
- *  - Vehicle shift lever position
- *  - Vehicle charging enabled
- */
-void chademo_state_D(ChademoEvent event) {
-    //
-}
-
-/*
- * State : Bprime1
- *  - Zero current confirmed
- *  - Current suppression
- *  - Welding detection (vehicle)
- *
- * Charging station sends:
- *  - Station status
- *  - Charging system malfunction
- *  - Charging stop control
- *  - Output voltage
- *  - Output current
- *  - Charging syste mmalfunction
- *
- * Car sends:
- *  - Vehicle charging enabled
- */
-void chademo_state_Bprime1(ChademoEvent event) {
-    //
-}
-
-/*
- * State : Bprime2
- *  - Welding detection (vehicle)
- *  - Vehicle side contactors open
- *  - DC power line voltage verification
- *
- * Charging station sends:
- *  - Output voltage
- */
-void chademo_state_Bprime2(ChademoEvent event) {
-    //
-}
-
-/*
- * State : Bprime3
- *  - Connector unlocked
- *
- * Charging station sends:
- *  - Vehicle connector lock
- */
-void chademo_state_Bprime3(ChademoEvent event) {
-    //
-}
-
-/*
- * State : Bprime4
- *  - End of charge at communication level
- */
-void chademo_event_Bprime4(ChademoEvent event) {
-    //
-}
 
 
 

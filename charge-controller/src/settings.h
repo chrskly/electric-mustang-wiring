@@ -42,11 +42,12 @@
 #define CHARGE_INHIBIT_PIN 99
 
 // Chademo pins
-#define CHADEMO_IN1_PIN 99
-#define CHADEMO_IN2_PIN 99
-#define CHADEMO_OUT1_PIN 99
-#define CHADEMO_OUT2_PIN 99
-#define CHADEMO_CS_PIN 99
+#define CHADEMO_IN1_PIN 99  // CP  - contactor +ve, (sensed by 'f'), d1 enable signal, chademo plug pin 2
+#define CHADEMO_IN2_PIN 99  // CP2 - contactor -ve, (sensed by 'g'), d2 enable signal, chademo plug pin 10
+#define CHADEMO_OUT1_PIN 99 // CP3 - charge enable, (switched by 'k'), chademo plug pin 4
+#define CHADEMO_OUT2_PIN 99 // contactor relay control, 'e'
+
+#define CHADEMO_CS_PIN 99   // CS - pilot wire, input, (a.k.a 'h'), pilot signal, chademo plug pin 7
 
 // Version of ChaDeMo protocol to use. 1 == v0.9, 2 == v1.0
 #define CHADEMO_PROTOCOL_VERSION 2
@@ -68,8 +69,12 @@
 // This scaling factor is used to calculate max charging time from the estimated charging time
 #define MAX_CHARGING_TIME_SCALING_FACTOR 1.2
 
+//
 // Battery settings
+//
+
 #define BATTERY_MAX_VOLTAGE 350         // fixme put in proper value
+
 #define BATTERY_MAX_CURRENT 10          // fixme put in proper value
 #define BATTERY_MAX_CURRENT_FAILSAFE 10 // maximum current to use if we lose communication with the BMS
 

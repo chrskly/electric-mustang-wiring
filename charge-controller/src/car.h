@@ -41,6 +41,8 @@ class Car {
 
         uint8_t targetChargingCurrent;  // charging current to request to EVSE
 
+        // Sent in 0x101
+        // Rated capacity of the battery (kWh)
         uint16_t batteryCapacity;  // 0.11 kWh/bit
 
         Car();

@@ -29,6 +29,7 @@ using namespace std;
 #include "settings.h"
 
 extern Car car;
+extern Charger charger;
 
 
 Chademo::Chademo() {
@@ -56,6 +57,27 @@ bool Chademo::in2_is_active() {
     return ( gpio_get(CHADEMO_IN2_PIN) == 0 );
 }
 
+// OUT1 (CP3)
+
+void Chademo::activate_out1() {
+    gpio_set(CHADEMO_OUT1_PIN, 1);
+}
+
+void Chademo::deactivate_out1() {
+    gpio_set(CHADEMO_OUT1_PIN, 0);
+}
+
+// OUT2 (contactor relay)
+
+void Chademo::activate_out2() {
+    gpio_set(CHADEMO_OUT2_PIN, 1);
+}
+
+void Chademo::deactivate_out2() {
+    gpio_set(CHADEMO_OUT2_PIN, 0);
+}
+
+
 bool Chademo::battery_over_voltage() {
     //
     return false;
@@ -82,16 +104,28 @@ bool Chademo::battery_current_deviation_error() {
 //
 ////----
 
+// capabilities
+
+bool Chademo::car_and_station_voltage_compatible() {
+    return ( car.maximumBatteryVoltage < station.maximumVoltageAvailable );
+}
+
+// status
 
 bool Chademo::car_and_station_protocol_compatible() {
     return ( car.chademoControlProtocolNumber >= station.controlProtocolNumber );
 }
 
-
-bool Chademo::car_and_station_voltage_compatible() {
-    return ( car.maximumBatteryVoltage < station.outputVoltage );
+bool Chademo::station_malfunction() {
+    return ( charger.station.stationMalfunction );
 }
 
+bool Chademo::battery_incompatible() {
+    return ( charger.station.batteryIncompatability );
+}
 
+bool Chademo::charging_system_malfunction() {
+    return ( charger.station.chargingSystemMalfunction );
+}
 
 
