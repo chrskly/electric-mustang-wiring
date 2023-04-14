@@ -23,5 +23,6 @@
 
 void enable_listen_for_IN1_signal();
 void enable_listen_for_IN2_signal();
+void enable_listen_for_CS_signal()
 
 #endif

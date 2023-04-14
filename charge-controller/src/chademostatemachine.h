@@ -35,8 +35,11 @@ enum ChademoEvent {
 typedef void (*ChademoState)(ChademoEvent);
 
 void chademo_state_idle(ChademoEvent event);
+void chademo_plug_in(ChademoEvent event);
 void chademo_state_handshaking(ChademoEvent event);
-void chademo_state_charge_prep(ChademoEvent event);
+void chademo_await_connector_lock(ChademoEvent event);
+void chademo_await_insulation_test(ChademoEvent event);
+void chademo_energy_transfer(ChademoEvent event);
 void chademo_state_error(ChademoEvent event);
 
 #endif

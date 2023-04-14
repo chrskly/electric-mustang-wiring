@@ -42,9 +42,6 @@ void chademo_state_idle(ChademoEvent event) {
     switch (event) {
 
         case E_PLUG_INSERTED:
-            charger.chademo.station.reinitialise();
-            // begin sending messages needed for handshaking
-            enable_send_outbound_CAN_messages();
             charger.chademo.state = chademo_state_handshaking;
             break;
 
@@ -58,12 +55,19 @@ void chademo_state_idle(ChademoEvent event) {
  * Wait for go-ahead from station
  */
 void chademo_plug_in(ChademoEvent event) {
+
     switch (event) {
+
         case E_IN1_ACTIVATED:
+            charger.chademo.station.reinitialise();
+            // begin sending messages needed for handshaking
+            enable_send_outbound_CAN_messages();            
             charger.chademo.state = chademo_state_handshaking;
             break;
+
         default:
             printf("WARNING : received invalid event\n");
+
     }
 }
 
@@ -118,20 +122,20 @@ void chademo_state_handshaking(ChademoEvent event) {
                 // FIXME what to do here?
             }
 
-            // Check stationMalfunction
-            if ( charger.chademo.station_malfunction() ) {
+            // Fail out if the charging station has reported a malfunction
+            if ( charger.chademo.station.is_reporting_malfunction() ) {
                 printf("ERROR : station reports malfunction. Stopping\n");
-                // FIXME what to do here?
+                charger.chademo.state = chademo_state_error;
             }
 
-            // Check batteryCompatible
-            if ( charger.chademo.battery_incompatible() ) {
+            // Fail out if the charging station has reported a battery incompatability
+            if ( charger.chademo.station.is_reporting_battery_incompatibility() ) {
                 printf("ERROR : station reports battery incompatible. Stopping\n");
-                // FIXME what to do here?
+                charger.chademo.state = chademo_state_error;
             }
 
             // Check for station malfunction
-            if ( charger.chademo.charging_system_malfunction() ) {
+            if ( charger.chademo.station.charging_system_malfunction() ) {
                 printf("ERROR : station reports malfunction. Stopping\n");
                 // FIXME what do do here?
             }
@@ -162,11 +166,18 @@ void chademo_await_connector_lock(ChademoEvent event) {
 
     switch (event) {
 
+        case E_EVSE_CAPABILITIES_UPDATED:
+            break;
+
         case E_EVSE_STATUS_UPDATED:
             // check if lock is complete
-            if ( charger.station.connector_is_locked() ) {
+            if ( charger.chademo.station.connector_is_locked() ) {
                 charger.chademo.state = chademo_await_insulation_test;
             }
+            break;
+
+        case E_PLUG_REMOVED:
+            charger.chademo.state = chademo_state_idle;
             break;
 
         default:
@@ -218,6 +229,7 @@ void chademo_energy_transfer(ChademoEvent event) {
  */
 void chademo_state_error(ChademoEvent event) {
     switch (event) {
+        // Only way out of error is to remove the plug and start over
         case E_PLUG_REMOVED:
             charger.chademo.state = chademo_state_idle;
     }

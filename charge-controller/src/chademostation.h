@@ -57,6 +57,10 @@ class ChademoStation {
 
         void heartbeat();
         bool is_alive();
+        bool connector_is_locked();
+        bool is_reporting_battery_incompatibility();
+        bool is_reporting_malfunction();
+        bool charging_system_malfunction();
 
 
 };

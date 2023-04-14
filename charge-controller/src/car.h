@@ -23,26 +23,23 @@
 class Car {
 
     private:
-        uint8_t maximumChargingTimeMinutes;
-        uint8_t maximumChargingTimeSeconds;
         uint16_t targetBatteryVoltage;
         bool vehicleChargingEnabled;
         bool highBatteryTemperature;
 
     public:
-        uint8_t chademoControlProtocolNumber;
-
         // Received from BMS
-        uint16_t soc; // Battery SoC, received from BMS
-        uint16_t maximumBatteryVoltage;
-        uint16_t maximumChargeCurrent; // Maximum charging current from BMS
-        uint16_t maximumDischargeCurrent;
-        uint16_t minimumBatteryVoltage;
+        uint16_t soc;                     // Battery SoC, received from BMS
+        uint16_t maximumBatteryVoltage;   // 'Full' battery voltage from BMS
+        uint16_t maximumChargeCurrent;    // Maximum charge current allowed by BMS
+        uint16_t maximumDischargeCurrent; // Maximum discharge current allowed by BMS
+        uint16_t minimumBatteryVoltage;   // 'Empty' battery voltage from BMS
 
-        uint8_t targetChargingCurrent;  // charging current to request to EVSE
+        // Charging current to request from EVSE. Derived from what the BMS
+        // and the station allow.
+        uint8_t targetChargingCurrent;
 
-        // Sent in 0x101
-        // Rated capacity of the battery (kWh)
+        // Rated capacity of the battery (kWh). Send to station.
         uint16_t batteryCapacity;  // 0.11 kWh/bit
 
         Car();

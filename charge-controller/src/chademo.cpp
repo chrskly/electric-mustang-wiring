@@ -24,6 +24,7 @@ using namespace std;
 #include "hardware/gpio.h"
 
 #include "chademo.h"
+#include "charger.h"
 #include "car.h"
 #include "chademostatemachine.h"
 #include "settings.h"
@@ -60,21 +61,21 @@ bool Chademo::in2_is_active() {
 // OUT1 (CP3)
 
 void Chademo::activate_out1() {
-    gpio_set(CHADEMO_OUT1_PIN, 1);
+    gpio_put(CHADEMO_OUT1_PIN, 1);
 }
 
 void Chademo::deactivate_out1() {
-    gpio_set(CHADEMO_OUT1_PIN, 0);
+    gpio_put(CHADEMO_OUT1_PIN, 0);
 }
 
 // OUT2 (contactor relay)
 
 void Chademo::activate_out2() {
-    gpio_set(CHADEMO_OUT2_PIN, 1);
+    gpio_put(CHADEMO_OUT2_PIN, 1);
 }
 
 void Chademo::deactivate_out2() {
-    gpio_set(CHADEMO_OUT2_PIN, 0);
+    gpio_put(CHADEMO_OUT2_PIN, 0);
 }
 
 
@@ -113,19 +114,16 @@ bool Chademo::car_and_station_voltage_compatible() {
 // status
 
 bool Chademo::car_and_station_protocol_compatible() {
-    return ( car.chademoControlProtocolNumber >= station.controlProtocolNumber );
+    return ( CHADEMO_PROTOCOL_VERSION >= station.controlProtocolNumber );
 }
 
 bool Chademo::station_malfunction() {
-    return ( charger.station.stationMalfunction );
+    return ( station.stationMalfunction );
 }
 
 bool Chademo::battery_incompatible() {
-    return ( charger.station.batteryIncompatability );
+    return ( station.batteryIncompatability );
 }
 
-bool Chademo::charging_system_malfunction() {
-    return ( charger.station.chargingSystemMalfunction );
-}
 
 

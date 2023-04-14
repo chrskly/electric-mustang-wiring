@@ -50,6 +50,11 @@ class Chademo {
         bool in1_is_active();
         bool in2_is_active();
 
+        void activate_out1();
+        void deactivate_out1();
+        void activate_out2();
+        void deactivate_out2();
+
         void initialise_state();
         bool battery_over_voltage();
         bool battery_under_voltage();
@@ -59,6 +64,9 @@ class Chademo {
         bool car_and_station_protocol_compatible();
         bool car_and_station_voltage_compatible();
         bool car_and_station_capabilities_match();
+
+        bool station_malfunction();
+        bool battery_incompatible();
 
 };
 

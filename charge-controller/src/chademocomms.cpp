@@ -121,7 +121,7 @@ void send_status_message() {
     frame.data[0] = 1;    // protocol version 0.9
     frame.data[1] = 0x00; // target voltage lsb
     frame.data[2] = 0x00; // target voltage msb
-    frame.data[3] = 0x00; // current request
+    frame.data[3] = car.targetChargingCurrent; // current request
     frame.data[4] = 0x00; // battery status
     frame.data[5] = 0x00; // vehicle status
     frame.data[6] = 0x00; // charging rate
@@ -199,6 +199,7 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
                 break;
 
         }
+
     }
 
     return true;

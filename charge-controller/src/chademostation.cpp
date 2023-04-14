@@ -141,7 +141,16 @@ bool ChademoStation::connector_is_locked() {
     return vehicleConnectorLock;
 }
 
+bool ChademoStation::is_reporting_battery_incompatibility() {
+    return batteryIncompatability;
+}
 
+bool ChademoStation::is_reporting_malfunction() {
+    return chargingSystemMalfunction;
+}
 
+bool ChademoStation::charging_system_malfunction() {
+    return chargingSystemMalfunction;
+}
 
 
