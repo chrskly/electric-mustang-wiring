@@ -118,13 +118,13 @@ void send_status_message() {
 
     frame.can_id = 0x102;
     frame.can_dlc = 8;
-    frame.data[0] = 1;    // protocol version 0.9
+    frame.data[0] = CHADEMO_PROTOCOL_VERSION;
     frame.data[1] = 0x00; // target voltage lsb
     frame.data[2] = 0x00; // target voltage msb
-    frame.data[3] = car.targetChargingCurrent; // current request
-    frame.data[4] = 0x00; // battery status
-    frame.data[5] = 0x00; // vehicle status
-    frame.data[6] = 0x00; // charging rate
+    frame.data[3] = charger.chademo.get_charging_current_request();
+    frame.data[4] = charger.chademo.generate_battery_status_byte();
+    frame.data[5] = charger.chademo.generate_vehicle_status_byte();
+    frame.data[6] = 0x00; // how full is the battery in kWh
     frame.data[7] = 0x00; // unused
 
     chademoCAN.sendMessage(&frame);

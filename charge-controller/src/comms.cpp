@@ -44,19 +44,40 @@ bool handle_main_CAN_message(struct repeating_timer *t) {
 
         switch ( mainCANInboundFrame.can_id ) {
 
-            case BMS_STATUS_MESSAGE_ID:
-                car.soc = mainCANInboundFrame.data[0] | mainCANInboundFrame.data[1] << 8;
-                charger.bms_heartbeat();
-                // FIXME record msg received time
-
             case BMS_LIMITS_MESSAGE_ID:
                 car.maximumBatteryVoltage = mainCANInboundFrame.data[0] | mainCANInboundFrame.data[1] << 8;
                 car.maximumChargeCurrent = mainCANInboundFrame.data[2] | mainCANInboundFrame.data[3] << 8;
                 car.maximumDischargeCurrent = mainCANInboundFrame.data[4] | mainCANInboundFrame.data[5] << 8;
                 car.minimumBatteryVoltage = mainCANInboundFrame.data[6] | mainCANInboundFrame.data[7] << 8;
-                // FIXME record msg received time
+                charger.bms_heartbeat();
+                break;
 
-            break;
+            case BMS_SOC_MESSAGE_ID:
+                car.soc = mainCANInboundFrame.data[0] | mainCANInboundFrame.data[1] << 8;
+                break;
+
+            case BMS_STATUS_MESSAGE_ID:            
+                car.batteryVoltage = mainCANInboundFrame.data[0] | mainCANInboundFrame.data[1] << 8;
+                car.batteryCurrent = mainCANInboundFrame.data[2] | mainCANInboundFrame.data[3] << 8;
+                car.batteryTemperature = mainCANInboundFrame.data[4] | mainCANInboundFrame.data[5] << 8;
+                charger.bms_heartbeat();
+                break;
+
+            case BMS_ALARM_MESSAGE_ID:
+                car.highCellAlarm = (mainCANInboundFrame.data[0] & ( 1 << 2 )) >> 2;
+                car.lowCellAlarm = (mainCANInboundFrame.data[0] & ( 1 << 4 )) >> 4;
+                car.highTempAlarm = (mainCANInboundFrame.data[0] & ( 1 << 6 )) >> 6;
+                car.lowTempAlarm = mainCANInboundFrame.data[1];
+                car.cellDeltaAlarm = mainCANInboundFrame.data[3];
+                car.highCellWarn = (mainCANInboundFrame.data[4] & ( 1 << 2 )) >> 2;
+                car.lowCellWarn = (mainCANInboundFrame.data[4] & ( 1 << 4 )) >> 4;
+                car.highTempWarn = (mainCANInboundFrame.data[4] & ( 1 << 6 )) >> 6;
+                car.lowTempWarn = mainCANInboundFrame.data[5];
+                charger.bms_heartbeat();
+                break;
+
+            default:
+                break;
 
         }
     }

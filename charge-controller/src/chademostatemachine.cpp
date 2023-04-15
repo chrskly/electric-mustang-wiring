@@ -33,9 +33,8 @@ extern Charger charger;
  *  - plug out
  *
  * Transitions:
- *  => handshaking
- *     - plug must be inserted
- *     - IN1 must be active (high)
+ *  => plug_in
+ *     - plug must be inserted (CS)
  */
 void chademo_state_idle(ChademoEvent event) {
 
@@ -45,6 +44,9 @@ void chademo_state_idle(ChademoEvent event) {
             charger.chademo.state = chademo_state_handshaking;
             break;
 
+        case E_BMS_UPDATE_RECEIVED:
+            charger.chademo.recalculate_charging_current_request();
+
         default:
             printf("WARNING : received invalid event\n");
 
@@ -52,7 +54,19 @@ void chademo_state_idle(ChademoEvent event) {
 }
 
 /*
- * Wait for go-ahead from station
+ * State : plug_in
+ *
+ * Plug has been inserted. Waiting on station pull IN1/CP high to indicate
+ * station is ready to start.
+ *
+ * Note: possible issue here if IN1/CP and CS activate simultaneously or in the
+ *       wrong order. Can this happen?
+ *
+ * Transitions:
+ *  => handshaking
+ *     - IN1 goes high
+ *  => idle
+ *     - plug removed
  */
 void chademo_plug_in(ChademoEvent event) {
 
@@ -63,6 +77,11 @@ void chademo_plug_in(ChademoEvent event) {
             // begin sending messages needed for handshaking
             enable_send_outbound_CAN_messages();            
             charger.chademo.state = chademo_state_handshaking;
+            break;
+
+        case E_PLUG_REMOVED:
+            charger.chademo.reinitialise();
+            charger.chademo.state = chademo_state_idle;
             break;
 
         default:
@@ -92,6 +111,8 @@ void chademo_plug_in(ChademoEvent event) {
  * Transitions:
  *  => idle
  *     - plug removed
+ *  => error
+ *     - 
  */
 void chademo_state_handshaking(ChademoEvent event) {
 
@@ -102,7 +123,8 @@ void chademo_state_handshaking(ChademoEvent event) {
             // Can the charger provide us with enough voltage?
             if ( ! charger.chademo.car_and_station_voltage_compatible() ) {
                 printf("ERROR : Insufficient voltage available at station. Stopping\n");
-                // FIXME what to do here?
+                charger.chademo.state = chademo_state_error;
+                break;
             }
 
             // If we have received all of the params we need from the station, move to the next step
@@ -110,6 +132,7 @@ void chademo_state_handshaking(ChademoEvent event) {
                 // Activate OUT1/CP3 to indicate to station that we can proceed
                 charger.chademo.activate_out1();
                 charger.chademo.state = chademo_await_connector_lock;
+                break;
             }
 
             break;
@@ -134,12 +157,6 @@ void chademo_state_handshaking(ChademoEvent event) {
                 charger.chademo.state = chademo_state_error;
             }
 
-            // Check for station malfunction
-            if ( charger.chademo.station.charging_system_malfunction() ) {
-                printf("ERROR : station reports malfunction. Stopping\n");
-                // FIXME what do do here?
-            }
-
             if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
                 // Activate OUT1/CP3 to indicate to station that we can proceed
                 charger.chademo.activate_out1();
@@ -151,6 +168,7 @@ void chademo_state_handshaking(ChademoEvent event) {
             charger.chademo.state = chademo_state_error;
 
         case E_PLUG_REMOVED:
+            charger.chademo.reinitialise();
             charger.chademo.state = chademo_state_idle;
             break;
 
@@ -160,23 +178,35 @@ void chademo_state_handshaking(ChademoEvent event) {
 }
 
 /*
- * State : await_lock
+ * State : await_connector_lock
  */
 void chademo_await_connector_lock(ChademoEvent event) {
 
     switch (event) {
 
         case E_EVSE_CAPABILITIES_UPDATED:
+
+            // Fail out if the charging station has reported a malfunction
+            if ( charger.chademo.station.is_reporting_malfunction() ) {
+                printf("ERROR : station reports malfunction. Stopping\n");
+                charger.chademo.state = chademo_state_error;
+                break;
+            }
+
             break;
 
         case E_EVSE_STATUS_UPDATED:
+
             // check if lock is complete
             if ( charger.chademo.station.connector_is_locked() ) {
                 charger.chademo.state = chademo_await_insulation_test;
+                break;
             }
             break;
 
         case E_PLUG_REMOVED:
+
+            charger.chademo.reinitialise();
             charger.chademo.state = chademo_state_idle;
             break;
 
@@ -197,6 +227,8 @@ void chademo_await_insulation_test(ChademoEvent event) {
     switch (event) {
 
         case E_PLUG_REMOVED:
+            charger.chademo.reinitialise();
+            charger.chademo.state = chademo_state_idle;
             break;
 
         default:
@@ -215,6 +247,20 @@ void chademo_energy_transfer(ChademoEvent event) {
         case E_PLUG_REMOVED:
             break;
 
+        case E_EVSE_CAPABILITIES_UPDATED:
+
+            // Current available at station may have changed
+            charger.chademo.recalculate_charging_current_request();
+
+            // Fail out if the charging station has reported a malfunction
+            if ( charger.chademo.station.is_reporting_malfunction() ) {
+                printf("ERROR : station reports malfunction. Stopping\n");
+                charger.chademo.state = chademo_state_error;
+                break;
+            }
+
+            break;
+
         default:
             printf("WARNING : received invalid event\n");
 
@@ -222,6 +268,22 @@ void chademo_energy_transfer(ChademoEvent event) {
 
 }
 
+/*
+ * State : winding_down
+ *
+ */
+void chademo_winding_down(ChademoEvent event) {
+
+    switch (event) {
+
+        case E_PLUG_REMOVED:
+            break;
+
+        break;
+
+    }
+
+}
 
 /*
  * State : error
@@ -231,7 +293,9 @@ void chademo_state_error(ChademoEvent event) {
     switch (event) {
         // Only way out of error is to remove the plug and start over
         case E_PLUG_REMOVED:
+            charger.chademo.reinitialise();
             charger.chademo.state = chademo_state_idle;
+            break;
     }
 }
 

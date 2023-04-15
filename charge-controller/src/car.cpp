@@ -50,3 +50,9 @@ uint8_t Car::calculate_charging_time_minutes(uint8_t current) {
 uint8_t Car::calculate_max_charging_time_minutes(uint8_t current) {
     return calculate_charging_time_minutes(current);
 }
+
+// Do a quick and dirty calculation to get battery voltage corresponding to SoC
+uint8_t Car::get_voltage_from_soc(uint8_t soc) {
+    if ( soc > 100 ) soc = 100;
+    return ( maximumBatteryVoltage - minimumBatteryVoltage ) * soc * 0.01;
+}

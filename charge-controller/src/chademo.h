@@ -39,6 +39,17 @@ class Chademo {
         uint8_t estimatedChargingTimeRemaining; //
         uint8_t chargingRate;                   //
 
+        // This is the current (amps) we will request from the station. It will
+        // vary dynamically throughout the charging process because of max ramp
+        // rates, etc.
+        uint8_t chargingCurrentRequest;
+
+        // The time we last changed our current request we send to the station
+        clock_t lastCurrentRequestChange;
+
+        // The battery voltage at which to stop charging
+        uint16_t targetBatteryVoltage;
+
     public:
 
         ChademoState state;
@@ -46,9 +57,18 @@ class Chademo {
 
         Chademo();
 
+        void reinitialise();
+
+        void recalculate_charging_current_request();
+        uint8_t get_charging_current_request();
+        uint8_t generate_battery_status_byte();
+        uint8_t generate_vehicle_status_byte();
+
         bool plug_is_in();
         bool in1_is_active();
         bool in2_is_active();
+
+        bool contactors_are_closed();
 
         void activate_out1();
         void deactivate_out1();

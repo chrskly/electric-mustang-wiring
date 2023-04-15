@@ -50,15 +50,29 @@
 #define CHADEMO_CS_PIN 99   // CS - pilot wire, input, (a.k.a 'h'), pilot signal, chademo plug pin 7
 
 // Version of ChaDeMo protocol to use. 1 == v0.9, 2 == v1.0
-#define CHADEMO_PROTOCOL_VERSION 2
+#define CHADEMO_PROTOCOL_VERSION 1
 
 // Messages from ChaDeMo station
 #define EVSE_CAPABILITIES_MESSAGE_ID 0x108
 #define EVSE_STATUS_MESSAGE_ID 0x109
 
+// Spec says current requests from the car should only vary at a rate of +/- 20A/sec
+#define CHADEMO_RAMP_RATE 20
+#define CHADEMO_RAMP_INTERVAL 1000 // units = ms
+
 // Messages from BMS
-#define BMS_STATUS_MESSAGE_ID 0x355
-#define BMS_LIMITS_MESSAGE_ID 0x102
+
+// max/min pack voltage, max dis/charge current
+#define BMS_LIMITS_MESSAGE_ID 0x351
+
+// soc
+#define BMS_SOC_MESSAGE_ID 0x355
+
+// pack voltage, current (not implemented), temp
+#define BMS_STATUS_MESSAGE_ID 0x356
+
+// Alarms/warnings from BMS
+#define BMS_ALARM_MESSAGE_ID 0x35A
 
 // If we don't see the BMS in this number of seconds, then something is wrong
 #define BMS_TTL 5
@@ -74,6 +88,9 @@
 //
 
 #define BATTERY_MAX_VOLTAGE 350         // fixme put in proper value
+
+// The SoC at which to stop fast-charging. Can be overriden via CAN msg.
+#define BATTERY_FAST_CHARGE_DEFAULT_SOC_MAX 80
 
 #define BATTERY_MAX_CURRENT 10          // fixme put in proper value
 #define BATTERY_MAX_CURRENT_FAILSAFE 10 // maximum current to use if we lose communication with the BMS

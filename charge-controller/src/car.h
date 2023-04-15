@@ -23,20 +23,32 @@
 class Car {
 
     private:
-        uint16_t targetBatteryVoltage;
+        uint16_t targetBatteryVoltage; // FIXME set this
         bool vehicleChargingEnabled;
         bool highBatteryTemperature;
 
     public:
-        // Received from BMS
-        uint16_t soc;                     // Battery SoC, received from BMS
-        uint16_t maximumBatteryVoltage;   // 'Full' battery voltage from BMS
+        // Below are all received from BMS
+        uint16_t soc;                     // Battery SoC
+        uint16_t maximumBatteryVoltage;   // 'Full' battery voltage
         uint16_t maximumChargeCurrent;    // Maximum charge current allowed by BMS
         uint16_t maximumDischargeCurrent; // Maximum discharge current allowed by BMS
-        uint16_t minimumBatteryVoltage;   // 'Empty' battery voltage from BMS
+        uint16_t minimumBatteryVoltage;   // 'Empty' battery voltage
+        uint16_t batteryVoltage;          // Actual voltage of battery right now
+        uint16_t batteryCurrent;          // Current (amps) in/out of the battery right now
+        uint16_t batteryTemperature;      // Temperature of hottest cell
+        bool highCellAlarm;               // 
+        bool lowCellAlarm;                // 
+        bool highTempAlarm;               // 
+        bool lowTempAlarm;                // 
+        bool cellDeltaAlarm;              // 
+        bool highCellWarn;                // 
+        bool lowCellWarn;                 // 
+        bool highTempWarn;                // 
+        bool lowTempWarn;                 // 
 
-        // Charging current to request from EVSE. Derived from what the BMS
-        // and the station allow.
+        // This is the current (amps) to request from the station. This value
+        // only factors in any limits placed on us by the BMS.
         uint8_t targetChargingCurrent;
 
         // Rated capacity of the battery (kWh). Send to station.
@@ -45,6 +57,7 @@ class Car {
         Car();
         uint8_t calculate_charging_time_minutes(uint8_t current);
         uint8_t calculate_max_charging_time_minutes(uint8_t current);
+        uint8_t get_voltage_from_soc(uint8_t soc);
 
 };
 

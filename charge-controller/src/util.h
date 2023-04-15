@@ -21,5 +21,6 @@
 #define UTIL_H
 
 clock_t get_clock();
+uint8_t get_voltage_from_soc(uint8_t soc);
 
 #endif

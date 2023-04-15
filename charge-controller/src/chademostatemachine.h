@@ -30,6 +30,7 @@ enum ChademoEvent {
     E_EVSE_CAPABILITIES_UPDATED,
     E_EVSE_STATUS_UPDATED,
     E_EVSE_INCOMPATIBLE,         // 
+    E_BMS_UPDATE_RECEIVED,
 };
 
 typedef void (*ChademoState)(ChademoEvent);
@@ -40,6 +41,7 @@ void chademo_state_handshaking(ChademoEvent event);
 void chademo_await_connector_lock(ChademoEvent event);
 void chademo_await_insulation_test(ChademoEvent event);
 void chademo_energy_transfer(ChademoEvent event);
+void chademo_winding_down(ChademoEvent event);
 void chademo_state_error(ChademoEvent event);
 
 #endif

@@ -30,7 +30,7 @@ class ChademoStation {
         bool weldDetectionSupported;
         uint16_t maximumVoltageAvailable;
         uint8_t availableCurrent;
-        uint16_t thresholdVoltage;
+        uint16_t thresholdVoltage; // evse reporting to car what it considers to be voltage to terminate charging
 
         // status
         uint8_t controlProtocolNumber;
@@ -60,7 +60,6 @@ class ChademoStation {
         bool connector_is_locked();
         bool is_reporting_battery_incompatibility();
         bool is_reporting_malfunction();
-        bool charging_system_malfunction();
 
 
 };

@@ -38,7 +38,8 @@ ChademoStation::ChademoStation() {}
 
 /*
  * When kicking off the charging process, we initialise these variables to zero
- * to ensure we get fresh values from the charging station.
+ * to ensure we get fresh values from the charging station. We may be restarting
+ * a failed charge and have the old values lying around still.
  */
 void ChademoStation::reinitialise() {
     controlProtocolNumber = 0;
@@ -148,9 +149,3 @@ bool ChademoStation::is_reporting_battery_incompatibility() {
 bool ChademoStation::is_reporting_malfunction() {
     return chargingSystemMalfunction;
 }
-
-bool ChademoStation::charging_system_malfunction() {
-    return chargingSystemMalfunction;
-}
-
-

@@ -26,3 +26,4 @@ using namespace std;
 clock_t get_clock() {
     return (clock_t) time_us_64() / 10000;
 }
+
