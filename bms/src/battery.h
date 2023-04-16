@@ -23,8 +23,7 @@
 #include "pack.h"
 #include "settings.h"
 
-void enable_update_soc();
-bool update_soc(struct repeating_timer *t);
+
 
 class Battery {
 
@@ -92,6 +91,7 @@ class Battery {
         float voltage_delta_between_packs();
         BatteryPack* get_pack_with_highest_voltage();
         bool packs_are_imbalanced();
+        long get_amps();
         float get_highest_cell_temperature();
 
         // Temperature

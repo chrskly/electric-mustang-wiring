@@ -66,8 +66,6 @@ void Battery::initialise () {
     gpio_set_dir(CHARGE_INHIBIT_PIN, GPIO_OUT);
     disable_inhibit_charge();
 
-    enable_update_soc();
-
 }
 
 int Battery::print () {
@@ -301,6 +299,16 @@ BatteryPack* Battery::get_pack_with_highest_voltage() {
 // therefore it's unstafe to close the contactors.
 bool Battery::packs_are_imbalanced() {
     return ( voltage_delta_between_packs() >= SAFE_VOLTAGE_DELTA_BETWEEN_PACKS );
+}
+
+//// ----
+//
+// Current
+//
+//// ----
+
+long Battery::get_amps() {
+    return amps;
 }
 
 

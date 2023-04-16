@@ -96,7 +96,7 @@ The car will also have precharge and main contactors in the HVJB. These are cont
 
 ## To Do
 
-- [ ] Fetch SoC from shunt and store in memory
+- [X] Fetch SoC from shunt and store in memory
 - [ ] Broadcast BMS mode
 - [x] CHARGE_ENABLE input
 - [x] IGNITION_ON input
@@ -105,6 +105,10 @@ The car will also have precharge and main contactors in the HVJB. These are cont
 - [ ] Implement balancing
 - [ ] Implement watchdog
 - [ ] On startup, properly detect the state we should start in and immediately switch to that state
+- [X] Emulate SimpBMS output CAN messages
+- [X] Reset ISA Shunt when battery charged to 100%
+- [ ] ISA shunt heartbeat
+- [ ] Warn/alarm flags
 
 ## Credits
 

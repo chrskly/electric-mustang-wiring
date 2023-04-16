@@ -207,10 +207,10 @@ bool send_status_message(struct repeating_timer *t) {
     statusFrame.can_id = BMS_STATUS_MSG_ID;
     statusFrame.can_dlc = 8;
 
-    statusFrame.data[0] = battery.get_voltage() && 0xFF;
-    statusFrame.data[1] = (int)battery.get_voltage() >> 8;
-    statusFrame.data[2] = 0x00; // FIXME get from shunt
-    statusFrame.data[3] = 0x00; // FIXME get from shunt
+    statusFrame.data[0] = (int)( battery.get_voltage() * 100 ) && 0xFF;
+    statusFrame.data[1] = (int)( battery.get_voltage() * 100 ) >> 8;
+    statusFrame.data[2] = (int)( battery.get_amps() * 10 ) && 0xFF;
+    statusFrame.data[3] = (int)( battery.get_amps() * 10 ) >> 8;
     statusFrame.data[4] = battery.get_highest_cell_temperature() && 0xFF;
     statusFrame.data[5] = (int)battery.get_highest_cell_temperature() >> 8;
     statusFrame.data[6] = 0x00; // unused
