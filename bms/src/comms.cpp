@@ -74,6 +74,25 @@ void enable_module_polling() {
 //
 //// ----
 
+/*
+ * Send CAN messages to ISA shunt to tell it to reset. Resets the kw/ah
+ * counters.
+ */
+void send_ISA_reset_message() {
+    struct can_frame ISAResetFrame;
+    ISAResetFrame.can_id = 0x411;
+    ISAResetFrame.can_dlc = 8;
+    ISAResetFrame.data[0] = 0x3F;
+    ISAResetFrame.data[1] = 0x00;
+    ISAResetFrame.data[2] = 0x00;
+    ISAResetFrame.data[3] = 0x00;
+    ISAResetFrame.data[4] = 0x00;
+    ISAResetFrame.data[5] = 0x00;
+    ISAResetFrame.data[6] = 0x00;
+    ISAResetFrame.data[7] = 0x00;
+    mainCAN.sendMessage(&ISAResetFrame);
+}
+
 
 /*
  * Limits message 0x351

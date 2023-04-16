@@ -82,6 +82,24 @@ void enable_watchdog_keepalive() {
     add_repeating_timer_ms(5000, watchdog_keepalive, NULL, &watchdogKeepaliveTimer);
 }
 
+/*
+ * Update SoC.
+ *
+ * It's excessive to update this value every time we get a message from the ISA
+ * shunt. Just update at a regular interval.
+ */
+
+struct repeating_timer socUpdateTimer;
+
+bool update_soc(struct repeating_timer *t) {
+    battery.recalculate_soc();
+    return true;
+}
+
+void enable_update_soc() {
+    add_repeating_timer_ms(5000, update_soc, NULL, &socUpdateTimer);
+}
+
 
 int main() {
     stdio_init_all();
@@ -144,6 +162,8 @@ int main() {
 
     printf("Enable listen for CHARGE_ENABLE signal\n");
     enable_listen_for_charge_enable_signal();
+
+    enable_update_soc();
 
     while(true) {
     }

@@ -24,6 +24,7 @@ using namespace std;
 #include "statemachine.h"
 #include "battery.h"
 #include "led.h"
+#include "comms.h"
 
 extern Battery battery;
 extern State state;
@@ -296,6 +297,13 @@ void state_charging(Event event) {
                 statusLight.led_set_mode(FAULT);
                 state = state_batteryEmpty;
                 break;
+            }
+
+            /* If battery is full (i.e., we've charged to 100%), reset kWh/Ah
+             * counters on the ISA shunt.
+             */
+            if ( battery.has_full_cell() ) {
+                send_ISA_reset_message();
             }
 
             // If ignition is already on, switch directly to drive mode

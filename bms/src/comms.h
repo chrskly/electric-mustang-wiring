@@ -26,6 +26,7 @@ void enable_status_print();
 void request_module_data(BatteryModule *module);
 bool poll_all_modules_for_data(struct repeating_timer *t);
 void enable_module_polling();
+void send_ISA_reset_message();
 bool send_status_message();
 void enable_status_messages();
 bool send_charge_limits_message();

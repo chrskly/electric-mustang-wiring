@@ -66,6 +66,8 @@ void Battery::initialise () {
     gpio_set_dir(CHARGE_INHIBIT_PIN, GPIO_OUT);
     disable_inhibit_charge();
 
+    enable_update_soc();
+
 }
 
 int Battery::print () {
@@ -114,8 +116,20 @@ float Battery::get_soc() {
     return soc;
 }
 
-void Battery::set_soc(float new_soc) {
-    soc = new_soc;
+/*
+ * Recalculate the SoC based on the latest data from the ISA shunt.
+ *
+ * 0 khw/ah == 100% charged. Value goes negative as we draw energy from the pack.
+ *
+ */
+void Battery::recalculate_soc() {
+    if ( CALCULATE_SOC_FROM == 0 ) {
+        soc = 100 * ( BATTERY_CAPACITY_WH + wattHours ) / BATTERY_CAPACITY_WH;
+
+    }
+    else {
+        soc = 100 * ( BATTERY_CAPACITY_AS + ampSeconds ) / BATTERY_CAPACITY_AS;
+    }
 }
 
 
@@ -502,3 +516,6 @@ void Battery::open_contactors() {
         packs[p].open_contactors();
     }
 }
+
+
+

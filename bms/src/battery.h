@@ -23,6 +23,9 @@
 #include "pack.h"
 #include "settings.h"
 
+void enable_update_soc();
+bool update_soc(struct repeating_timer *t);
+
 class Battery {
 
     private:
@@ -46,9 +49,10 @@ class Battery {
         bool ignitionOn;
         bool chargeEnable;             // Charger is asking to charge
 
+        float soc;
+
     public:
         // Readings from ISA shunt
-        float soc;
         long amps;
         long shuntVoltage1;
         long shuntVoltage2;
@@ -67,8 +71,8 @@ class Battery {
         void send_test_message();
 
         float get_soc();
-        void set_soc(float new_soc);
-
+        void recalculate_soc();
+        
         // Voltage
         float get_voltage();
         void set_voltage(float voltage) { this->voltage = voltage; }
