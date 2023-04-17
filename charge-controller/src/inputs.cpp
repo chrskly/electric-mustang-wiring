@@ -60,6 +60,14 @@ void gpio_callback(uint gpio, uint32_t events) {
         }
     }
 
+    if ( gpio == CHARGE_INHIBIT_PIN ) {
+        if ( gpio_get(CHARGE_INHIBIT_PIN) == 0 ) {
+            chademoState(E_CHARGE_INHIBIT_ENABLED);
+        } else {
+            chademoState(E_CHARGE_INHIBIT_DISABLED);
+        }
+    }
+
 }
 
 void enable_listen_for_IN1_signal() {

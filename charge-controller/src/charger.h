@@ -27,6 +27,7 @@
 class Charger {
 
     private:
+        bool chargeInhibited;
         clock_t bmsLastUpdate;
 
     public:

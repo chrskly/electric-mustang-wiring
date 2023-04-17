@@ -31,17 +31,20 @@ enum ChademoEvent {
     E_EVSE_STATUS_UPDATED,
     E_EVSE_INCOMPATIBLE,         // 
     E_BMS_UPDATE_RECEIVED,
+    E_CHARGE_INHIBIT_ENABLED,
+    E_CHARGE_INHIBIT_DISABLED,
 };
 
 typedef void (*ChademoState)(ChademoEvent);
 
 void chademo_state_idle(ChademoEvent event);
-void chademo_plug_in(ChademoEvent event);
+void chademo_state_plug_in(ChademoEvent event);
 void chademo_state_handshaking(ChademoEvent event);
-void chademo_await_connector_lock(ChademoEvent event);
-void chademo_await_insulation_test(ChademoEvent event);
-void chademo_energy_transfer(ChademoEvent event);
-void chademo_winding_down(ChademoEvent event);
+void chademo_state_await_connector_lock(ChademoEvent event);
+void chademo_state_await_insulation_test(ChademoEvent event);
+void chademo_state_energy_transfer(ChademoEvent event);
+void chademo_state_winding_down(ChademoEvent event);
+void chademo_state_charge_inhibited(ChademoEvent event);
 void chademo_state_error(ChademoEvent event);
 
 #endif

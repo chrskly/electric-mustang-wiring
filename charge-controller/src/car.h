@@ -23,7 +23,9 @@
 class Car {
 
     private:
-        uint16_t targetBatteryVoltage; // FIXME set this
+        // Voltage to charge up to
+        uint16_t targetBatteryVoltage;
+
         bool vehicleChargingEnabled;
         bool highBatteryTemperature;
 

@@ -48,7 +48,9 @@ Car car;
 Charger charger;
 StatusLight statusLight;
 
-Charger::Charger(){}
+Charger::Charger(){
+    chargeInhibited = true;
+}
 
 void Charger::bms_heartbeat() {
     bmsLastUpdate = get_clock();

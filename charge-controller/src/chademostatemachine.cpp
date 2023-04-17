@@ -47,6 +47,9 @@ void chademo_state_idle(ChademoEvent event) {
         case E_BMS_UPDATE_RECEIVED:
             charger.chademo.recalculate_charging_current_request();
 
+        case E_CHARGE_INHIBIT_ENABLED:
+            charger.chademo.state = chademo_state_charge_inhibited;
+
         default:
             printf("WARNING : received invalid event\n");
 
@@ -68,7 +71,7 @@ void chademo_state_idle(ChademoEvent event) {
  *  => idle
  *     - plug removed
  */
-void chademo_plug_in(ChademoEvent event) {
+void chademo_state_plug_in(ChademoEvent event) {
 
     switch (event) {
 
@@ -83,6 +86,9 @@ void chademo_plug_in(ChademoEvent event) {
             charger.chademo.reinitialise();
             charger.chademo.state = chademo_state_idle;
             break;
+
+        case E_CHARGE_INHIBIT_ENABLED:
+            charger.chademo.state = chademo_state_charge_inhibited;
 
         default:
             printf("WARNING : received invalid event\n");
@@ -131,7 +137,7 @@ void chademo_state_handshaking(ChademoEvent event) {
             if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
                 // Activate OUT1/CP3 to indicate to station that we can proceed
                 charger.chademo.activate_out1();
-                charger.chademo.state = chademo_await_connector_lock;
+                charger.chademo.state = chademo_state_await_connector_lock;
                 break;
             }
 
@@ -160,7 +166,7 @@ void chademo_state_handshaking(ChademoEvent event) {
             if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
                 // Activate OUT1/CP3 to indicate to station that we can proceed
                 charger.chademo.activate_out1();
-                charger.chademo.state = chademo_await_connector_lock;
+                charger.chademo.state = chademo_state_await_connector_lock;
             }
             break;
 
@@ -172,6 +178,11 @@ void chademo_state_handshaking(ChademoEvent event) {
             charger.chademo.state = chademo_state_idle;
             break;
 
+        case E_CHARGE_INHIBIT_ENABLED:
+            // FIXME disable CAN msgs
+            // disable_send_outbound_CAN_messages();
+            charger.chademo.state = chademo_state_charge_inhibited;
+
         default:
             printf("WARNING : received invalid event\n");
     }
@@ -180,7 +191,7 @@ void chademo_state_handshaking(ChademoEvent event) {
 /*
  * State : await_connector_lock
  */
-void chademo_await_connector_lock(ChademoEvent event) {
+void chademo_state_await_connector_lock(ChademoEvent event) {
 
     switch (event) {
 
@@ -199,7 +210,7 @@ void chademo_await_connector_lock(ChademoEvent event) {
 
             // check if lock is complete
             if ( charger.chademo.station.connector_is_locked() ) {
-                charger.chademo.state = chademo_await_insulation_test;
+                charger.chademo.state = chademo_state_await_insulation_test;
                 break;
             }
             break;
@@ -209,6 +220,11 @@ void chademo_await_connector_lock(ChademoEvent event) {
             charger.chademo.reinitialise();
             charger.chademo.state = chademo_state_idle;
             break;
+
+        case E_CHARGE_INHIBIT_ENABLED:
+
+            // FIXME how do we exit safely from here? send error msg?
+            charger.chademo.state = chademo_state_charge_inhibited;
 
         default:
             printf("WARNING : received invalid event\n");
@@ -222,14 +238,20 @@ void chademo_await_connector_lock(ChademoEvent event) {
  * State : chademo_await_insulation_test
  *
  */
-void chademo_await_insulation_test(ChademoEvent event) {
+void chademo_state_await_insulation_test(ChademoEvent event) {
 
     switch (event) {
 
         case E_PLUG_REMOVED:
+
             charger.chademo.reinitialise();
             charger.chademo.state = chademo_state_idle;
             break;
+
+        case E_CHARGE_INHIBIT_ENABLED:
+
+            // FIXME how do we exit safely from here? send error msg?
+            charger.chademo.state = chademo_state_charge_inhibited;
 
         default:
             printf("WARNING : received invalid event\n");
@@ -240,7 +262,7 @@ void chademo_await_insulation_test(ChademoEvent event) {
 /*
  * State : energy_transfer
  */
-void chademo_energy_transfer(ChademoEvent event) {
+void chademo_state_energy_transfer(ChademoEvent event) {
 
     switch (event) {
 
@@ -261,6 +283,11 @@ void chademo_energy_transfer(ChademoEvent event) {
 
             break;
 
+        case E_CHARGE_INHIBIT_ENABLED:
+
+            // FIXME how do we exit safely from here? send error msg?
+            charger.chademo.state = chademo_state_charge_inhibited;
+
         default:
             printf("WARNING : received invalid event\n");
 
@@ -272,11 +299,14 @@ void chademo_energy_transfer(ChademoEvent event) {
  * State : winding_down
  *
  */
-void chademo_winding_down(ChademoEvent event) {
+void chademo_state_winding_down(ChademoEvent event) {
 
     switch (event) {
 
         case E_PLUG_REMOVED:
+            break;
+
+        case E_CHARGE_INHIBIT_ENABLED:
             break;
 
         break;
@@ -286,16 +316,35 @@ void chademo_winding_down(ChademoEvent event) {
 }
 
 /*
+ * State : charge_inhibited
+ */
+void chademo_state_charge_inhibited(ChademoEvent event) {
+
+    switch (event) {
+
+        case E_CHARGE_INHIBIT_DISABLED:
+            break;
+
+        default:
+            printf("WARNING : received invalid event\n");
+
+    }
+}
+
+/*
  * State : error
  *
  */
 void chademo_state_error(ChademoEvent event) {
+
     switch (event) {
+
         // Only way out of error is to remove the plug and start over
         case E_PLUG_REMOVED:
             charger.chademo.reinitialise();
             charger.chademo.state = chademo_state_idle;
             break;
+
     }
 }
 
