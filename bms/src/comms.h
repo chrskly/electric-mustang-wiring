@@ -22,7 +22,6 @@
 
 #include "battery.h"
 
-void enable_status_print();
 void request_module_data(BatteryModule *module);
 bool poll_all_modules_for_data(struct repeating_timer *t);
 void enable_module_polling();

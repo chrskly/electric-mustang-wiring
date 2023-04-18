@@ -33,19 +33,6 @@ using namespace std;
 extern MCP2515 mainCAN;
 extern Battery battery;
 
-// FIXME move somewhere else
-
-struct repeating_timer statusPrintTimer;
-
-bool status_print(struct repeating_timer *t) {
-    battery.print();
-    return true;
-}
-
-void enable_status_print() {
-    add_repeating_timer_ms(5000, status_print, NULL, &statusPrintTimer);
-}
-
 
 //// ----
 //
@@ -118,14 +105,14 @@ bool send_limits_message(struct repeating_timer *t) {
     limitsFrame.can_id = BMS_LIMITS_MSG_ID;
     limitsFrame.can_dlc = 8;
 
-    limitsFrame.data[0] = ( (int)battery.get_max_voltage() && 0xFF ) * 10;
-    limitsFrame.data[1] = ( (int)battery.get_max_voltage() >> 8 ) * 10;
-    limitsFrame.data[2] = ( (int)battery.get_max_charge_current() && 0xFF ) * 10;
-    limitsFrame.data[3] = ( (int)battery.get_max_charge_current() >> 8 ) * 10 ;
-    limitsFrame.data[4] = ( (int)battery.get_max_discharge_current() && 0xFF ) * 10;
-    limitsFrame.data[5] = ( (int)battery.get_max_discharge_current() >> 8 ) * 10;
-    limitsFrame.data[6] = ( (int)battery.get_min_voltage() && 0xFF ) * 10;
-    limitsFrame.data[7] = ( (int)battery.get_min_voltage() >> 8 ) * 10;
+    limitsFrame.data[0] = ( (uint8_t)battery.get_max_voltage() && 0xFF ) * 10;
+    limitsFrame.data[1] = ( (uint8_t)battery.get_max_voltage() >> 8 ) * 10;
+    limitsFrame.data[2] = ( (uint8_t)battery.get_max_charge_current() && 0xFF ) * 10;
+    limitsFrame.data[3] = ( (uint8_t)battery.get_max_charge_current() >> 8 ) * 10 ;
+    limitsFrame.data[4] = ( (uint8_t)battery.get_max_discharge_current() && 0xFF ) * 10;
+    limitsFrame.data[5] = ( (uint8_t)battery.get_max_discharge_current() >> 8 ) * 10;
+    limitsFrame.data[6] = ( (uint8_t)battery.get_min_voltage() && 0xFF ) * 10;
+    limitsFrame.data[7] = ( (uint8_t)battery.get_min_voltage() >> 8 ) * 10;
 
     mainCAN.sendMessage(&limitsFrame);
 
@@ -165,12 +152,12 @@ bool send_soc_message(struct repeating_timer *t) {
     socFrame.can_id = BMS_SOC_MSG_ID;
     socFrame.can_dlc = 8;
 
-    socFrame.data[0] = battery.get_soc() && 0xFF;
-    socFrame.data[1] = (int)battery.get_soc() >> 8;
+    socFrame.data[0] = (uint8_t)battery.get_soc() && 0xFF;
+    socFrame.data[1] = (uint8_t)battery.get_soc() >> 8;
     socFrame.data[2] = 0x00; // not implemented
     socFrame.data[3] = 0x00; // not implemented
-    socFrame.data[4] = ( battery.get_soc() && 0xFF ) * 100;
-    socFrame.data[5] = ( (int)battery.get_soc() >> 8 ) * 100;
+    socFrame.data[4] = (uint8_t)( battery.get_soc() * 100 ) && 0xFF;
+    socFrame.data[5] = (uint8_t)( battery.get_soc() * 100 ) >> 8;
     socFrame.data[6] = 0x00; // unused
     socFrame.data[7] = 0x00; // unused
 
@@ -207,12 +194,12 @@ bool send_status_message(struct repeating_timer *t) {
     statusFrame.can_id = BMS_STATUS_MSG_ID;
     statusFrame.can_dlc = 8;
 
-    statusFrame.data[0] = (int)( battery.get_voltage() * 100 ) && 0xFF;
-    statusFrame.data[1] = (int)( battery.get_voltage() * 100 ) >> 8;
-    statusFrame.data[2] = (int)( battery.get_amps() * 10 ) && 0xFF;
-    statusFrame.data[3] = (int)( battery.get_amps() * 10 ) >> 8;
+    statusFrame.data[0] = (uint8_t)( battery.get_voltage() * 100 ) && 0xFF;
+    statusFrame.data[1] = (uint8_t)( battery.get_voltage() * 100 ) >> 8;
+    statusFrame.data[2] = (uint8_t)( battery.get_amps() * 10 ) && 0xFF;
+    statusFrame.data[3] = (uint8_t)( battery.get_amps() * 10 ) >> 8;
     statusFrame.data[4] = battery.get_highest_cell_temperature() && 0xFF;
-    statusFrame.data[5] = (int)battery.get_highest_cell_temperature() >> 8;
+    statusFrame.data[5] = (uint8_t)battery.get_highest_cell_temperature() >> 8;
     statusFrame.data[6] = 0x00; // unused
     statusFrame.data[7] = 0x00; // unused
 
@@ -315,6 +302,8 @@ void enable_alarm_messages() {
 //// ----
 
 
+// Handle messages coming in on the main CAN bus
+
 struct can_frame m;
 struct repeating_timer handleMainCANMessageTimer;
 
@@ -379,6 +368,7 @@ void enable_handle_main_CAN_messages() {
 }
 
 
+// Handle the CAN messages that come back from the battery modules
 
 struct repeating_timer handleBatteryCANMessagesTimer;
 
@@ -390,6 +380,3 @@ bool handle_battery_CAN_messages(struct repeating_timer *t) {
 void enable_handle_battery_CAN_messages() {
     add_repeating_timer_ms(10, handle_battery_CAN_messages, NULL, &handleBatteryCANMessagesTimer);
 }
-
-
-// https://openinverter.org/wiki/CAN_table_CAN_STD

@@ -82,6 +82,21 @@ void enable_watchdog_keepalive() {
     add_repeating_timer_ms(5000, watchdog_keepalive, NULL, &watchdogKeepaliveTimer);
 }
 
+
+// Status print
+
+struct repeating_timer statusPrintTimer;
+
+bool status_print(struct repeating_timer *t) {
+    battery.print();
+    return true;
+}
+
+void enable_status_print() {
+    add_repeating_timer_ms(5000, status_print, NULL, &statusPrintTimer);
+}
+
+
 /*
  * Update SoC.
  *
@@ -99,6 +114,7 @@ bool update_soc(struct repeating_timer *t) {
 void enable_update_soc() {
     add_repeating_timer_ms(5000, update_soc, NULL, &socUpdateTimer);
 }
+
 
 
 int main() {
