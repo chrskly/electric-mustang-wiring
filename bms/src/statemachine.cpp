@@ -523,7 +523,7 @@ void state_illegalStateTransitionFault(Event event) {
             break;
 
         case E_CHARGING_TERMINATED:
-            if ( battery.ignition_is_off() ) {
+            if ( ! battery.ignition_is_on() ) {
                 printf("Switching to state : standby, reason : ignition and charging off\n");
                 state = state_standby;
             }

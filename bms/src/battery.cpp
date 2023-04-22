@@ -475,10 +475,6 @@ bool Battery::ignition_is_on() {
     return ignitionOn;
 }
 
-bool Battery::ignition_is_off() {
-    return ( ! ignitionOn );
-}
-
 
 //// ----
 //
