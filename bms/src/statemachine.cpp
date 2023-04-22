@@ -49,9 +49,9 @@ void state_standby(Event event) {
             if ( battery.has_temperature_sensor_over_max() ) {
                 battery.enable_inhibit_drive();
                 battery.enable_inhibit_charge();
-                printf("Switching to state : fault, reason : battery too hot\n");
+                printf("Switching to state : overTempFault, reason : battery too hot\n");
                 statusLight.led_set_mode(FAULT);
-                state = state_fault;
+                state = state_overTempFault;
                 break;
             }
 
@@ -120,7 +120,7 @@ void state_standby(Event event) {
 /*
  * State          : drive
  * Ignition       : on
- * Contactors     : closed
+ * Contactors     : closed / inhibited
  * Charging       : no
  * heater         : off
  * drive inhibit  : off
@@ -135,9 +135,9 @@ void state_drive(Event event) {
             if ( battery.has_temperature_sensor_over_max() ) {
                 battery.enable_inhibit_drive();
                 battery.enable_inhibit_charge();
-                printf("Switching to state : fault, reason : battery too hot\n");
+                printf("Switching to state : overTempFault, reason : battery too hot\n");
                 statusLight.led_set_mode(FAULT);
-                state = state_fault;
+                state = state_overTempFault;
                 break;
             }
 
@@ -151,8 +151,7 @@ void state_drive(Event event) {
              */
             if ( battery.has_empty_cell() ) {
                 battery.enable_inhibit_drive();
-                // wait a while, then open contactors?
-                printf("Switching to state : fault, reason : empty battery\n");
+                printf("Switching to state : batteryEmpty, reason : empty battery\n");
                 statusLight.led_set_mode(FAULT);
                 state = state_batteryEmpty;
                 break;
@@ -188,9 +187,10 @@ void state_drive(Event event) {
              */
             if ( battery.one_or_more_contactors_inhibited() ) {
                 battery.enable_inhibit_drive();
-                printf("Switching to state : fault, reason : cannot switch directly from drive to charge with imbalanced packs\n");
+                battery.enable_inhibit_charge();
+                printf("Switching to state : illegalStateTransitionFault, reason : cannot switch directly from drive to charge with imbalanced packs\n");
                 statusLight.led_set_mode(FAULT);
-                state = state_fault;
+                state = state_illegalStateTransitionFault;
                 break;
             }
 
@@ -235,9 +235,9 @@ void state_charging(Event event) {
             if ( battery.has_temperature_sensor_over_max() ) {
                 battery.enable_inhibit_drive();
                 battery.enable_inhibit_charge();
-                printf("Switching to state : fault, reason : battery too hot\n");
+                printf("Switching to state : overTempFault, reason : battery too hot\n");
                 statusLight.led_set_mode(FAULT);
-                state = state_fault;
+                state = state_overTempFault;
                 break;
             }
 
@@ -330,11 +330,11 @@ void state_charging(Event event) {
 
 /*
  * State          : batteryEmpty
- * Ignition       : on or off
- * Contactors     : open or closed
+ * Ignition       : on / off
+ * Contactors     : open / closed / inhibited
  * Charging       : no
  * heater         : off
- * drive inhibit  : off
+ * drive inhibit  : on
  * charge inhibit : off
  */
 void state_batteryEmpty(Event event) {
@@ -346,9 +346,9 @@ void state_batteryEmpty(Event event) {
             if ( battery.has_temperature_sensor_over_max() ) {
                 battery.enable_inhibit_drive();
                 battery.enable_inhibit_charge();
-                printf("Switching to state : fault, reason : battery too hot\n");
+                printf("Switching to state : overTempFault, reason : battery too hot\n");
                 statusLight.led_set_mode(FAULT);
-                state = state_fault;
+                state = state_overTempFault;
                 break;
             }
 
@@ -387,9 +387,7 @@ void state_batteryEmpty(Event event) {
             // Is it too cold to charge?
             if ( battery.too_cold_to_charge() ) {
                 battery.enable_inhibit_charge();
-                if ( ! battery.heater_enabled() ) {
-                    battery.enable_heater();
-                }
+                battery.enable_heater();
             }
             printf("Switching to state : charging, reason : charging initiated\n");
             statusLight.led_set_mode(CHARGING);
@@ -408,19 +406,18 @@ void state_batteryEmpty(Event event) {
 }
 
 /*
- * State          : fault
- * Ignition       : --
+ * State          : overTempFault
+ * Ignition       : on / off
  * Contactors     : open / closed
- * Charging       : no
+ * Charging       : yes (waiting for charing to terminate) / no
  * heater         : off
  * drive inhibit  : on
  * charge inhibit : on
  *
  * Reasons we can be in this state:
- *   - We tried to go from drive to charge with imbalanced packs
  *   - Batteries are too hot
  */
-void state_fault(Event event) {
+void state_overTempFault(Event event) {
 
     switch (event) {
 
@@ -429,9 +426,10 @@ void state_fault(Event event) {
              * which state to switch to based on the input signals
              */
             if ( ! battery.has_temperature_sensor_over_max() ) {
+
                 // Charge mode overrides drive mode
                 if ( battery.charge_enable_is_on() ) {
-                    if ( battery.packs_are_imbalanced() ) {
+                    if ( battery.one_or_more_contactors_inhibited() ) {
                         battery.disable_inhibit_for_charge();
                     }
                     battery.disable_inhibit_charge();
@@ -440,9 +438,10 @@ void state_fault(Event event) {
                     state = state_charging;
                     break;
                 }
+
                 // Drive mode
                 if ( battery.ignition_is_on() ) {
-                    if ( battery.packs_are_imbalanced() ) {
+                    if ( battery.one_or_more_contactors_inhibited() ) {
                         battery.disable_inhibit_for_drive();
                     }
                     battery.disable_inhibit_charge();
@@ -452,6 +451,7 @@ void state_fault(Event event) {
                     state = state_drive;
                     break;
                 }
+
                 // Standby mode
                 battery.disable_inhibit_drive();
                 battery.disable_inhibit_charge();
@@ -459,6 +459,7 @@ void state_fault(Event event) {
                 statusLight.led_set_mode(STANDBY);
                 state = state_standby;
                 break;
+
             }
             break;
 
@@ -476,6 +477,56 @@ void state_fault(Event event) {
 
         case E_CHARGING_TERMINATED:
             break;
+
+        case E_EMERGENCY_SHUTDOWN:
+            break;
+
+        default:
+            printf("Received unknown event\n");
+    }
+}
+
+
+/*
+ * State          : illegalStateTransitionFault
+ * Ignition       : --
+ * Contactors     : open / closed
+ * Charging       : no
+ * heater         : off
+ * drive inhibit  : on
+ * charge inhibit : on
+ *
+ * Reasons we can be in this state:
+ *   - We tried to go straight from drive to charge with imbalanced packs
+ */
+void state_illegalStateTransitionFault(Event event) {
+
+    switch (event) {
+
+        case E_TEMPERATURE_UPDATE:
+            break;
+
+        case E_CELL_VOLTAGE_UPDATE:
+            break;
+
+        case E_IGNITION_ON:
+            break;
+
+        case E_IGNITION_OFF:
+            if ( battery.charge_enable_is_on() ) {
+                printf("Switching to state : standby, reason : ignition and charging off\n");
+                state = state_standby;
+            }
+            break;
+
+        case E_CHARGING_INITIATED:
+            break;
+
+        case E_CHARGING_TERMINATED:
+            if ( battery.ignition_is_off() ) {
+                printf("Switching to state : standby, reason : ignition and charging off\n");
+                state = state_standby;
+            }
 
         case E_EMERGENCY_SHUTDOWN:
             break;

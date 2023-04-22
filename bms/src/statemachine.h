@@ -33,6 +33,7 @@ void state_standby(Event event);
 void state_drive(Event event);
 void state_charging(Event event);
 void state_batteryEmpty(Event event);
-void state_fault(Event event);
+void state_overTempFault(Event event);
+void state_illegalStateTransitionFault(Event event);
 
 

@@ -115,6 +115,7 @@ class Battery {
         void disable_inhibit_for_drive();
         void disable_inhibit_for_charge();
         bool ignition_is_on();
+        bool ignition_is_off();
 
         // Contactors
         void inhibit_contactor_close();
