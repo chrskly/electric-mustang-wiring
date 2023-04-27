@@ -59,7 +59,9 @@ class ChademoStation {
         bool is_alive();
         bool connector_is_locked();
         bool is_reporting_battery_incompatibility();
-        bool is_reporting_malfunction();
+        bool is_reporting_station_malfunction();
+        bool is_reporting_charging_system_malfunction();
+        bool station_is_shutting_down();
 
 
 };

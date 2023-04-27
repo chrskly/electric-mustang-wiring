@@ -17,26 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BATTERY_H
-#define BATTERY_H
+#ifndef CHARGER_H
+#define CHARGER_H
 
 #include "chademo.h"
 #include "ccs.h"
 #include "util.h"
+#include "battery.h"
 
 class Charger {
 
     private:
         bool chargeInhibited;
-        clock_t bmsLastUpdate;
 
     public:
         Chademo chademo;
         CCS css;
+        Battery battery;
 
         Charger();
-        void bms_heartbeat();
-        bool bms_is_alive();
 
 };
 

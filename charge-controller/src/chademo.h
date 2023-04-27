@@ -23,7 +23,6 @@
 
 #include "chademostatemachine.h"
 #include "chademostation.h"
-#include "car.h"
 
 class Chademo {
 
@@ -41,14 +40,17 @@ class Chademo {
 
         // This is the current (amps) we will request from the station. It will
         // vary dynamically throughout the charging process because of max ramp
-        // rates, etc.
+        // rates, amps available and charger, BMS limits, etc.
         uint8_t chargingCurrentRequest;
 
         // The time we last changed our current request we send to the station
         clock_t lastCurrentRequestChange;
 
+        // The SoC at which to stop charging
+        uint8_t targetSoc;
+
         // The battery voltage at which to stop charging
-        uint16_t targetBatteryVoltage;
+        float targetVoltage;
 
     public:
 
@@ -59,8 +61,15 @@ class Chademo {
 
         void reinitialise();
 
+        bool car_and_station_protocol_compatible();
+        float get_target_voltage();
+        bool car_and_station_voltage_compatible();
+
         void recalculate_charging_current_request();
         uint8_t get_charging_current_request();
+        void recalculate_charging_time();
+        void process_station_capabilities_update();
+
         uint8_t generate_battery_status_byte();
         uint8_t generate_vehicle_status_byte();
 
@@ -74,19 +83,6 @@ class Chademo {
         void deactivate_out1();
         void activate_out2();
         void deactivate_out2();
-
-        void initialise_state();
-        bool battery_over_voltage();
-        bool battery_under_voltage();
-        bool battery_voltage_deviation_error();
-        bool battery_current_deviation_error();
-
-        bool car_and_station_protocol_compatible();
-        bool car_and_station_voltage_compatible();
-        bool car_and_station_capabilities_match();
-
-        bool station_malfunction();
-        bool battery_incompatible();
 
 };
 

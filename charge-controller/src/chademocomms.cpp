@@ -25,11 +25,9 @@ using namespace std;
 #include "mcp2515/mcp2515.h"
 #include "settings.h"
 #include "charger.h"
-#include "car.h"
 #include "util.h"
 
 
-extern Car car;
 extern Charger charger;
 extern MCP2515 chademoCAN;
 
@@ -50,9 +48,9 @@ void send_limits_message() {
     frame.data[1] = 0x00;
     frame.data[2] = 0x00;
     frame.data[3] = 0x00;
-    frame.data[4] = BATTERY_MAX_VOLTAGE & 0xFF;
-    frame.data[5] = BATTERY_MAX_VOLTAGE >> 8;
-    frame.data[6] = car.soc;
+    frame.data[4] = (uint8_t)charger.chademo.get_target_voltage() & 0xFF;
+    frame.data[5] = (uint8_t)charger.chademo.get_target_voltage() >> 8;
+    frame.data[6] = (uint8_t)charger.battery.soc;
     frame.data[7] = 0x00;
 
     chademoCAN.sendMessage(&frame);
@@ -79,11 +77,11 @@ void send_charge_time_message() {
     frame.can_dlc = 8;
     frame.data[0] = 0x00; // unused
     frame.data[1] = 0xFF; // Don't declare max charge time in seconds
-    frame.data[2] = car.calculate_max_charging_time_minutes(charger.chademo.station.availableCurrent);
-    frame.data[3] = car.calculate_charging_time_minutes(charger.chademo.station.availableCurrent);
+    frame.data[2] = charger.battery.get_charging_time_minutes_max();
+    frame.data[3] = charger.battery.get_charging_time_minutes();
     frame.data[4] = 0x00; // unused
-    frame.data[5] = car.batteryCapacity & 0xFF; // lsb
-    frame.data[6] = car.batteryCapacity >> 8;  // msb
+    frame.data[5] = (uint8_t)( charger.battery.batteryCapacityWH / 1000 / 0.11 ) & 0xFF;
+    frame.data[6] = (uint8_t)( charger.battery.batteryCapacityWH / 1000 / 0.11 ) >> 8;
     frame.data[7] = 0x00; // unused
 
     chademoCAN.sendMessage(&frame);
@@ -119,8 +117,8 @@ void send_status_message() {
     frame.can_id = 0x102;
     frame.can_dlc = 8;
     frame.data[0] = CHADEMO_PROTOCOL_VERSION;
-    frame.data[1] = 0x00; // target voltage lsb
-    frame.data[2] = 0x00; // target voltage msb
+    frame.data[1] = (uint8_t)charger.chademo.get_target_voltage() & 0xFF;
+    frame.data[2] = (uint8_t)charger.chademo.get_target_voltage() >> 8;
     frame.data[3] = charger.chademo.get_charging_current_request();
     frame.data[4] = charger.chademo.generate_battery_status_byte();
     frame.data[5] = charger.chademo.generate_vehicle_status_byte();
@@ -143,6 +141,10 @@ bool send_outbound_CAN_messages(struct repeating_timer *t) {
 
 void enable_send_outbound_CAN_messages() {
     add_repeating_timer_ms(100, send_outbound_CAN_messages, NULL, &outboundCANMessageTimer);
+}
+
+void disable_send_outbound_CAN_messages() {
+    //
 }
 
 

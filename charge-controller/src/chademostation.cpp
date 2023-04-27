@@ -25,14 +25,13 @@ using namespace std;
 
 #include "chademostation.h"
 #include "chademostatemachine.h"
-#include "car.h"
+#include "battery.h"
 #include "util.h"
 
 #include "settings.h"
 
 
 extern ChademoState state;
-extern Car car;
 
 ChademoStation::ChademoStation() {}
 
@@ -76,6 +75,8 @@ bool ChademoStation::initial_parameter_exchange_complete() {
  */
 void ChademoStation::process_capabilities_update() {
 
+    /*
+
     // Check voltage available at EVSE is enough
     if ( maximumVoltageAvailable < BATTERY_MAX_VOLTAGE ) {
         printf("ERROR maximum EVSE voltage is insufficient");
@@ -85,6 +86,8 @@ void ChademoStation::process_capabilities_update() {
 
     // 
     car.targetChargingCurrent = min((uint16_t)availableCurrent, car.maximumChargeCurrent);
+
+    */
 
 }
 
@@ -146,6 +149,15 @@ bool ChademoStation::is_reporting_battery_incompatibility() {
     return batteryIncompatability;
 }
 
-bool ChademoStation::is_reporting_malfunction() {
+bool ChademoStation::is_reporting_station_malfunction() {
+    return stationMalfunction;
+}
+
+bool ChademoStation::is_reporting_charging_system_malfunction() {
     return chargingSystemMalfunction;
 }
+
+bool ChademoStation::station_is_shutting_down() {
+    return chargerStopControl;
+}
+

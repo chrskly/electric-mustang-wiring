@@ -17,25 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CAR_H
-#define CAR_H
+#ifndef BATTERY_H
+#define BATTERY_H
 
-class Car {
+class Battery {
 
     private:
         // Voltage to charge up to
-        uint16_t targetBatteryVoltage;
+        uint16_t targetVoltage;
 
-        bool vehicleChargingEnabled;
-        bool highBatteryTemperature;
+        // Estimated time remaining until charging is complete. We calculate
+        // this as we go along. Sent to station.
+        uint8_t chargingTimeMinutes;
+        uint8_t chargingTimeMinutesMax;
+
+        // BMS
+        clock_t bmsLastUpdate;
 
     public:
         // Below are all received from BMS
         uint16_t soc;                     // Battery SoC
-        uint16_t maximumBatteryVoltage;   // 'Full' battery voltage
+        uint16_t maximumVoltage;          // 'Full' battery voltage
         uint16_t maximumChargeCurrent;    // Maximum charge current allowed by BMS
         uint16_t maximumDischargeCurrent; // Maximum discharge current allowed by BMS
-        uint16_t minimumBatteryVoltage;   // 'Empty' battery voltage
+        uint16_t minimumVoltage;          // 'Empty' battery voltage
         uint16_t batteryVoltage;          // Actual voltage of battery right now
         uint16_t batteryCurrent;          // Current (amps) in/out of the battery right now
         uint16_t batteryTemperature;      // Temperature of hottest cell
@@ -49,17 +54,23 @@ class Car {
         bool highTempWarn;                // 
         bool lowTempWarn;                 // 
 
+        // BMS
+        void bms_heartbeat();
+        bool bms_is_alive();
+
         // This is the current (amps) to request from the station. This value
         // only factors in any limits placed on us by the BMS.
         uint8_t targetChargingCurrent;
 
-        // Rated capacity of the battery (kWh). Send to station.
-        uint16_t batteryCapacity;  // 0.11 kWh/bit
+        // Rated capacity of the battery.
+        uint16_t batteryCapacityWH;
+        uint16_t batteryCapacityAH;
 
-        Car();
-        uint8_t calculate_charging_time_minutes(uint8_t current);
-        uint8_t calculate_max_charging_time_minutes(uint8_t current);
+        Battery();
+        void recalculate_charging_time_minutes(uint8_t current, uint8_t targetSoc);
         uint8_t get_voltage_from_soc(uint8_t soc);
+        uint8_t get_charging_time_minutes();
+        uint8_t get_charging_time_minutes_max();
 
 };
 

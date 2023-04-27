@@ -26,11 +26,10 @@ using namespace std;
 
 #include "chademo.h"
 #include "charger.h"
-#include "car.h"
 #include "chademostatemachine.h"
 #include "settings.h"
 
-extern Car car;
+
 extern Charger charger;
 
 
@@ -40,11 +39,40 @@ Chademo::Chademo() {
 }
 
 void Chademo::reinitialise() {
-    // Start at zero. We only recalculate this during energy transfer.
+    // Start at zero. We only update this from handshaking onward.
     chargingCurrentRequest = 0;
 
-    targetBatteryVoltage = car.get_voltage_from_soc(BATTERY_FAST_CHARGE_DEFAULT_SOC_MAX);
+    // Set the target state-of-charge and voltage
+    targetSoc = BATTERY_FAST_CHARGE_DEFAULT_SOC_MAX;
+    targetVoltage = charger.battery.get_voltage_from_soc(BATTERY_FAST_CHARGE_DEFAULT_SOC_MAX);
 }
+
+//
+// Handshaking
+//
+
+bool Chademo::car_and_station_protocol_compatible() {
+    return ( CHADEMO_PROTOCOL_VERSION >= station.controlProtocolNumber );
+}
+
+
+//
+// Voltage
+//
+
+
+float Chademo::get_target_voltage() {
+    return targetVoltage;
+}
+
+bool Chademo::car_and_station_voltage_compatible() {
+    return ( charger.battery.maximumVoltage < station.maximumVoltageAvailable );
+}
+
+
+//
+// Current
+//
 
 /*
  * Calculate a new value for the charge current (chargingCurrentRequest) that we
@@ -56,7 +84,7 @@ void Chademo::recalculate_charging_current_request() {
 
     // Our new max current target will be whichever is less between what the BMS
     // allows or what the station can provide.
-    uint8_t chargingCurrentCeiling = min(car.targetChargingCurrent, station.availableCurrent);
+    uint8_t chargingCurrentCeiling = min(charger.battery.targetChargingCurrent, station.availableCurrent);
 
     // No change required. Hold at the current level.
     if ( chargingCurrentRequest == chargingCurrentCeiling ) {
@@ -122,6 +150,35 @@ uint8_t Chademo::get_charging_current_request() {
 }
 
 
+//
+// Time
+//
+
+void Chademo::recalculate_charging_time() {
+    charger.battery.recalculate_charging_time_minutes(chargingCurrentRequest, targetSoc);
+}
+
+
+
+
+
+/*
+ * We've just received an update on the capabilites of the charging station.
+ * Process this information. The following data are in the capabilities msg.
+ *  - weldDetectionSupported
+ *  - maximumVoltageAvailable
+ *  - availableCurrent
+ *  - thresholdVoltage
+ */
+void Chademo::process_station_capabilities_update() {
+    // recalculate time remaining
+    charger.battery.recalculate_charging_time_minutes(chargingCurrentRequest, targetSoc);
+}
+
+
+
+
+
 /*
  * Generate byte 4 (battery status) sent in the car status message.
  *
@@ -135,7 +192,13 @@ uint8_t Chademo::get_charging_current_request() {
  * 
  */
 uint8_t Chademo::generate_battery_status_byte() {
-    return ( 0x00 | car.highCellAlarm | car.lowCellAlarm << 1 | car.highTempAlarm << 3 | car.cellDeltaAlarm << 4 );
+    return (
+        0x00 |
+        charger.battery.highCellAlarm |
+        charger.battery.lowCellAlarm << 1 |
+        charger.battery.highTempAlarm << 3 |
+        charger.battery.cellDeltaAlarm << 4
+    );
 }
 
 /*
@@ -160,23 +223,17 @@ uint8_t Chademo::generate_vehicle_status_byte() {
 
 
 
-/*
- * Return true if plug is inserted in car.
- */
+// Return true if plug is inserted in car.
 bool Chademo::plug_is_in() {
     return ( gpio_get(CHADEMO_CS_PIN) == 0 );
 }
 
-/*
- * Return true if IN1 signal is active (high)
- */
+// Return true if IN1 signal is active (high)
 bool Chademo::in1_is_active() {
     return ( gpio_get(CHADEMO_IN1_PIN) == 1 );
 }
 
-/*
- * Return true if IN2 signal is active (low)
- */
+// Return true if IN2 signal is active (low)
 bool Chademo::in2_is_active() {
     return ( gpio_get(CHADEMO_IN2_PIN) == 0 );
 }
@@ -204,53 +261,3 @@ void Chademo::activate_out2() {
 void Chademo::deactivate_out2() {
     gpio_put(CHADEMO_OUT2_PIN, 0);
 }
-
-
-bool Chademo::battery_over_voltage() {
-    //
-    return false;
-}
-
-bool Chademo::battery_under_voltage() {
-    //
-    return false;
-}
-
-bool Chademo::battery_voltage_deviation_error() {
-    //
-    return false;
-}
-
-bool Chademo::battery_current_deviation_error() {
-    //
-    return false;
-}
-
-////----
-//
-// Handshaking checks
-//
-////----
-
-// capabilities
-
-bool Chademo::car_and_station_voltage_compatible() {
-    return ( car.maximumBatteryVoltage < station.maximumVoltageAvailable );
-}
-
-// status
-
-bool Chademo::car_and_station_protocol_compatible() {
-    return ( CHADEMO_PROTOCOL_VERSION >= station.controlProtocolNumber );
-}
-
-bool Chademo::station_malfunction() {
-    return ( station.stationMalfunction );
-}
-
-bool Chademo::battery_incompatible() {
-    return ( station.batteryIncompatability );
-}
-
-
-

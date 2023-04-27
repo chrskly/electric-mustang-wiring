@@ -37,27 +37,18 @@ using namespace std;
 #include "chademocomms.h"
 #include "comms.h"
 #include "led.h"
-#include "car.h"
+#include "battery.h"
 #include "charger.h"
 
 MCP2515 mainCAN(SPI_PORT, MAIN_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 MCP2515 chademoCAN(SPI_PORT, CHADEMO_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 MCP2515 cssCAN(SPI_PORT, CCS_CAN_CS, SPI_MISO, SPI_MOSI, SPI_CLK, 500000);
 
-Car car;
 Charger charger;
 StatusLight statusLight;
 
 Charger::Charger(){
     chargeInhibited = true;
-}
-
-void Charger::bms_heartbeat() {
-    bmsLastUpdate = get_clock();
-}
-
-bool Charger::bms_is_alive() {
-    return ( ((double)(get_clock() - bmsLastUpdate) / CLOCKS_PER_SEC) < BMS_TTL );
 }
 
 

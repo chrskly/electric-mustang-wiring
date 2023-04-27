@@ -12,8 +12,8 @@ set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 pico_sdk_init()
 
 add_executable(charger
-        car.cpp
-        car.h
+        battery.cpp
+        battery.h
         ccs.cpp
         ccs.h
         ccscomms.cpp

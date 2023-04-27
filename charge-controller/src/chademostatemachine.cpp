@@ -30,7 +30,13 @@ extern Charger charger;
 
 /*
  * State : idle
- *  - plug out
+ *
+ * IN1         : deactivated
+ * IN2         : deactivated
+ * OUT1        : 
+ * OUT2        : 
+ * CS          : deactivated
+ * Plug locked : no
  *
  * Transitions:
  *  => plug_in
@@ -40,20 +46,23 @@ void chademo_state_idle(ChademoEvent event) {
 
     switch (event) {
 
+        case E_BMS_UPDATE_RECEIVED:
+            charger.chademo.recalculate_charging_current_request();
+            break;
+
         case E_PLUG_INSERTED:
             charger.chademo.state = chademo_state_handshaking;
             break;
 
-        case E_BMS_UPDATE_RECEIVED:
-            charger.chademo.recalculate_charging_current_request();
-
         case E_CHARGE_INHIBIT_ENABLED:
             charger.chademo.state = chademo_state_charge_inhibited;
+            break;
 
         default:
             printf("WARNING : received invalid event\n");
 
     }
+
 }
 
 /*
@@ -65,6 +74,13 @@ void chademo_state_idle(ChademoEvent event) {
  * Note: possible issue here if IN1/CP and CS activate simultaneously or in the
  *       wrong order. Can this happen?
  *
+ * IN1         : deactivated
+ * IN2         : deactivated
+ * OUT1        : 
+ * OUT2        : 
+ * CS          : deactivated
+ * Plug locked : no
+ *
  * Transitions:
  *  => handshaking
  *     - IN1 goes high
@@ -74,6 +90,10 @@ void chademo_state_idle(ChademoEvent event) {
 void chademo_state_plug_in(ChademoEvent event) {
 
     switch (event) {
+
+        case E_BMS_UPDATE_RECEIVED:
+            charger.chademo.recalculate_charging_current_request();
+            break;
 
         case E_IN1_ACTIVATED:
             charger.chademo.station.reinitialise();
@@ -89,16 +109,25 @@ void chademo_state_plug_in(ChademoEvent event) {
 
         case E_CHARGE_INHIBIT_ENABLED:
             charger.chademo.state = chademo_state_charge_inhibited;
+            break;
 
         default:
             printf("WARNING : received invalid event\n");
 
     }
+
 }
 
 /*
  * State : handshaking
  *  - exchanging params with evse
+ *
+ * IN1         : deactivated
+ * IN2         : deactivated
+ * OUT1        : 
+ * OUT2        : 
+ * CS          : deactivated
+ * Plug locked : no
  *
  * Charging station sends:
  *  - Control protocol number (0x109)
@@ -124,7 +153,13 @@ void chademo_state_handshaking(ChademoEvent event) {
 
     switch (event) {
 
+        case E_BMS_UPDATE_RECEIVED:
+            charger.chademo.recalculate_charging_current_request();
+            break;
+
         case E_EVSE_CAPABILITIES_UPDATED:
+
+            charger.chademo.station.process_capabilities_update();
 
             // Can the charger provide us with enough voltage?
             if ( ! charger.chademo.car_and_station_voltage_compatible() ) {
@@ -132,6 +167,9 @@ void chademo_state_handshaking(ChademoEvent event) {
                 charger.chademo.state = chademo_state_error;
                 break;
             }
+
+            // update time estimates
+            // update current request
 
             // If we have received all of the params we need from the station, move to the next step
             if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
@@ -144,23 +182,39 @@ void chademo_state_handshaking(ChademoEvent event) {
             break;
 
         case E_EVSE_STATUS_UPDATED:
-
-            // Check for control protocol compatibility
+            // Check for control protocol compatibility (controlProtocolNumber)
             if ( ! charger.chademo.car_and_station_protocol_compatible() ) {
                 printf("ERROR : chademo protocol version mismatch. Stopping\n");
-                // FIXME what to do here?
-            }
-
-            // Fail out if the charging station has reported a malfunction
-            if ( charger.chademo.station.is_reporting_malfunction() ) {
-                printf("ERROR : station reports malfunction. Stopping\n");
+                disable_send_outbound_CAN_messages();
                 charger.chademo.state = chademo_state_error;
             }
 
-            // Fail out if the charging station has reported a battery incompatability
+            // Fail out if the charging station has reported a malfunction (stationMalfunction)
+            if ( charger.chademo.station.is_reporting_station_malfunction() ) {
+                printf("ERROR : station is reporting a malfunction. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_error;
+            }
+
+            // Fail out if the charging station has reported a battery incompatability (batteryIncompatability)
             if ( charger.chademo.station.is_reporting_battery_incompatibility() ) {
-                printf("ERROR : station reports battery incompatible. Stopping\n");
+                printf("ERROR : station is reporting a battery incompatiblity. Stopping\n");
+                disable_send_outbound_CAN_messages();
                 charger.chademo.state = chademo_state_error;
+            }
+
+            // Fail out if the charging station has reported a malfunction with the car (chargingSystemMalfunction)
+            if ( charger.chademo.station.is_reporting_charging_system_malfunction() ) {
+                printf("ERROR : station is reporting a charging system malfunction. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_error;
+            }
+
+            // Check if charger is shutting down (chargerStopControl)
+            if ( charger.chademo.station.station_is_shutting_down() ) {
+                printf("ERROR : station is shutting down. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_plug_in;
             }
 
             if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
@@ -190,23 +244,61 @@ void chademo_state_handshaking(ChademoEvent event) {
 
 /*
  * State : await_connector_lock
+ *
+ * IN1         : deactivated
+ * IN2         : deactivated
+ * OUT1        : 
+ * OUT2        : 
+ * CS          : deactivated
+ * Plug locked : no
+ * 
  */
 void chademo_state_await_connector_lock(ChademoEvent event) {
 
     switch (event) {
 
+        case E_BMS_UPDATE_RECEIVED:
+            charger.chademo.recalculate_charging_current_request();
+            break;
+
         case E_EVSE_CAPABILITIES_UPDATED:
-
-            // Fail out if the charging station has reported a malfunction
-            if ( charger.chademo.station.is_reporting_malfunction() ) {
-                printf("ERROR : station reports malfunction. Stopping\n");
-                charger.chademo.state = chademo_state_error;
-                break;
-            }
-
             break;
 
         case E_EVSE_STATUS_UPDATED:
+            // Check for control protocol compatibility (controlProtocolNumber)
+            if ( ! charger.chademo.car_and_station_protocol_compatible() ) {
+                printf("ERROR : chademo protocol version mismatch. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_error;
+            }
+
+            // Fail out if the charging station has reported a malfunction (stationMalfunction)
+            if ( charger.chademo.station.is_reporting_station_malfunction() ) {
+                printf("ERROR : station is reporting a malfunction. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_error;
+            }
+
+            // Fail out if the charging station has reported a battery incompatability (batteryIncompatability)
+            if ( charger.chademo.station.is_reporting_battery_incompatibility() ) {
+                printf("ERROR : station is reporting a battery incompatiblity. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_error;
+            }
+
+            // Fail out if the charging station has reported a malfunction with the car (chargingSystemMalfunction)
+            if ( charger.chademo.station.is_reporting_charging_system_malfunction() ) {
+                printf("ERROR : station is reporting a charging system malfunction. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_error;
+            }
+
+            // Check if charger is shutting down (chargerStopControl)
+            if ( charger.chademo.station.station_is_shutting_down() ) {
+                printf("ERROR : station is shutting down. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_plug_in;
+            }
 
             // check if lock is complete
             if ( charger.chademo.station.connector_is_locked() ) {
@@ -216,14 +308,13 @@ void chademo_state_await_connector_lock(ChademoEvent event) {
             break;
 
         case E_PLUG_REMOVED:
-
             charger.chademo.reinitialise();
+            charger.chademo.deactivate_out1();
             charger.chademo.state = chademo_state_idle;
             break;
 
         case E_CHARGE_INHIBIT_ENABLED:
-
-            // FIXME how do we exit safely from here? send error msg?
+            charger.chademo.deactivate_out1();
             charger.chademo.state = chademo_state_charge_inhibited;
 
         default:
@@ -237,19 +328,30 @@ void chademo_state_await_connector_lock(ChademoEvent event) {
 /*
  * State : chademo_await_insulation_test
  *
+ * IN1         : deactivated
+ * IN2         : deactivated
+ * OUT1        : 
+ * OUT2        : 
+ * CS          : deactivated
+ * Plug locked : no
+ *
+ * Connector locked : yes
+ *
  */
 void chademo_state_await_insulation_test(ChademoEvent event) {
 
     switch (event) {
 
-        case E_PLUG_REMOVED:
+        case E_BMS_UPDATE_RECEIVED:
+            charger.chademo.recalculate_charging_current_request();
+            break;
 
+        case E_PLUG_REMOVED:
             charger.chademo.reinitialise();
             charger.chademo.state = chademo_state_idle;
             break;
 
         case E_CHARGE_INHIBIT_ENABLED:
-
             // FIXME how do we exit safely from here? send error msg?
             charger.chademo.state = chademo_state_charge_inhibited;
 
@@ -261,10 +363,22 @@ void chademo_state_await_insulation_test(ChademoEvent event) {
 
 /*
  * State : energy_transfer
+ *
+ * IN1         : deactivated
+ * IN2         : deactivated
+ * OUT1        : 
+ * OUT2        : 
+ * CS          : deactivated
+ * Plug locked : no
+ *
  */
 void chademo_state_energy_transfer(ChademoEvent event) {
 
     switch (event) {
+
+        case E_BMS_UPDATE_RECEIVED:
+            charger.chademo.recalculate_charging_current_request();
+            break;
 
         case E_PLUG_REMOVED:
             break;
@@ -274,14 +388,46 @@ void chademo_state_energy_transfer(ChademoEvent event) {
             // Current available at station may have changed
             charger.chademo.recalculate_charging_current_request();
 
-            // Fail out if the charging station has reported a malfunction
-            if ( charger.chademo.station.is_reporting_malfunction() ) {
-                printf("ERROR : station reports malfunction. Stopping\n");
-                charger.chademo.state = chademo_state_error;
-                break;
-            }
+            // If current available has changed then the charging time may need update
+            charger.chademo.recalculate_charging_time();
 
             break;
+
+        case E_EVSE_STATUS_UPDATED:
+            // Check for control protocol compatibility (controlProtocolNumber)
+            if ( ! charger.chademo.car_and_station_protocol_compatible() ) {
+                printf("ERROR : chademo protocol version mismatch. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_error;
+            }
+
+            // Fail out if the charging station has reported a malfunction (stationMalfunction)
+            if ( charger.chademo.station.is_reporting_station_malfunction() ) {
+                printf("ERROR : station is reporting a malfunction. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_error;
+            }
+
+            // Fail out if the charging station has reported a battery incompatability (batteryIncompatability)
+            if ( charger.chademo.station.is_reporting_battery_incompatibility() ) {
+                printf("ERROR : station is reporting a battery incompatiblity. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_error;
+            }
+
+            // Fail out if the charging station has reported a malfunction with the car (chargingSystemMalfunction)
+            if ( charger.chademo.station.is_reporting_charging_system_malfunction() ) {
+                printf("ERROR : station is reporting a charging system malfunction. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_error;
+            }
+
+            // Check if charger is shutting down (chargerStopControl)
+            if ( charger.chademo.station.station_is_shutting_down() ) {
+                printf("ERROR : station is shutting down. Stopping\n");
+                disable_send_outbound_CAN_messages();
+                charger.chademo.state = chademo_state_plug_in;
+            }
 
         case E_CHARGE_INHIBIT_ENABLED:
 
@@ -298,10 +444,21 @@ void chademo_state_energy_transfer(ChademoEvent event) {
 /*
  * State : winding_down
  *
+ * IN1         : deactivated
+ * IN2         : deactivated
+ * OUT1        : 
+ * OUT2        : 
+ * CS          : deactivated
+ * Plug locked : no 
+ *
  */
 void chademo_state_winding_down(ChademoEvent event) {
 
     switch (event) {
+
+        case E_BMS_UPDATE_RECEIVED:
+            charger.chademo.recalculate_charging_current_request();
+            break;
 
         case E_PLUG_REMOVED:
             break;
@@ -317,10 +474,22 @@ void chademo_state_winding_down(ChademoEvent event) {
 
 /*
  * State : charge_inhibited
+ *
+ * IN1         : deactivated
+ * IN2         : deactivated
+ * OUT1        : 
+ * OUT2        : 
+ * CS          : deactivated
+ * Plug locked : no
+ *
  */
 void chademo_state_charge_inhibited(ChademoEvent event) {
 
     switch (event) {
+
+        case E_BMS_UPDATE_RECEIVED:
+            charger.chademo.recalculate_charging_current_request();
+            break;
 
         case E_CHARGE_INHIBIT_DISABLED:
             break;
@@ -334,10 +503,21 @@ void chademo_state_charge_inhibited(ChademoEvent event) {
 /*
  * State : error
  *
+ * IN1         : deactivated
+ * IN2         : deactivated
+ * OUT1        : 
+ * OUT2        : 
+ * CS          : deactivated
+ * Plug locked : no
+ *
  */
 void chademo_state_error(ChademoEvent event) {
 
     switch (event) {
+
+        case E_BMS_UPDATE_RECEIVED:
+            charger.chademo.recalculate_charging_current_request();
+            break;
 
         // Only way out of error is to remove the plug and start over
         case E_PLUG_REMOVED:
