@@ -159,26 +159,6 @@ void Chademo::recalculate_charging_time() {
 }
 
 
-
-
-
-/*
- * We've just received an update on the capabilites of the charging station.
- * Process this information. The following data are in the capabilities msg.
- *  - weldDetectionSupported
- *  - maximumVoltageAvailable
- *  - availableCurrent
- *  - thresholdVoltage
- */
-void Chademo::process_station_capabilities_update() {
-    // recalculate time remaining
-    charger.battery.recalculate_charging_time_minutes(chargingCurrentRequest, targetSoc);
-}
-
-
-
-
-
 /*
  * Generate byte 4 (battery status) sent in the car status message.
  *

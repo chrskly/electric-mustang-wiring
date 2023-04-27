@@ -27,16 +27,6 @@
 class Chademo {
 
     private:
-        
-        // control signals
-        bool chargingEnabled;                   //
-        bool chargingStopRequest;               //
-        bool chargingSystemFault;               //
-
-        // charging params
-        uint8_t chargingRateIndication;         //
-        uint8_t estimatedChargingTimeRemaining; //
-        uint8_t chargingRate;                   //
 
         // This is the current (amps) we will request from the station. It will
         // vary dynamically throughout the charging process because of max ramp
@@ -46,11 +36,11 @@ class Chademo {
         // The time we last changed our current request we send to the station
         clock_t lastCurrentRequestChange;
 
-        // The SoC at which to stop charging
-        uint8_t targetSoc;
-
         // The battery voltage at which to stop charging
         float targetVoltage;
+
+        // The SoC at which to stop charging.
+        uint8_t targetSoc;
 
     public:
 
@@ -68,7 +58,6 @@ class Chademo {
         void recalculate_charging_current_request();
         uint8_t get_charging_current_request();
         void recalculate_charging_time();
-        void process_station_capabilities_update();
 
         uint8_t generate_battery_status_byte();
         uint8_t generate_vehicle_status_byte();
