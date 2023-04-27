@@ -105,14 +105,14 @@ bool send_limits_message(struct repeating_timer *t) {
     limitsFrame.can_id = BMS_LIMITS_MSG_ID;
     limitsFrame.can_dlc = 8;
 
-    limitsFrame.data[0] = ( (uint8_t)battery.get_max_voltage() && 0xFF ) * 10;
-    limitsFrame.data[1] = ( (uint8_t)battery.get_max_voltage() >> 8 ) * 10;
-    limitsFrame.data[2] = ( (uint8_t)battery.get_max_charge_current() && 0xFF ) * 10;
-    limitsFrame.data[3] = ( (uint8_t)battery.get_max_charge_current() >> 8 ) * 10 ;
-    limitsFrame.data[4] = ( (uint8_t)battery.get_max_discharge_current() && 0xFF ) * 10;
-    limitsFrame.data[5] = ( (uint8_t)battery.get_max_discharge_current() >> 8 ) * 10;
-    limitsFrame.data[6] = ( (uint8_t)battery.get_min_voltage() && 0xFF ) * 10;
-    limitsFrame.data[7] = ( (uint8_t)battery.get_min_voltage() >> 8 ) * 10;
+    limitsFrame.data[0] = (uint8_t)( battery.get_max_voltage() * 10 ) && 0xFF;
+    limitsFrame.data[1] = (uint8_t)( battery.get_max_voltage() * 10 ) >> 8;
+    limitsFrame.data[2] = (uint8_t)( battery.get_max_charge_current() * 10 ) && 0xFF;
+    limitsFrame.data[3] = (uint8_t)( battery.get_max_charge_current() * 10 ) >> 8;
+    limitsFrame.data[4] = (uint8_t)( battery.get_max_discharge_current() * 10 ) && 0xFF;
+    limitsFrame.data[5] = (uint8_t)( battery.get_max_discharge_current() * 10 ) >> 8;
+    limitsFrame.data[6] = (uint8_t)( battery.get_min_voltage() * 10 ) && 0xFF;
+    limitsFrame.data[7] = (uint8_t)( battery.get_min_voltage() * 10 ) >> 8;
 
     mainCAN.sendMessage(&limitsFrame);
 
