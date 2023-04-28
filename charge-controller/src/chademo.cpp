@@ -42,6 +42,10 @@ void Chademo::reinitialise() {
     // Start at zero. We only update this from handshaking onward.
     chargingCurrentRequest = 0;
 
+    // Vehicle status flags
+    vehicleChargingEnabled = true;
+    vehicleNotInPark = false;
+
     // Set the target state-of-charge and voltage
     targetSoc = BATTERY_FAST_CHARGE_DEFAULT_SOC_MAX;
     targetVoltage = charger.battery.get_voltage_from_soc(BATTERY_FAST_CHARGE_DEFAULT_SOC_MAX);
@@ -190,13 +194,16 @@ uint8_t Chademo::generate_battery_status_byte() {
  * bit 3 : Vehicle contactor status. 0:closed (or weld detect running), 1: open (or weld detect finished)
  * bit 4 : Normal stop request before charging. 0:no request, 1:request to stop
  *
- * FIXME : vehicle charging enabled flag
- * FIXME : charging system fault
- * FIXME : stop request
- *
  */
 uint8_t Chademo::generate_vehicle_status_byte() {
-    return ( 0x00 | contactors_are_closed() << 3 );
+    return (
+        0x00 |
+        vehicleChargingEnabled |
+        vehicleNotInPark << 1 |
+        vehicleChargingSystemFault << 2 |
+        contactors_are_closed() << 3 |
+        vehicleRequestingStop
+    );
 }
 
 

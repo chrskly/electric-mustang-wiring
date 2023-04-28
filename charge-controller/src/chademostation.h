@@ -44,8 +44,6 @@ class ChademoStation {
         bool batteryIncompatability;
         bool chargingSystemMalfunction;
         bool chargerStopControl;
-
-        //uint8_t chargingCurrentRequest;
         
         clock_t lastUpdateFromEVSE;
 

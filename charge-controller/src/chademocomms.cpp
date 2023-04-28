@@ -175,7 +175,7 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
 
                 charger.chademo.station.heartbeat();
 
-                charger.chademo.state(E_EVSE_CAPABILITIES_UPDATED);
+                charger.chademo.state(E_STATION_CAPABILITIES_UPDATED);
                 break;
 
             case EVSE_STATUS_MESSAGE_ID:
@@ -197,7 +197,7 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
 
                 charger.chademo.station.heartbeat();
 
-                charger.chademo.state(E_EVSE_STATUS_UPDATED);
+                charger.chademo.state(E_STATION_STATUS_UPDATED);
                 break;
 
         }

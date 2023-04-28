@@ -42,6 +42,12 @@ class Chademo {
         // The SoC at which to stop charging.
         uint8_t targetSoc;
 
+        // Flags that are sent in the 0x102 message (vehicle status)
+        bool vehicleChargingEnabled;
+        bool vehicleNotInPark;
+        bool vehicleChargingSystemFault;
+        bool vehicleRequestingStop;
+
     public:
 
         ChademoState state;

@@ -154,12 +154,11 @@ void chademo_state_handshaking(ChademoEvent event) {
     switch (event) {
 
         case E_BMS_UPDATE_RECEIVED:
+
             charger.chademo.recalculate_charging_current_request();
             break;
 
-        case E_EVSE_CAPABILITIES_UPDATED:
-
-            charger.chademo.station.process_capabilities_update();
+        case E_STATION_CAPABILITIES_UPDATED:
 
             // Can the charger provide us with enough voltage?
             if ( ! charger.chademo.car_and_station_voltage_compatible() ) {
@@ -167,9 +166,12 @@ void chademo_state_handshaking(ChademoEvent event) {
                 charger.chademo.state = chademo_state_error;
                 break;
             }
+            
+            // Current available at station may have changed
+            charger.chademo.recalculate_charging_current_request();
 
-            // update time estimates
-            // update current request
+            // If current available has changed then the charging time may need update
+            charger.chademo.recalculate_charging_time();
 
             // If we have received all of the params we need from the station, move to the next step
             if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
@@ -181,7 +183,8 @@ void chademo_state_handshaking(ChademoEvent event) {
 
             break;
 
-        case E_EVSE_STATUS_UPDATED:
+        case E_STATION_STATUS_UPDATED:
+
             // Check for control protocol compatibility (controlProtocolNumber)
             if ( ! charger.chademo.car_and_station_protocol_compatible() ) {
                 printf("ERROR : chademo protocol version mismatch. Stopping\n");
@@ -225,14 +228,17 @@ void chademo_state_handshaking(ChademoEvent event) {
             break;
 
         case E_EVSE_INCOMPATIBLE:
+
             charger.chademo.state = chademo_state_error;
 
         case E_PLUG_REMOVED:
+
             charger.chademo.reinitialise();
             charger.chademo.state = chademo_state_idle;
             break;
 
         case E_CHARGE_INHIBIT_ENABLED:
+
             // FIXME disable CAN msgs
             // disable_send_outbound_CAN_messages();
             charger.chademo.state = chademo_state_charge_inhibited;
@@ -247,7 +253,7 @@ void chademo_state_handshaking(ChademoEvent event) {
  *
  * IN1         : deactivated
  * IN2         : deactivated
- * OUT1        : 
+ * OUT1        : activated
  * OUT2        : 
  * CS          : deactivated
  * Plug locked : no
@@ -261,10 +267,10 @@ void chademo_state_await_connector_lock(ChademoEvent event) {
             charger.chademo.recalculate_charging_current_request();
             break;
 
-        case E_EVSE_CAPABILITIES_UPDATED:
+        case E_STATION_CAPABILITIES_UPDATED:
             break;
 
-        case E_EVSE_STATUS_UPDATED:
+        case E_STATION_STATUS_UPDATED:
             // Check for control protocol compatibility (controlProtocolNumber)
             if ( ! charger.chademo.car_and_station_protocol_compatible() ) {
                 printf("ERROR : chademo protocol version mismatch. Stopping\n");
@@ -308,8 +314,8 @@ void chademo_state_await_connector_lock(ChademoEvent event) {
             break;
 
         case E_PLUG_REMOVED:
-            charger.chademo.reinitialise();
             charger.chademo.deactivate_out1();
+            charger.chademo.reinitialise();
             charger.chademo.state = chademo_state_idle;
             break;
 
@@ -383,7 +389,7 @@ void chademo_state_energy_transfer(ChademoEvent event) {
         case E_PLUG_REMOVED:
             break;
 
-        case E_EVSE_CAPABILITIES_UPDATED:
+        case E_STATION_CAPABILITIES_UPDATED:
 
             // Current available at station may have changed
             charger.chademo.recalculate_charging_current_request();
@@ -393,7 +399,8 @@ void chademo_state_energy_transfer(ChademoEvent event) {
 
             break;
 
-        case E_EVSE_STATUS_UPDATED:
+        case E_STATION_STATUS_UPDATED:
+
             // Check for control protocol compatibility (controlProtocolNumber)
             if ( ! charger.chademo.car_and_station_protocol_compatible() ) {
                 printf("ERROR : chademo protocol version mismatch. Stopping\n");
@@ -422,7 +429,7 @@ void chademo_state_energy_transfer(ChademoEvent event) {
                 charger.chademo.state = chademo_state_error;
             }
 
-            // Check if charger is shutting down (chargerStopControl)
+            // Check if station is shutting down (chargerStopControl)
             if ( charger.chademo.station.station_is_shutting_down() ) {
                 printf("ERROR : station is shutting down. Stopping\n");
                 disable_send_outbound_CAN_messages();

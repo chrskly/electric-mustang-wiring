@@ -66,70 +66,6 @@ bool ChademoStation::initial_parameter_exchange_complete() {
     );
 }
 
-/*
- * Process capabilities update
- *  - weldDetectionSupported
- *  - maximumVoltageAvailable
- *  - availableCurrent
- *  - thresholdVoltage
- */
-void ChademoStation::process_capabilities_update() {
-
-    /*
-
-    // Check voltage available at EVSE is enough
-    if ( maximumVoltageAvailable < BATTERY_MAX_VOLTAGE ) {
-        printf("ERROR maximum EVSE voltage is insufficient");
-        state(E_EVSE_INCOMPATIBLE);
-        return;
-    }
-
-    // 
-    car.targetChargingCurrent = min((uint16_t)availableCurrent, car.maximumChargeCurrent);
-
-    */
-
-}
-
-/*
- * Process status update
- *  - controlProtocolNumber
- *  - outputVoltage
- *  - outputCurrent
- *  - timeRemainingSeconds
- *  - timeRemainingMinutes
- *  - stationStatus
- *  - stationMalfunction
- *  - vehicleConnectorLock
- *  - batteryIncompatability
- *  - chargingSystemMalfunction
- *  - chargerStopControl
- */
-void ChademoStation::process_status_update() {
-
-    // Check for communication protocol mismatch
-    if ( controlProtocolNumber >= CHADEMO_PROTOCOL_VERSION ) {
-        state(E_EVSE_INCOMPATIBLE);
-        return;
-    }
-
-    // Check for voltage mismatch
-
-    // Check for current mismatch
-
-    // Check for station status problem
-
-    // Check for station malfunction
-
-    // Check for battery incompatability
-
-    // Check for charging systme malfunction
-
-    // Check for charger stop control
-
-}
-
-
 // Mark the chademo station as seen right now
 void ChademoStation::heartbeat() {
     lastUpdateFromEVSE = get_clock();
@@ -140,7 +76,7 @@ bool ChademoStation::is_alive() {
     return ( ((double)(get_clock() - lastUpdateFromEVSE) / CLOCKS_PER_SEC) < BMS_TTL );
 }
 
-
+// Return true if the connector plug is locked to the car
 bool ChademoStation::connector_is_locked() {
     return vehicleConnectorLock;
 }
