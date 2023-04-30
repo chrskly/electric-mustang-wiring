@@ -173,7 +173,7 @@ void enable_soc_messages() {
 /*
  * Status message 0x356
  *
- * Follows the SimpBMS format.
+ * More or less follows the SimpBMS format.
  *
  * byte 0 = Voltage LSB, scale 0.01, unit V
  * byte 1 = Voltage MSB, scale 0.01, unit V
@@ -181,8 +181,8 @@ void enable_soc_messages() {
  * byte 3 = Current MSB, scale 0.1, unit A
  * byte 4 = Temperature LSB, scale 0.1, unit C
  * byte 5 = Temperature MSB, scale 0.1, unit C
- * byte 6 = unused
- * byte 7 = unused
+ * byte 6 = Voltage LSB (measured by shunt), scale 0.01, unit V
+ * byte 7 = Voltage MSB (measured by shunt), scale 0.01, unit V
  */
 
 struct can_frame statusFrame;
@@ -200,8 +200,8 @@ bool send_status_message(struct repeating_timer *t) {
     statusFrame.data[3] = (uint8_t)( battery.get_amps() * 10 ) >> 8;
     statusFrame.data[4] = battery.get_highest_cell_temperature() && 0xFF;
     statusFrame.data[5] = (uint8_t)battery.get_highest_cell_temperature() >> 8;
-    statusFrame.data[6] = 0x00; // unused
-    statusFrame.data[7] = 0x00; // unused
+    statusFrame.data[6] = (uint8_t)( battery.shuntVoltage1 * 100 ) && 0xFF;
+    statusFrame.data[7] = (uint8_t)( battery.shuntVoltage1 * 100 ) >> 8;
 
     mainCAN.sendMessage(&statusFrame);
     return true;
