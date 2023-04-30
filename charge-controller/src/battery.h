@@ -24,7 +24,7 @@ class Battery {
 
     private:
         // Voltage to charge up to
-        uint16_t targetVoltage;
+        float targetVoltage;
 
         // Estimated time remaining until charging is complete. We calculate
         // this as we go along. Sent to station.
@@ -37,13 +37,14 @@ class Battery {
     public:
         // Below are all received from BMS
         uint16_t soc;                     // Battery SoC
-        uint16_t maximumVoltage;          // 'Full' battery voltage
-        uint16_t maximumChargeCurrent;    // Maximum charge current allowed by BMS
-        uint16_t maximumDischargeCurrent; // Maximum discharge current allowed by BMS
-        uint16_t minimumVoltage;          // 'Empty' battery voltage
-        uint16_t batteryVoltage;          // Actual voltage of battery right now
-        uint16_t batteryCurrent;          // Current (amps) in/out of the battery right now
-        uint16_t batteryTemperature;      // Temperature of hottest cell
+        float maximumVoltage;             // 'Full' battery voltage
+        float maximumChargeCurrent;       // Maximum charge current allowed by BMS
+        float maximumDischargeCurrent;    // Maximum discharge current allowed by BMS
+        float minimumVoltage;             // 'Empty' battery voltage
+        float voltage;                    // Actual voltage of battery right now
+        float measuredVoltage;            // Voltage measured by the shunt
+        float batteryCurrent;             // Current (amps) in/out of the battery right now
+        float batteryTemperature;         // Temperature of hottest cell
         bool highCellAlarm;               // 
         bool lowCellAlarm;                // 
         bool highTempAlarm;               // 
@@ -57,6 +58,7 @@ class Battery {
         // BMS
         void bms_heartbeat();
         bool bms_is_alive();
+        float get_target_voltage();
 
         // This is the current (amps) to request from the station. This value
         // only factors in any limits placed on us by the BMS.

@@ -97,3 +97,8 @@ bool ChademoStation::station_is_shutting_down() {
     return chargerStopControl;
 }
 
+
+
+
+
+

@@ -43,10 +43,10 @@ bool handle_main_CAN_message(struct repeating_timer *t) {
         switch ( mainCANInboundFrame.can_id ) {
 
             case BMS_LIMITS_MESSAGE_ID:
-                charger.battery.maximumVoltage = mainCANInboundFrame.data[0] | mainCANInboundFrame.data[1] << 8;
-                charger.battery.maximumChargeCurrent = mainCANInboundFrame.data[2] | mainCANInboundFrame.data[3] << 8;
-                charger.battery.maximumDischargeCurrent = mainCANInboundFrame.data[4] | mainCANInboundFrame.data[5] << 8;
-                charger.battery.minimumVoltage = mainCANInboundFrame.data[6] | mainCANInboundFrame.data[7] << 8;
+                charger.battery.maximumVoltage = ( mainCANInboundFrame.data[0] | mainCANInboundFrame.data[1] << 8 ) / 10;
+                charger.battery.maximumChargeCurrent = ( mainCANInboundFrame.data[2] | mainCANInboundFrame.data[3] << 8 ) / 10;
+                charger.battery.maximumDischargeCurrent = ( mainCANInboundFrame.data[4] | mainCANInboundFrame.data[5] << 8 ) / 10;
+                charger.battery.minimumVoltage = ( mainCANInboundFrame.data[6] | mainCANInboundFrame.data[7] << 8 ) / 10;
                 charger.chademo.state(E_BMS_UPDATE_RECEIVED);
                 charger.battery.bms_heartbeat();
                 break;
@@ -58,9 +58,10 @@ bool handle_main_CAN_message(struct repeating_timer *t) {
                 break;
 
             case BMS_STATUS_MESSAGE_ID:            
-                charger.battery.batteryVoltage = mainCANInboundFrame.data[0] | mainCANInboundFrame.data[1] << 8;
-                charger.battery.batteryCurrent = mainCANInboundFrame.data[2] | mainCANInboundFrame.data[3] << 8;
-                charger.battery.batteryTemperature = mainCANInboundFrame.data[4] | mainCANInboundFrame.data[5] << 8;
+                charger.battery.voltage = ( mainCANInboundFrame.data[0] | mainCANInboundFrame.data[1] << 8 ) / 100;
+                charger.battery.batteryCurrent = ( mainCANInboundFrame.data[2] | mainCANInboundFrame.data[3] << 8 ) / 10;
+                charger.battery.batteryTemperature = ( mainCANInboundFrame.data[4] | mainCANInboundFrame.data[5] << 8 ) / 10;
+                charger.battery.measuredVoltage = ( mainCANInboundFrame.data[6] | mainCANInboundFrame.data[7] << 8 ) / 100;
                 charger.chademo.state(E_BMS_UPDATE_RECEIVED);
                 charger.battery.bms_heartbeat();
                 break;

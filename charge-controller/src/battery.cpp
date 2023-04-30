@@ -52,6 +52,10 @@ bool Battery::bms_is_alive() {
 // Voltage
 //
 
+float Battery::get_target_voltage() {
+    return targetVoltage;
+}
+
 // Do a quick and dirty calculation to get battery voltage corresponding to SoC
 uint8_t Battery::get_voltage_from_soc(uint8_t soc) {
     if ( soc > 100 ) soc = 100;

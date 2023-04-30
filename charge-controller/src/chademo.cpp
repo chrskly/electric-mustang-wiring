@@ -43,20 +43,34 @@ void Chademo::reinitialise() {
     chargingCurrentRequest = 0;
 
     // Vehicle status flags
-    vehicleChargingEnabled = true;
+    vehicleChargingEnabled = false;
     vehicleNotInPark = false;
+    vehicleChargingSystemFault = false;
+    vehicleRequestingStop = false;
 
     // Set the target state-of-charge and voltage
     targetSoc = BATTERY_FAST_CHARGE_DEFAULT_SOC_MAX;
     targetVoltage = charger.battery.get_voltage_from_soc(BATTERY_FAST_CHARGE_DEFAULT_SOC_MAX);
 }
 
+
 //
-// Handshaking
+// Charging phases
 //
 
-bool Chademo::car_and_station_protocol_compatible() {
-    return ( CHADEMO_PROTOCOL_VERSION >= station.controlProtocolNumber );
+
+// The output voltage of the station is below target (plus margin)
+bool Chademo::in_constant_current_window() {
+    return ( ( station.outputVoltage - CC_CV_MARGIN ) < charger.battery.get_target_voltage() );
+}
+
+
+// The output voltage of the station is within CC_CV_MARGIN of the target voltage
+bool Chademo::in_constant_voltage_window() {
+    return (
+        ( ( station.outputVoltage - CC_CV_MARGIN ) > charger.battery.get_target_voltage() ) && \
+        ( station.outputVoltage < charger.battery.get_target_voltage() )
+    );
 }
 
 
@@ -69,7 +83,9 @@ float Chademo::get_target_voltage() {
     return targetVoltage;
 }
 
-bool Chademo::car_and_station_voltage_compatible() {
+// Can the station provide enough voltage to charge out battery?
+bool Chademo::station_voltage_sufficient() {
+    // FIXME should this be based on voltage at our target SOC?
     return ( charger.battery.maximumVoltage < station.maximumVoltageAvailable );
 }
 
@@ -86,65 +102,93 @@ bool Chademo::car_and_station_voltage_compatible() {
  */
 void Chademo::recalculate_charging_current_request() {
 
-    // Our new max current target will be whichever is less between what the BMS
-    // allows or what the station can provide.
-    uint8_t chargingCurrentCeiling = min(charger.battery.targetChargingCurrent, station.availableCurrent);
+    /*
+     * If the output voltage being reported by the station is less than the
+     * target voltage, then we're in the constant current phase. Just max out
+     * the amps.
+     */
 
-    // No change required. Hold at the current level.
-    if ( chargingCurrentRequest == chargingCurrentCeiling ) {
+    if ( in_constant_current_window() ) {
+
+        // Our new max current target will be whichever is less between what the BMS
+        // allows or what the station can provide.
+        uint8_t chargingCurrentCeiling = min(charger.battery.targetChargingCurrent, station.availableCurrent);
+
+        // No change required. Hold at the current level.
+        if ( chargingCurrentRequest == chargingCurrentCeiling ) {
+            return;
+        }
+
+        clock_t now = get_clock();
+
+        // We need to ramp up the current request
+        if ( chargingCurrentRequest < chargingCurrentCeiling ) {
+
+            // Enough time has passed that we can bump up the current request
+            if ( lastCurrentRequestChange > ( now + CHADEMO_RAMP_INTERVAL ) ) {
+                // Next step would be more than max, so just increment by max
+                if ( ( chargingCurrentCeiling - chargingCurrentRequest ) > CHADEMO_RAMP_RATE ) {
+                    chargingCurrentRequest += CHADEMO_RAMP_RATE;
+                    lastCurrentRequestChange = now;
+                    return;
+                }
+                // Next step is less than max, so go directly
+                else {
+                    chargingCurrentRequest = chargingCurrentCeiling;
+                    lastCurrentRequestChange = now;
+                    return;
+                }
+            }
+
+            // Need to wait longer before we can bump up further
+            else {
+                return;
+            }
+        }
+
+        // We need to ramp down the current requests
+        else if ( chargingCurrentRequest > chargingCurrentCeiling ) {
+
+            // Enough time has passed that we can reduce the current request
+            if ( lastCurrentRequestChange > ( now + CHADEMO_RAMP_INTERVAL ) ) {
+                // Next step would be more than max, so just decrement by max
+                if ( ( chargingCurrentRequest - chargingCurrentCeiling ) > CHADEMO_RAMP_RATE ) {
+                    chargingCurrentRequest -= CHADEMO_RAMP_RATE;
+                    lastCurrentRequestChange = now;
+                    return;
+                }
+                // Next step is less than max, so go directly
+                else {
+                    chargingCurrentRequest = chargingCurrentCeiling;
+                    lastCurrentRequestChange = now;
+                    return;
+                }
+            }
+
+            // Need to wait longer before we can reduce further
+            else {
+                return;
+            }
+        }
+    }
+
+    /*
+     * If the output voltage reported by the station is at the target voltage
+     * then we're in the constant voltage phase.
+     */
+
+    else if ( in_constant_voltage_window() ) {
+        // Nothing to do here
         return;
     }
 
-    clock_t now = get_clock();
+    /*
+     * If the output voltage reported by the station is over the target voltage
+     * then ramp down the amps until we get back to the target voltage;.
+     */
 
-    // We need to ramp up the current request
-    if ( chargingCurrentRequest < chargingCurrentCeiling ) {
-
-        // Enough time has passed that we can bump up the current request
-        if ( lastCurrentRequestChange > ( now + CHADEMO_RAMP_INTERVAL ) ) {
-            // Next step would be more than max, so just increment by max
-            if ( ( chargingCurrentCeiling - chargingCurrentRequest ) > CHADEMO_RAMP_RATE ) {
-                chargingCurrentRequest += CHADEMO_RAMP_RATE;
-                lastCurrentRequestChange = now;
-                return;
-            }
-            // Next step is less than max, so go directly
-            else {
-                chargingCurrentRequest = chargingCurrentCeiling;
-                lastCurrentRequestChange = now;
-                return;
-            }
-        }
-
-        // Need to wait longer before we can bump up further
-        else {
-            return;
-        }
-    }
-
-    // We need to ramp down the current requests
-    else if ( chargingCurrentRequest > chargingCurrentCeiling ) {
-
-        // Enough time has passed that we can reduce the current request
-        if ( lastCurrentRequestChange > ( now + CHADEMO_RAMP_INTERVAL ) ) {
-            // Next step would be more than max, so just decrement by max
-            if ( ( chargingCurrentRequest - chargingCurrentCeiling ) > CHADEMO_RAMP_RATE ) {
-                chargingCurrentRequest -= CHADEMO_RAMP_RATE;
-                lastCurrentRequestChange = now;
-                return;
-            }
-            // Next step is less than max, so go directly
-            else {
-                chargingCurrentRequest = chargingCurrentCeiling;
-                lastCurrentRequestChange = now;
-                return;
-            }
-        }
-
-        // Need to wait longer before we can reduce further
-        else {
-            return;
-        }
+    else {
+        chargingCurrentRequest--;
     }
 
 }
@@ -226,7 +270,7 @@ bool Chademo::in2_is_active() {
 }
 
 bool Chademo::contactors_are_closed() {
-    return ( in1_is_active() && in2_is_active() );
+    return ( in1_is_active() && in2_is_active() && out2_is_active() );
 }
 
 // OUT1 (CP3)
@@ -239,8 +283,13 @@ void Chademo::deactivate_out1() {
     gpio_put(CHADEMO_OUT1_PIN, 0);
 }
 
+bool Chademo::out1_is_active() {
+    return ( gpio_get(CHADEMO_OUT1_PIN) == 0 );
+}
+
 // OUT2 (contactor relay)
 
+/*
 void Chademo::activate_out2() {
     gpio_put(CHADEMO_OUT2_PIN, 1);
 }
@@ -248,3 +297,87 @@ void Chademo::activate_out2() {
 void Chademo::deactivate_out2() {
     gpio_put(CHADEMO_OUT2_PIN, 0);
 }
+
+bool Chademo::out2_is_active() {
+    return ( gpio_get(CHADEMO_OUT2_PIN) == 0 );
+}
+*/
+
+void Chademo::permit_contactor_close() {
+    gpio_put(CHADEMO_OUT2_PIN, 1);
+}
+
+void Chademo::inhibit_contactor_close() {
+    gpio_put(CHADEMO_OUT2_PIN, 0);
+}
+
+/*
+ * Car signals go ahead to start charging
+ */
+void Chademo::signal_charge_go_ahead() {
+
+    // Communicate over CAN that the car is ready to charge
+    vehicleChargingEnabled = true;
+    vehicleRequestingStop = false;
+
+    // Enable the vehicle 'charge enable' digital signal, a.k.a CP3
+    activate_out1();
+
+}
+
+
+/*
+ * Car wants to initiate a shut down of the charging process.
+ */
+void Chademo::initiate_shutdown() {
+
+    // Communicate over CAN that the car wants to shut down
+    vehicleChargingEnabled = false;
+    vehicleRequestingStop = true;
+
+    // Disable the vehicle 'charge enable' digital signal, a.k.a CP3
+    deactivate_out1();
+
+}
+
+
+
+/*
+ * Check for error conditions. Return true if error is present.
+ */
+bool Chademo::error_condition() {
+
+    // Check for control protocol compatibility (controlProtocolNumber)
+    if ( CHADEMO_PROTOCOL_VERSION > station.controlProtocolNumber ) {
+        printf("ERROR : chademo protocol version mismatch. Stopping\n");
+        return true;
+    }
+
+    // Fail out if the charging station has reported a malfunction (stationMalfunction)
+    if ( charger.chademo.station.is_reporting_station_malfunction() ) {
+        printf("ERROR : station is reporting a malfunction. Stopping\n");
+        return true;
+    }
+
+    // Fail out if the charging station has reported a battery incompatability (batteryIncompatability)
+    if ( charger.chademo.station.is_reporting_battery_incompatibility() ) {
+        printf("ERROR : station is reporting a battery incompatiblity. Stopping\n");
+        return true;
+    }
+
+    // Fail out if the charging station has reported a malfunction with the car (chargingSystemMalfunction)
+    if ( charger.chademo.station.is_reporting_charging_system_malfunction() ) {
+        printf("ERROR : station is reporting a charging system malfunction. Stopping\n");
+        return true;
+    }
+
+    // Check if charger is shutting down (chargerStopControl)
+    if ( charger.chademo.station.station_is_shutting_down() ) {
+        printf("ERROR : station is shutting down. Stopping\n");
+        return true;
+    }
+
+    return false;
+
+}
+
