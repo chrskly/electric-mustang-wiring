@@ -102,6 +102,11 @@ bool Chademo::station_voltage_sufficient() {
  */
 void Chademo::recalculate_charging_current_request() {
 
+    clock_t now = get_clock();
+
+    // Get the new limits from the BMS and station
+    uint8_t chargingCurrentCeiling = min(charger.battery.targetChargingCurrent, station.availableCurrent);
+
     /*
      * If the output voltage being reported by the station is less than the
      * target voltage, then we're in the constant current phase. Just max out
@@ -110,16 +115,10 @@ void Chademo::recalculate_charging_current_request() {
 
     if ( in_constant_current_window() ) {
 
-        // Our new max current target will be whichever is less between what the BMS
-        // allows or what the station can provide.
-        uint8_t chargingCurrentCeiling = min(charger.battery.targetChargingCurrent, station.availableCurrent);
-
         // No change required. Hold at the current level.
         if ( chargingCurrentRequest == chargingCurrentCeiling ) {
             return;
         }
-
-        clock_t now = get_clock();
 
         // We need to ramp up the current request
         if ( chargingCurrentRequest < chargingCurrentCeiling ) {
@@ -175,11 +174,42 @@ void Chademo::recalculate_charging_current_request() {
     /*
      * If the output voltage reported by the station is at the target voltage
      * then we're in the constant voltage phase.
+     *
+     * Here we're aiming to keep the voltage at the target voltage by adjusting
+     * the current request.
      */
 
     else if ( in_constant_voltage_window() ) {
-        // Nothing to do here
+
+        // We need to ramp down the current requests
+        if ( chargingCurrentRequest > chargingCurrentCeiling ) {
+
+            // Enough time has passed that we can reduce the current request
+            if ( lastCurrentRequestChange > ( now + CHADEMO_RAMP_INTERVAL ) ) {
+                // Next step would be more than max, so just decrement by max
+                if ( ( chargingCurrentRequest - chargingCurrentCeiling ) > CHADEMO_RAMP_RATE ) {
+                    chargingCurrentRequest -= CHADEMO_RAMP_RATE;
+                    lastCurrentRequestChange = now;
+                    return;
+                }
+                // Next step is less than max, so go directly
+                else {
+                    chargingCurrentRequest = chargingCurrentCeiling;
+                    lastCurrentRequestChange = now;
+                    return;
+                }
+            }
+
+            // Need to wait longer before we can reduce further
+            else {
+                return;
+            }
+        }
+
+        // FIXME any reason to increase here?
+
         return;
+
     }
 
     /*
@@ -191,6 +221,17 @@ void Chademo::recalculate_charging_current_request() {
         chargingCurrentRequest--;
     }
 
+}
+
+/*
+ * We're at the end of charging. Ramp down the current request all the way to
+ * zero at the normal rate.
+ */
+void ramp_down_current_request() {
+    clock_t now = get_clock();
+    if ( lastCurrentRequestChange > ( now + CHADEMO_RAMP_INTERVAL ) ) {
+        chargingCurrentRequest -= CHADEMO_RAMP_RATE;
+    }
 }
 
 uint8_t Chademo::get_charging_current_request() {

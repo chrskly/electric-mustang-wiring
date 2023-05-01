@@ -90,9 +90,14 @@ uint8_t Battery::get_charging_time_minutes_max() {
 }
 
 
-//
-// SoC
-//
-
+bool Battery::is_full() {
+    if ( highCellAlarm ) {
+        return true;
+    }
+    if ( voltage >= BATTERY_MAX_VOLTAGE ) {
+        return true;
+    }
+    return false;
+}
 
 

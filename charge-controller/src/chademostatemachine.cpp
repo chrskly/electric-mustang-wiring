@@ -234,7 +234,7 @@ void chademo_state_handshaking(ChademoEvent event) {
  * IN1/CP      : activated
  * IN2/CP2     : deactivated
  * OUT1/CP3    : activated
- * OUT2        : deactivated
+ * OUT2/cont   : deactivated
  * CS          : deactivated
  * Plug locked : no
  * 
@@ -294,7 +294,7 @@ void chademo_state_await_connector_lock(ChademoEvent event) {
  * IN1/CP      : activated
  * IN2/CP2     : deactivated
  * OUT1/CP3    : activated
- * OUT2        : deactivated
+ * OUT2/cont   : deactivated
  * CS          : deactivated
  * Plug locked : yes
  *
@@ -344,12 +344,12 @@ void chademo_state_await_insulation_test(ChademoEvent event) {
 /*
  * State : energy_transfer
  *
- * IN1/CP      : deactivated
- * IN2/CP2     : deactivated
- * OUT1/CP3    : 
- * OUT2        : 
- * CS          : deactivated
- * Plug locked : no
+ * IN1/CP      : activated
+ * IN2/CP2     : activated
+ * OUT1/CP3    : activated
+ * OUT2/cont   : activated
+ * CS          : activated
+ * Plug locked : yes
  *
  */
 void chademo_state_energy_transfer(ChademoEvent event) {
@@ -359,6 +359,14 @@ void chademo_state_energy_transfer(ChademoEvent event) {
         case E_BMS_UPDATE_RECEIVED:
 
             charger.chademo.recalculate_charging_current_request();
+
+            // Stop charging if the BMS says the battery is full
+            if ( charger.battery.is_full() ) {
+                charger.chademo.initiate_shutdown();
+                charger.chademo.state = chademo_state_winding_down;
+                break;
+            }
+
             break;
 
         /* This shouldn't be possible as the plug connector lock should be
@@ -367,6 +375,7 @@ void chademo_state_energy_transfer(ChademoEvent event) {
         case E_PLUG_REMOVED:
 
             charger.chademo.reinitialise();
+            // FIXME contactors, etc.
             charger.chademo.state = chademo_state_idle;
             break;
 
@@ -406,11 +415,14 @@ void chademo_state_energy_transfer(ChademoEvent event) {
 /*
  * State : winding_down
  *
- * IN1/CP      : deactivated
- * IN2/CP2     : deactivated
- * OUT1/CP3    : 
- * OUT2        : 
- * CS          : deactivated
+ * We've told the station we want to stop charging by deactivating OUT1/CP3
+ * and via CAN messaging. Wait here while the current ramps down.
+ *
+ * IN1/CP      : activated
+ * IN2/CP2     : activated
+ * OUT1/CP3    : deactivated
+ * OUT2/cont   : activated
+ * CS          : activated
  * Plug locked : no 
  *
  */
@@ -419,7 +431,15 @@ void chademo_state_winding_down(ChademoEvent event) {
     switch (event) {
 
         case E_BMS_UPDATE_RECEIVED:
-            charger.chademo.recalculate_charging_current_request();
+            charger.chademo.ramp_down_current_request();
+            break;
+
+        case E_STATION_CAPABILITIES_UPDATED:
+            charger.chadmeo.ramp_down_current_request();
+            break;
+
+        case E_STATION_STATUS_UPDATED:
+            charger.chadmeo.ramp_down_current_request();
             break;
 
         case E_PLUG_REMOVED:
