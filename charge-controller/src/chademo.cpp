@@ -227,7 +227,7 @@ void Chademo::recalculate_charging_current_request() {
  * We're at the end of charging. Ramp down the current request all the way to
  * zero at the normal rate.
  */
-void ramp_down_current_request() {
+void Chademo::ramp_down_current_request() {
     clock_t now = get_clock();
     if ( lastCurrentRequestChange > ( now + CHADEMO_RAMP_INTERVAL ) ) {
         chargingCurrentRequest -= CHADEMO_RAMP_RATE;

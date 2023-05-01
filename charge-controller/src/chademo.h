@@ -66,6 +66,7 @@ class Chademo {
         bool station_voltage_sufficient();
 
         void recalculate_charging_current_request();
+        void ramp_down_current_request();
         uint8_t get_charging_current_request();
         void recalculate_charging_time();
 

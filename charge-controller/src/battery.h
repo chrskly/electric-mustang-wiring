@@ -74,6 +74,8 @@ class Battery {
         uint8_t get_charging_time_minutes();
         uint8_t get_charging_time_minutes_max();
 
+        bool is_full();
+
 };
 
 #endif

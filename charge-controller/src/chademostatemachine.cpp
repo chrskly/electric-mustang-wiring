@@ -49,15 +49,23 @@ void chademo_state_idle(ChademoEvent event) {
 
         case E_BMS_UPDATE_RECEIVED:
 
+            // Battery is full, go straight to inhibited state
+            if ( charger.battery.is_full() ) {
+                printf("Switching to state : charge_inhibited, reason : battery is full\n");
+                charger.chademo.state = chademo_state_charge_inhibited;
+            }
+
             break;
 
         case E_PLUG_INSERTED:
 
+            printf("Switching to state : handshaking, reason : plugin inserted\n");
             charger.chademo.state = chademo_state_handshaking;
             break;
 
         case E_CHARGE_INHIBIT_ENABLED:
 
+            printf("Switching to state : charge_inhibited, reason : received charge_inhibit input signal\n");
             charger.chademo.state = chademo_state_charge_inhibited;
             break;
 
@@ -98,6 +106,12 @@ void chademo_state_plug_in(ChademoEvent event) {
 
         case E_BMS_UPDATE_RECEIVED:
 
+            // Battery is full, go straight to inhibited state
+            if ( charger.battery.is_full() ) {
+                printf("Switching to state : charge_inhibited, reason : battery is full\n");
+                charger.chademo.state = chademo_state_charge_inhibited;
+            }
+
             break;
 
         // Station has activated IN1/CP signal indicating it's ready to start charging
@@ -105,18 +119,21 @@ void chademo_state_plug_in(ChademoEvent event) {
 
             charger.chademo.station.reinitialise();
             // Begin sending vehicle state over CAN to station
-            enable_send_outbound_CAN_messages();            
+            enable_send_outbound_CAN_messages();
+            printf("Switching to state : handshaking, reason : station enabled IN1/CP signal\n");
             charger.chademo.state = chademo_state_handshaking;
             break;
 
         case E_PLUG_REMOVED:
 
             charger.chademo.reinitialise();
+            printf("Switching to state : idle, reason : plug removed\n");
             charger.chademo.state = chademo_state_idle;
             break;
 
         case E_CHARGE_INHIBIT_ENABLED:
 
+            printf("Switching to state : charge_inhibited, reason : received charge_inhibit input signal\n");
             charger.chademo.state = chademo_state_charge_inhibited;
             break;
 
@@ -166,14 +183,21 @@ void chademo_state_handshaking(ChademoEvent event) {
 
         case E_BMS_UPDATE_RECEIVED:
 
+            // Battery is full, go straight to inhibited state
+            if ( charger.battery.is_full() ) {
+                charger.chademo.initiate_shutdown();
+                printf("Switching to state : charge_inhibited, reason : battery full\n");
+                charger.chademo.state = chademo_state_charge_inhibited;
+            }
+
             break;
 
         case E_STATION_CAPABILITIES_UPDATED:
 
             // Can the charger provide us with enough voltage?
             if ( ! charger.chademo.station_voltage_sufficient() ) {
-                printf("ERROR : Insufficient voltage available at station. Stopping\n");
                 charger.chademo.initiate_shutdown();
+                printf("Switching to state : error, reason : station cannot supply sufficient voltage\n");
                 charger.chademo.state = chademo_state_error;
                 break;
             }
@@ -181,6 +205,7 @@ void chademo_state_handshaking(ChademoEvent event) {
             // If we have received all of the params we need from the station, move to the next step
             if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
                 charger.chademo.signal_charge_go_ahead();
+                printf("Switching to state : await_connector_lock, reason : initial param exchange complete\n");
                 charger.chademo.state = chademo_state_await_connector_lock;
                 break;
             }
@@ -192,21 +217,19 @@ void chademo_state_handshaking(ChademoEvent event) {
             // Check for error conditions from station
             if ( charger.chademo.error_condition() ) {
                 disable_send_outbound_CAN_messages();
+                printf("Switching to state : error, reason : station reporting error condition\n");
                 charger.chademo.state = chademo_state_error;
             }
 
             // If we have received all of the params we need from the station, move to the next step
             if ( charger.chademo.station.initial_parameter_exchange_complete() ) {
                 charger.chademo.signal_charge_go_ahead();
+                printf("Switching to state : await_connector_lock, reason : initial param exchange complete\n");
                 charger.chademo.state = chademo_state_await_connector_lock;
                 break;
             }
 
             break;
-
-        case E_EVSE_INCOMPATIBLE:
-
-            charger.chademo.state = chademo_state_error;
 
         case E_PLUG_REMOVED:
 
@@ -244,6 +267,12 @@ void chademo_state_await_connector_lock(ChademoEvent event) {
     switch (event) {
 
         case E_BMS_UPDATE_RECEIVED:
+
+            // Battery is full, go straight to inhibited state
+            if ( charger.battery.is_full() ) {
+                charger.chademo.initiate_shutdown();
+                charger.chademo.state = chademo_state_charge_inhibited;
+            }
 
             break;
 
@@ -307,6 +336,12 @@ void chademo_state_await_insulation_test(ChademoEvent event) {
 
         case E_BMS_UPDATE_RECEIVED:
 
+            // Battery is full, go straight to inhibited state
+            if ( charger.battery.is_full() ) {
+                charger.chademo.initiate_shutdown();
+                charger.chademo.state = chademo_state_charge_inhibited;
+            }
+
             break;
 
         /* Station has indicated that insulation test is over and it is now
@@ -344,6 +379,8 @@ void chademo_state_await_insulation_test(ChademoEvent event) {
 /*
  * State : energy_transfer
  *
+ * Station is delivering energy to the batteries.
+ *
  * IN1/CP      : activated
  * IN2/CP2     : activated
  * OUT1/CP3    : activated
@@ -358,14 +395,15 @@ void chademo_state_energy_transfer(ChademoEvent event) {
 
         case E_BMS_UPDATE_RECEIVED:
 
-            charger.chademo.recalculate_charging_current_request();
-
             // Stop charging if the BMS says the battery is full
             if ( charger.battery.is_full() ) {
                 charger.chademo.initiate_shutdown();
+                printf("Switching to state : winding down, reason : battery full\n");
                 charger.chademo.state = chademo_state_winding_down;
                 break;
             }
+
+            charger.chademo.recalculate_charging_current_request();
 
             break;
 
@@ -384,7 +422,7 @@ void chademo_state_energy_transfer(ChademoEvent event) {
             // Current available at station may have changed
             charger.chademo.recalculate_charging_current_request();
 
-            // If current available has changed then the charging time may need update
+            // If current available has changed then the charging time may need updating
             charger.chademo.recalculate_charging_time();
 
             break;
@@ -416,14 +454,15 @@ void chademo_state_energy_transfer(ChademoEvent event) {
  * State : winding_down
  *
  * We've told the station we want to stop charging by deactivating OUT1/CP3
- * and via CAN messaging. Wait here while the current ramps down.
+ * and via CAN messaging. All we do here is ramp down the current to zero.
+ * Once we reach zero, open the contactors.
  *
  * IN1/CP      : activated
  * IN2/CP2     : activated
  * OUT1/CP3    : deactivated
  * OUT2/cont   : activated
  * CS          : activated
- * Plug locked : no 
+ * Plug locked : yes
  *
  */
 void chademo_state_winding_down(ChademoEvent event) {
@@ -435,11 +474,11 @@ void chademo_state_winding_down(ChademoEvent event) {
             break;
 
         case E_STATION_CAPABILITIES_UPDATED:
-            charger.chadmeo.ramp_down_current_request();
+            charger.chademo.ramp_down_current_request();
             break;
 
         case E_STATION_STATUS_UPDATED:
-            charger.chadmeo.ramp_down_current_request();
+            charger.chademo.ramp_down_current_request();
             break;
 
         case E_PLUG_REMOVED:
@@ -470,7 +509,6 @@ void chademo_state_charge_inhibited(ChademoEvent event) {
     switch (event) {
 
         case E_BMS_UPDATE_RECEIVED:
-            charger.chademo.recalculate_charging_current_request();
             break;
 
         case E_CHARGE_INHIBIT_DISABLED:
@@ -498,7 +536,6 @@ void chademo_state_error(ChademoEvent event) {
     switch (event) {
 
         case E_BMS_UPDATE_RECEIVED:
-            charger.chademo.recalculate_charging_current_request();
             break;
 
         // Only way out of error is to remove the plug and start over
