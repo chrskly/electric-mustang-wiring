@@ -39,9 +39,6 @@ extern Charger charger;
  * CS          : deactivated
  * Plug locked : no
  *
- * Transitions:
- *  => plug_in
- *     - plug must be inserted (CS)
  */
 void chademo_state_idle(ChademoEvent event) {
 
@@ -171,15 +168,16 @@ void chademo_state_plug_in(ChademoEvent event) {
  *  - Target battery voltage (0x102)
  *  - Vehicle charging enabled (0x102)
  *
- * Transitions:
- *  => idle
- *     - plug removed
- *  => error
- *     - 
  */
 void chademo_state_handshaking(ChademoEvent event) {
 
     switch (event) {
+
+        case E_IN1_DEACTIVATED:
+
+            charger.chademo.initiate_shutdown();
+            printf("Switching to state : plug_in, reason : disabled IN1/CP signal\n");
+            charger.chademo.state = chademo_state_plug_in;
 
         case E_BMS_UPDATE_RECEIVED:
 
@@ -266,6 +264,12 @@ void chademo_state_await_connector_lock(ChademoEvent event) {
 
     switch (event) {
 
+        case E_IN1_DEACTIVATED:
+
+            charger.chademo.initiate_shutdown();
+            printf("Switching to state : plug_in, reason : disabled IN1/CP signal\n");
+            charger.chademo.state = chademo_state_plug_in;
+
         case E_BMS_UPDATE_RECEIVED:
 
             // Battery is full, go straight to inhibited state
@@ -327,12 +331,16 @@ void chademo_state_await_connector_lock(ChademoEvent event) {
  * CS          : deactivated
  * Plug locked : yes
  *
- * Connector locked : yes
- *
  */
 void chademo_state_await_insulation_test(ChademoEvent event) {
 
     switch (event) {
+
+        case E_IN1_DEACTIVATED:
+
+            charger.chademo.initiate_shutdown();
+            printf("Switching to state : plug_in, reason : disabled IN1/CP signal\n");
+            charger.chademo.state = chademo_state_plug_in;
 
         case E_BMS_UPDATE_RECEIVED:
 
@@ -436,6 +444,15 @@ void chademo_state_energy_transfer(ChademoEvent event) {
                 break;
             }
 
+            break;
+
+        /* This shouldn't be possible as the plug connector lock should be
+         * engaged here, but deal with this scenario anyway for safety sake.
+         */
+        case E_PLUG_REMOVED:
+
+            charger.chademo.reinitialise();
+            charger.chademo.state = chademo_state_idle;
             break;
 
         case E_CHARGE_INHIBIT_ENABLED:
