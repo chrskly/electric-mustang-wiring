@@ -412,12 +412,6 @@ bool Chademo::error_condition() {
         return true;
     }
 
-    // Check if charger is shutting down (chargerStopControl)
-    if ( charger.chademo.station.station_is_shutting_down() ) {
-        printf("ERROR : station is shutting down. Stopping\n");
-        return true;
-    }
-
     return false;
 
 }
