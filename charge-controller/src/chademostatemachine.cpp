@@ -59,8 +59,8 @@ void chademo_state_idle(ChademoEvent event) {
 
         case E_PLUG_INSERTED:
 
-            printf("Switching to state : handshaking, reason : plugin inserted\n");
-            charger.chademo.state = chademo_state_handshaking;
+            printf("Switching to state : plug_in, reason : plugin inserted\n");
+            charger.chademo.state = chademo_state_plug_in;
             break;
 
         case E_CHARGE_INHIBIT_ENABLED:
