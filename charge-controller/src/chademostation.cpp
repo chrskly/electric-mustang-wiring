@@ -93,7 +93,7 @@ bool ChademoStation::is_reporting_charging_system_malfunction() {
     return chargingSystemMalfunction;
 }
 
-bool ChademoStation::station_is_shutting_down() {
+bool ChademoStation::station_is_allowing_charge() {
     return chargerStopControl;
 }
 
