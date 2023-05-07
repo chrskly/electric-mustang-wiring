@@ -185,7 +185,7 @@ bool handle_chademo_CAN_messages(struct repeating_timer *t) {
                 // 1A/bit (0 to 255A)
                 charger.chademo.station.outputCurrent = chademoInboundFrame.data[3];
                 // 10s/bit (0 to 2540s)
-                charger.chademo.station.timeRemainingSeconds = chademoInboundFrame.data[6];
+                charger.chademo.station.timeRemainingSeconds = 10 * chademoInboundFrame.data[6];
                 // 1min/bit (0 to 255min)
                 charger.chademo.station.timeRemainingMinutes = chademoInboundFrame.data[7];
                 charger.chademo.station.stationStatus = chademoInboundFrame.data[5] & 1;                             // bit 0
