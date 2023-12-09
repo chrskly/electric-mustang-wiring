@@ -12,27 +12,13 @@
 * CHARGE_INHIBIT, output, GND when active
 * HEATER_ENABLE, output, GND when active
 
-## Test Cases
+--------------------------------------------------------------------------------
+
+## Test Cases : Battery empty/full
 
 ### Test Case xx
 
-Description : Ensure car cannot be driven when battery is empty (ignition off)
-
-Pre-conditions
-* ignition off
-* charge off
-* batt1 inhibit off
-* batt2 inhibit off
-* chg inhibit off
-* heater enable off
-
-Event : Any cell is empty
-
-Result : DRIVE_INHIBIT signal activates
-
-### Test Case xx
-
-Description : Ensure car cannot be driven when battery is empty (ignition on)
+Description : Ensure car cannot be driven when battery is empty
 
 Pre-conditions
 * ignition on
@@ -48,6 +34,26 @@ Result : DRIVE_INHIBIT signal activates
 
 ### Test Case xx
 
+Description : Ensure battery cannot be charged when battery is full
+
+Pre-conditions
+* ignition off
+* charge off
+* batt1 inhibit off
+* batt2 inhibit off
+* chg inhibit off
+* heater enable off
+
+Event : Any cell is full
+
+Result : CHARGE_INHIBIT signal activates
+
+--------------------------------------------------------------------------------
+
+## Test Cases : Pack-level voltage safety
+
+### Test Case xx
+
 Description : Inhibit battery contactor close when pack voltages differ
 
 Pre-conditions
@@ -58,9 +64,10 @@ Pre-conditions
 * charge inhibit off
 * heater enable off
 
-Event : Voltage difference between packs is greater than X volts.
+Event : Voltage difference between packs is greater than SAFE_VOLTAGE_DELTA_BETWEEN_PACKS volts.
 
-Result : Both batt1 inhibit and batt2 inhibit activate
+Result : Both batt1 inhibit and batt2 inhibit signals activate
+
 
 ### Test Case xx
 
@@ -78,6 +85,7 @@ Event : Voltage difference between packs is greater than SAFE_VOLTAGE_DELTA_BETW
 
 Result : batt1 inhibit and batt2 inhibit remain disabled.
 
+
 ### Test Case xx
 
 Description : Ignition turned on when battery contactors are inhibited.
@@ -90,13 +98,27 @@ Pre-conditions
 * charge inhibit off
 * heater enable off
 
-Event : Ingition turned on
+Event : Voltage of batt 1 higher than batt 2. Ignition turned on.
 
 Result : Batt 1 inhibit deactivates
+
 
 ### Test Case xx
 
 Description : Ignition turned off when battery contactors are inhibited.
+
+Pre-conditions
+* ignition on
+* charge off
+* batt1 inhibit off
+* batt2 inhibit on
+* charge inhibit off
+* heater enable off
+
+Event : Ignition turned off.
+
+Result : Batt 1 inhibit activates.
+
 
 ### Test Case xx
 
@@ -110,13 +132,83 @@ Pre-conditions
 * charge inhibit off
 * heater enable off
 
-Event : Charging starts (CHARGE_ENABLE input signal activates).
+Event : Voltage of batt 1 higher than batt 2. Charging starts (CHARGE_ENABLE input signal activates).
 
 Result : Batt 2 inhibit deactivates.
+
 
 ### Test Case xx
 
 Description : Stop charging when battery contactors are inhibited.
+
+Pre-conditions
+* ignition off
+* charge on
+* batt1 inhibit on
+* batt2 inhibit off
+* charge inhibit off
+* heater enable off
+
+Event : Voltage of batt 1 higher than batt 2. Charging ceases.
+
+Result : Batt 2 inhibit activates.
+
+
+### Test Case xx
+
+Description : Charging on one pack, voltage equalises
+
+Pre-condition
+* ignition off
+* charge on
+* batt1 inhibit off
+* batt2 inhibit on
+* charge inhibit off
+* heater enable off
+
+Event : Voltage of batt1 == voltage of batt2.
+
+Result : batt2 inhibit deactivates.
+
+
+### Test Case xx
+
+Description : Driving on one pack, voltage equalises
+
+Pre-condition
+* ignition on
+* charge off
+* batt1 inhibit off
+* batt2 inhibit on
+* charge inhibit off
+* heater enable off
+
+Event : Voltage of batt1 == voltage of batt2.
+
+Result : batt2 inhibit deactivates.
+
+
+### Test Case xx
+
+Description : Driving on one pack, begin charging while ignition still on.
+
+Pre-condition
+* ignition on
+* charge off
+* batt1 inhibit off
+* batt2 inhibit off
+* charge inhibit off
+* heater enable off
+
+Event : CHARGE_ENABLE signal activates.
+
+Result : DRIVE_INHIBIT and CHARGE_INHIBIT signals should activate.
+
+
+--------------------------------------------------------------------------------
+
+
+## Test Cases : Temperature
 
 ### Test Case xx
 
@@ -166,39 +258,6 @@ Event : CHARGE_ENABLE input signal activates
 
 Result : HEATER_ENABLE output signal activates
 
-
-### Test Case xx
-
-Description : Charging on one pack, voltage equalises
-
-Pre-condition
-* ignition off
-* charge on
-* batt1 inhibit off
-* batt2 inhibit on
-* charge inhibit off
-* heater enable off
-
-Event : Voltage of batt1 == voltage of batt2.
-
-Result : batt2 inhibit deactivates.
-
-### Test Case xx
-
-Description : Driving on one pack, voltage equalises
-
-Pre-condition
-* ignition on
-* charge off
-* batt1 inhibit off
-* batt2 inhibit on
-* charge inhibit off
-* heater enable off
-
-Event : Voltage of batt1 == voltage of batt2.
-
-Result : batt2 inhibit deactivates.
-
 ### Test Case xx
 
 Description : Battery too hot to charge.
@@ -217,7 +276,7 @@ Result : CHARGE_INHIBIT output signal activates.
 
 ### Test Case xx
 
-Description : Limit charging current when battery overheats.
+Description : Limit charging current when battery partially overheats.
 
 Pre-condition
 * ignition off
@@ -231,3 +290,6 @@ Event : Set one of the battery sensors between CHARGE_THROTTLE_TEMP_LOW and CHAR
 
 Result : Max charge current in 0x351 message should be scaled based on temperature.
 
+### Test Case xx
+
+Description : 
