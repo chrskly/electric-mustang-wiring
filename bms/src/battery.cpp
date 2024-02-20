@@ -20,28 +20,23 @@
 #include <stdio.h>
 #include <string>
 
-#include "battery.h"
-#include "pack.h"
-#include "statemachine.h"
+#include "include/battery.h"
+#include "include/pack.h"
+#include "include/statemachine.h"
 
 #include "settings.h"
 
 
-using namespace std;
-
-Battery::Battery (int _numPacks) {
-
+Battery::Battery(int _numPacks) {
     voltage = 0;
     lowestCellVoltage = 0;
     highestCellVoltage = 0;
     lowestCellTemperature = 0;
     highestCellTemperature = 0;
     numPacks = _numPacks;
-
 }
 
-void Battery::initialise () {
-
+void Battery::initialise() {
     printf("Initialising battery with %d packs\n", numPacks);
 
     for ( int p = 0; p < numPacks; p++ ) {
@@ -65,10 +60,9 @@ void Battery::initialise () {
     gpio_init(CHARGE_INHIBIT_PIN);
     gpio_set_dir(CHARGE_INHIBIT_PIN, GPIO_OUT);
     disable_inhibit_charge();
-
 }
 
-int Battery::print () {
+int Battery::print() {
     extern State state;
     printf("--------------------------------------------------------------------------------\n");
     printf("BMS status : %s\n", state);
@@ -93,7 +87,7 @@ void Battery::read_message() {
 
 void Battery::send_test_message() {
     for ( int p = 0; p < numPacks; p++ ) {
-        //printf("Sending test message to pack %d\n", p);
+        // printf("Sending test message to pack %d\n", p);
         can_frame fr;
         fr.can_id = 0x000;
         fr.can_dlc = 3;
@@ -122,10 +116,9 @@ float Battery::get_soc() {
  */
 void Battery::recalculate_soc() {
     if ( CALCULATE_SOC_FROM == 0 ) {
-        soc = 100 * ( BATTERY_CAPACITY_AS + ampSeconds ) / BATTERY_CAPACITY_AS;
-    }
-    else {
-        soc = 100 * ( BATTERY_CAPACITY_WH + wattHours ) / BATTERY_CAPACITY_WH;
+        soc = 100 * (BATTERY_CAPACITY_AS + ampSeconds) / BATTERY_CAPACITY_AS;
+    } else {
+        soc = 100 * (BATTERY_CAPACITY_WH + wattHours) / BATTERY_CAPACITY_WH;
     }
 }
 
@@ -306,7 +299,7 @@ bool Battery::packs_are_imbalanced() {
 //
 //// ----
 
-long Battery::get_amps() {
+uint16_t Battery::get_amps() {
     return amps;
 }
 
@@ -324,7 +317,7 @@ float Battery::get_highest_cell_temperature() {
 // Return true if any sensor in the pack is over the max temperature
 bool Battery::has_temperature_sensor_over_max() {
     for ( int p = 0; p < numPacks; p++ ) {
-        if ( packs[p].has_temperature_sensor_over_max() ){
+        if ( packs[p].has_temperature_sensor_over_max() ) {
             return true;
         }
     }
@@ -497,32 +490,3 @@ bool Battery::one_or_more_contactors_inhibited() {
     }
     return false;
 }
-
-void Battery::close_contactors() {
-
-    // Check that the voltage difference between the packs in the battery is
-    // a small, safe value.
-    if ( voltage_delta_between_packs() < SAFE_VOLTAGE_DELTA_BETWEEN_PACKS ) {
-        for ( int p = 0; p < numPacks; p++ ) {
-            packs[p].close_contactors();
-        }
-    }
-
-    // The pack voltages differ too much. We can only use one pack. Figure out
-    // which pack is fuller (has higher voltage) and close the contactors for
-    // just that pack.
-    else {
-        get_pack_with_highest_voltage()->close_contactors();
-    }
-
-}
-
-void Battery::open_contactors() {
-    // wait?
-    for ( int p = 0; p < numPacks; p++ ) {
-        packs[p].open_contactors();
-    }
-}
-
-
-

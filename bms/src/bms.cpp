@@ -32,7 +32,6 @@ SPIO15 (20) SPI0 CS1 - to CS on mcp2515 board 1 (vai level converter)
 
 ------------------------------------------------------------------------------*/
 
-using namespace std;
 
 #include <stdio.h>
 #include "pico/stdlib.h"
@@ -45,13 +44,12 @@ using namespace std;
 
 #include "mcp2515/mcp2515.h"
 
-#include "battery.h"
-#include "update.h"
-#include "bms.h"
-#include "statemachine.h"
-#include "comms.h"
-#include "led.h"
-#include "inputs.h"
+#include "include/battery.h"
+#include "include/bms.h"
+#include "include/statemachine.h"
+#include "include/comms.h"
+#include "include/led.h"
+#include "include/inputs.h"
 
 
 struct can_frame rx;
@@ -152,8 +150,8 @@ int main() {
     // Check for unexpected reboot
     if (watchdog_caused_reboot()) {
         printf("Rebooted by Watchdog!\n");
-        //errorFame.can_id = ;
-        //mainCAN.sendMessage();
+        // errorFame.can_id = ;
+        // mainCAN.sendMessage();
         return 0;
     } else {
         printf("Clean boot\n");
@@ -181,7 +179,7 @@ int main() {
 
     enable_update_soc();
 
-    while(true) {
+    while (true) {
     }
 
     return 0;

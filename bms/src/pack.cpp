@@ -19,18 +19,16 @@
 
 #include <stdio.h>
 
-#include "pack.h"
-#include "module.h"
+#include "include/pack.h"
+#include "include/module.h"
 #include "mcp2515/mcp2515.h"
 #include "settings.h"
-#include "statemachine.h"
+#include "include/statemachine.h"
 
-using namespace std;
 
-BatteryPack::BatteryPack(){}
+BatteryPack::BatteryPack() {}
 
-BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorInhibitPin, int _numModules, int _numCellsPerModule, int _numTemperatureSensorsPerModule) {
-
+BatteryPack::BatteryPack(int _id, int CANCSPin, int _contactorInhibitPin, int _numModules, int _numCellsPerModule, int _numTemperatureSensorsPerModule) {
     id = _id;
 
     printf("Initialising BatteryPack %d\n", id);
@@ -41,7 +39,6 @@ BatteryPack::BatteryPack (int _id, int CANCSPin, int _contactorInhibitPin, int _
 
     // Initialise modules
     for ( int m = 0; m < numModules; m++ ) {
-        //printf("Creating module %d (cpm:%d, tpm:%d)\n", m, numCellsPerModule, numTemperatureSensorsPerModule);
         modules[m] = BatteryModule(m, this, numCellsPerModule, numTemperatureSensorsPerModule);
     }
 
@@ -91,7 +88,7 @@ void BatteryPack::print() {
 
 uint8_t BatteryPack::getcheck(can_frame &msg, int id) {
     unsigned char canmes[11];
-    int meslen = msg.can_dlc + 1; //remove one for crc and add two for id bytes
+    int meslen = msg.can_dlc + 1;  // remove one for crc and add two for id bytes
     canmes[1] = msg.can_id;
     canmes[0] = msg.can_id >> 8;
 
@@ -116,11 +113,9 @@ uint8_t BatteryPack::getcheck(can_frame &msg, int id) {
  */
 
 void BatteryPack::request_data() {
-
     if ( modulePollingCycle == 0xF ) {
         modulePollingCycle = 0;
     }
-
     for ( int m = 0; m < numModules; m++ ) {
         pollModuleFrame.can_id = 0x080 | (m);
         pollModuleFrame.can_dlc = 8;
@@ -136,32 +131,23 @@ void BatteryPack::request_data() {
             pollModuleFrame.data[5] = 0x01;
         }
         pollModuleFrame.data[6] = modulePollingCycle << 4;
-        if ( inStartup && ( modulePollingCycle == 2 )) {
+        if ( inStartup && modulePollingCycle == 2 ) {
             pollModuleFrame.data[6] = pollModuleFrame.data[6] + 0x04;
         }
         pollModuleFrame.data[7] = getcheck(pollModuleFrame, m);
         send_message(&pollModuleFrame);
     }
-
-    if ( inStartup && ( modulePollingCycle == 2 )) {
+    if ( inStartup && modulePollingCycle == 2 ) {
         inStartup = false;
     }
-
     modulePollingCycle++;
-
     return;
-
 }
 
 void BatteryPack::read_message() {
-
-    //printf("Pack %d : checking for messages\n", id);
-
     extern State state;
     can_frame frame;
-
     if ( CAN.readMessage(&frame) == MCP2515::ERROR_OK ) {
-
         /*
         printf("Pack %d received message : id:%02X : ", id, frame.can_id);
         for ( int i = 0; i < frame.can_dlc; i++ ) {
@@ -169,19 +155,16 @@ void BatteryPack::read_message() {
         }
         printf("\n");
         */
-
         // Temperature messages
-        if ( ( frame.can_id & 0xFF0 ) == 0x180 ) {
+        if ( (frame.can_id & 0xFF0) == 0x180 ) {
             decode_temperatures(&frame);
             state(E_TEMPERATURE_UPDATE);
         }
-
         // Voltage messages
         if (frame.can_id > 0x99 && frame.can_id < 0x180) {
             decode_voltages(&frame);
             state(E_CELL_VOLTAGE_UPDATE);
         }
-
     }
 }
 
@@ -267,7 +250,7 @@ float BatteryPack::get_lowest_cell_voltage() {
     float lowestCellVoltage = 10.0000f;
     for ( int m = 0; m < numModules; m++ ) {
         // skip modules with incomplete cell data
-        if ( ! modules[m].all_module_data_populated() ) {
+        if ( !modules[m].all_module_data_populated() ) {
             continue;
         }
         if ( modules[m].get_lowest_cell_voltage() < lowestCellVoltage ) {
@@ -279,7 +262,7 @@ float BatteryPack::get_lowest_cell_voltage() {
 
 // Return true if any cell in the pack is under min voltage
 bool BatteryPack::has_empty_cell() {
-    for ( int m = 0; m < numModules; m++ ){
+    for ( int m = 0; m < numModules; m++ ) {
         if ( modules[m].has_empty_cell() ) {
             return true;
         }
@@ -292,7 +275,7 @@ float BatteryPack::get_highest_cell_voltage() {
     float highestCellVoltage = 0.0000f;
     for ( int m = 0; m < numModules; m++ ) {
         // skip modules with incomplete cell data
-        if ( ! modules[m].all_module_data_populated() ) {
+        if ( !modules[m].all_module_data_populated() ) {
             continue;
         }
         if ( modules[m].get_highest_cell_voltage() > highestCellVoltage ) {
@@ -309,7 +292,7 @@ void BatteryPack::update_cell_delta() {
 
 // Return true if any cell in the pack is over max voltage
 bool BatteryPack::has_full_cell() {
-    for ( int m = 0; m < numModules; m++ ){
+    for ( int m = 0; m < numModules; m++ ) {
         if ( modules[m].has_full_cell() ) {
             return true;
         }
@@ -324,61 +307,55 @@ void BatteryPack::update_cell_voltage(int moduleId, int cellIndex, float newCell
 
 // Extract voltage readings from CAN message and updated stored values
 void BatteryPack::decode_voltages(can_frame *frame) {
-
-    //printf("    Inside decode_voltages\n");
-
     int messageId = (frame->can_id & 0x0F0);
     int moduleId = (frame->can_id & 0x00F);
-
-    //printf("    decode voltages :: messageId : %02X, moduleId : %02X\n", messageId, moduleId);
 
     switch (messageId) {
         case 0x000:
             // error = msg.buf[0] + (msg.buf[1] << 8) + (msg.buf[2] << 16) + (msg.buf[3] << 24);
             set_pack_error_status(frame->data[0] + (frame->data[1] << 8) + (frame->data[2] << 16) + (frame->data[3] << 24));
             // balstat = (frame.data[5] << 8) + frame.data[4];
-            set_pack_balance_status( (frame->data[5] << 8) + frame->data[4] );
+            set_pack_balance_status((frame->data[5] << 8) + frame->data[4]);
             break;
         case 0x020:
-            modules[moduleId].update_cell_voltage(0, float(frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000);
-            modules[moduleId].update_cell_voltage(1, float(frame->data[2] + (frame->data[3] & 0x3F) * 256) / 1000);
-            modules[moduleId].update_cell_voltage(2, float(frame->data[4] + (frame->data[5] & 0x3F) * 256) / 1000);
+            modules[moduleId].update_cell_voltage(0, static_cast<float>((frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000));
+            modules[moduleId].update_cell_voltage(1, static_cast<float>((frame->data[2] + (frame->data[3] & 0x3F) * 256) / 1000));
+            modules[moduleId].update_cell_voltage(2, static_cast<float>((frame->data[4] + (frame->data[5] & 0x3F) * 256) / 1000));
             break;
         case 0x30:
-            modules[moduleId].update_cell_voltage(3, float(frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000);
-            modules[moduleId].update_cell_voltage(4, float(frame->data[2] + (frame->data[3] & 0x3F) * 256) / 1000);
-            modules[moduleId].update_cell_voltage(5, float(frame->data[4] + (frame->data[5] & 0x3F) * 256) / 1000);
+            modules[moduleId].update_cell_voltage(3, static_cast<float>((frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000));
+            modules[moduleId].update_cell_voltage(4, static_cast<float>((frame->data[2] + (frame->data[3] & 0x3F) * 256) / 1000));
+            modules[moduleId].update_cell_voltage(5, static_cast<float>((frame->data[4] + (frame->data[5] & 0x3F) * 256) / 1000));
             break;
         case 0x40:
-            modules[moduleId].update_cell_voltage(6, float(frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000);
-            modules[moduleId].update_cell_voltage(7, float(frame->data[2] + (frame->data[3] & 0x3F) * 256) / 1000);
-            modules[moduleId].update_cell_voltage(8, float(frame->data[4] + (frame->data[5] & 0x3F) * 256) / 1000);
+            modules[moduleId].update_cell_voltage(6, static_cast<float>((frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000));
+            modules[moduleId].update_cell_voltage(7, static_cast<float>((frame->data[2] + (frame->data[3] & 0x3F) * 256) / 1000));
+            modules[moduleId].update_cell_voltage(8, static_cast<float>((frame->data[4] + (frame->data[5] & 0x3F) * 256) / 1000));
             break;
         case 0x50:
-            modules[moduleId].update_cell_voltage(9, float(frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000);
-            modules[moduleId].update_cell_voltage(10, float(frame->data[2] + (frame->data[3] & 0x3F) * 256) / 1000);
-            modules[moduleId].update_cell_voltage(11, float(frame->data[4] + (frame->data[5] & 0x3F) * 256) / 1000);
+            modules[moduleId].update_cell_voltage(9, static_cast<float>((frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000));
+            modules[moduleId].update_cell_voltage(10, static_cast<float>((frame->data[2] + (frame->data[3] & 0x3F) * 256) / 1000));
+            modules[moduleId].update_cell_voltage(11, static_cast<float>((frame->data[4] + (frame->data[5] & 0x3F) * 256) / 1000));
             break;
         case 0x60:
-            modules[moduleId].update_cell_voltage(12, float(frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000);
-            modules[moduleId].update_cell_voltage(13, float(frame->data[2] + (frame->data[3] & 0x3F) * 256) / 1000);
-            modules[moduleId].update_cell_voltage(14, float(frame->data[4] + (frame->data[5] & 0x3F) * 256) / 1000);
+            modules[moduleId].update_cell_voltage(12, static_cast<float>((frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000));
+            modules[moduleId].update_cell_voltage(13, static_cast<float>((frame->data[2] + (frame->data[3] & 0x3F) * 256) / 1000));
+            modules[moduleId].update_cell_voltage(14, static_cast<float>((frame->data[4] + (frame->data[5] & 0x3F) * 256) / 1000));
             break;
         case 0x70:
-            modules[moduleId].update_cell_voltage(15, float(frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000);
+            modules[moduleId].update_cell_voltage(15, static_cast<float>((frame->data[0] + (frame->data[1] & 0x3F) * 256) / 1000));
             break;
         default:
             break;
     }
 
     // Check if this update has left us with a complete set of voltage/temperature readings
-    if ( ! modules[moduleId].all_module_data_populated() ) {
+    if ( !modules[moduleId].all_module_data_populated() ) {
         modules[moduleId].check_if_module_data_is_populated();
     }
 
     update_voltage();
     update_cell_delta();
-
 }
 
 
@@ -438,13 +415,13 @@ void BatteryPack::decode_temperatures(can_frame *temperatureMessageFrame) {
 // Prevent the contactors for this pack from closing
 void BatteryPack::enable_inhibit_contactor_close() {
     contactorsAreInhibited = true;
-    //gpio_put();
+    // gpio_put();
 }
 
 // Allow the contactors for this pack to close
 void BatteryPack::disable_inhibit_contactor_close() {
     contactorsAreInhibited = false;
-    //gpio_put();
+    // gpio_put();
 }
 
 // Return true if the contactors for this pack are currently not allowed to close

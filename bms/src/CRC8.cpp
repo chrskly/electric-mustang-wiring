@@ -20,7 +20,7 @@
 // This code was directly borrowed from the SimpBMS project over here :
 //   https://github.com/Tom-evnut/BMWPhevBMS.git
 
-#include "CRC8.h"
+#include "include/CRC8.h"
 
 CRC8::CRC8(void) { }
 
@@ -28,12 +28,11 @@ void CRC8::begin(void) {
     crc remainder;
     for (int dividend = 0; dividend < 256; ++dividend) {
         remainder = dividend << (WIDTH - 8);
-        
+
         for (uint8_t bit = 8; bit > 0; --bit) {
             if (remainder & TOPBIT) {
                 remainder = (remainder << 1) ^ POLYNOMIAL;
-            }
-            else {
+            } else {
                 remainder = (remainder << 1);
             }
         }

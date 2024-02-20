@@ -18,17 +18,14 @@
  */
 
 #include <stdio.h>
-#include "pico/stdlib.h"
-
 #include <stdexcept>
-
+#include "include/comms.h"
+#include "pico/stdlib.h"
 #include "settings.h"
-#include "comms.h"
-#include "statemachine.h"
-#include "battery.h"
-#include "pack.h"
+#include "include/statemachine.h"
+#include "include/battery.h"
+#include "include/pack.h"
 
-using namespace std;
 
 extern MCP2515 mainCAN;
 extern Battery battery;
@@ -40,7 +37,7 @@ extern Battery battery;
 //
 //// ----
 
-//struct can_frame pollModuleFrame;
+// struct can_frame pollModuleFrame;
 
 struct repeating_timer pollModuleTimer;
 
@@ -101,10 +98,8 @@ struct can_frame limitsFrame;
 struct repeating_timer limitsMessageTimer;
 
 bool send_limits_message(struct repeating_timer *t) {
-
     limitsFrame.can_id = BMS_LIMITS_MSG_ID;
     limitsFrame.can_dlc = 8;
-
     limitsFrame.data[0] = (uint8_t)( battery.get_max_voltage() * 10 ) && 0xFF;
     limitsFrame.data[1] = (uint8_t)( battery.get_max_voltage() * 10 ) >> 8;
     limitsFrame.data[2] = (uint8_t)( battery.get_max_charge_current() * 10 ) && 0xFF;
@@ -113,9 +108,7 @@ bool send_limits_message(struct repeating_timer *t) {
     limitsFrame.data[5] = (uint8_t)( battery.get_max_discharge_current() * 10 ) >> 8;
     limitsFrame.data[6] = (uint8_t)( battery.get_min_voltage() * 10 ) && 0xFF;
     limitsFrame.data[7] = (uint8_t)( battery.get_min_voltage() * 10 ) >> 8;
-
     mainCAN.sendMessage(&limitsFrame);
-
     return true;
 }
 
@@ -148,19 +141,16 @@ struct can_frame socFrame;
 struct repeating_timer socMessageTimer;
 
 bool send_soc_message(struct repeating_timer *t) {
-
     socFrame.can_id = BMS_SOC_MSG_ID;
     socFrame.can_dlc = 8;
-
-    socFrame.data[0] = (uint8_t)battery.get_soc() && 0xFF;
-    socFrame.data[1] = (uint8_t)battery.get_soc() >> 8;
-    socFrame.data[2] = 0x00; // not implemented
-    socFrame.data[3] = 0x00; // not implemented
-    socFrame.data[4] = (uint8_t)( battery.get_soc() * 100 ) && 0xFF;
-    socFrame.data[5] = (uint8_t)( battery.get_soc() * 100 ) >> 8;
-    socFrame.data[6] = 0x00; // unused
-    socFrame.data[7] = 0x00; // unused
-
+    socFrame.data[0] = (uint8_t)battery.get_soc() && 0xFF;            //
+    socFrame.data[1] = (uint8_t)battery.get_soc() >> 8;               //
+    socFrame.data[2] = 0x00;                                          // not implemented
+    socFrame.data[3] = 0x00;                                          // not implemented
+    socFrame.data[4] = (uint8_t)( battery.get_soc() * 100 ) && 0xFF;  //
+    socFrame.data[5] = (uint8_t)( battery.get_soc() * 100 ) >> 8;     //
+    socFrame.data[6] = 0x00;                                          // unused
+    socFrame.data[7] = 0x00;                                          // unused
     mainCAN.sendMessage(&socFrame);
     return true;
 }
@@ -190,10 +180,8 @@ struct can_frame statusFrame;
 struct repeating_timer statusMessageTimer;
 
 bool send_status_message(struct repeating_timer *t) {
-
     statusFrame.can_id = BMS_STATUS_MSG_ID;
     statusFrame.can_dlc = 8;
-
     statusFrame.data[0] = (uint8_t)( battery.get_voltage() * 100 ) && 0xFF;
     statusFrame.data[1] = (uint8_t)( battery.get_voltage() * 100 ) >> 8;
     statusFrame.data[2] = (uint8_t)( battery.get_amps() * 10 ) && 0xFF;
@@ -202,7 +190,6 @@ bool send_status_message(struct repeating_timer *t) {
     statusFrame.data[5] = (uint8_t)battery.get_highest_cell_temperature() >> 8;
     statusFrame.data[6] = (uint8_t)( battery.shuntVoltage1 * 100 ) && 0xFF;
     statusFrame.data[7] = (uint8_t)( battery.shuntVoltage1 * 100 ) >> 8;
-
     mainCAN.sendMessage(&statusFrame);
     return true;
 }
@@ -253,10 +240,8 @@ struct can_frame alarmFrame;
 struct repeating_timer alarmMessageTimer;
 
 bool send_alarm_message(struct repeating_timer *t) {
-
     alarmFrame.can_id = BMS_ALARM_MSG_ID;
     alarmFrame.can_dlc = 3;
-
     alarmFrame.data[0] = 0x00;
 
     // Set undervolt bit (3)
@@ -309,57 +294,44 @@ struct repeating_timer handleMainCANMessageTimer;
 
 
 bool handle_main_CAN_messages(struct repeating_timer *t) {
-
     if ( mainCAN.readMessage(&m) == MCP2515::ERROR_OK ) {
-
         switch ( m.can_id ) {
-
             // ISA shunt amps
             case 0x521:
-                battery.amps = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) );
+                battery.amps = (uint16_t)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) );
                 break;
-
             // ISA shunt voltage 1
             case 0x522:
-                battery.shuntVoltage1 = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
+                battery.shuntVoltage1 = (uint16_t)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
                 break;
-
             // ISA shunt voltage 2
             case 0x523:
-                battery.shuntVoltage2 = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
+                battery.shuntVoltage2 = (uint16_t)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
                 break;
-
             // ISA shunt voltage 3
             case 0x524:
-                battery.shuntVoltage3 = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
+                battery.shuntVoltage3 = (uint16_t)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
                 break;
-
             // ISA shunt temperature
             case 0x525:
-                battery.shuntTemperature = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 10;
+                battery.shuntTemperature = (uint16_t)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 10;
                 break;
-
             // ISA shunt kilowatts
             case 0x526:
-                battery.watts = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
+                battery.watts = (uint16_t)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) ) / 1000.0f;
                 break;
-
             // ISA shunt amp-hours
             case 0x527:
                 battery.ampSeconds = (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]);
                 break;
-
             // ISA shunt kilowatt-hours
             case 0x528:
-                battery.wattHours = (long)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) );
+                battery.wattHours = (uint16_t)( (m.data[5] << 24) | (m.data[4] << 16) | (m.data[3] << 8) | (m.data[2]) );
                 break;
-
             default:
                 break;
-
         }
     }
-
     return true;
 }
 

@@ -20,15 +20,13 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 
-#include "led.h"
-
-using namespace std;
+#include "include/led.h"
 
 
 // Switch status light to a different mode
 void StatusLight::led_set_mode(LED_MODE newMode) {
     printf("Setting LED mode %d\n", newMode);
-    switch( newMode ) {
+    switch (newMode) {
         case STANDBY:
             printf("Switch status light to mode STANDBY\n");
             LEDonDuration = 1;
@@ -50,7 +48,6 @@ void StatusLight::led_set_mode(LED_MODE newMode) {
             LEDoffDuration = 1;
             break;
     }
-
 }
 
 void StatusLight::led_blink() {
@@ -60,7 +57,7 @@ void StatusLight::led_blink() {
         if ( LEDcounter > LEDonDuration ) {
             LEDcounter = 0;
             if ( LEDoffDuration > 0 ) {
-                gpio_put(PICO_DEFAULT_LED_PIN, 0);                
+                gpio_put(PICO_DEFAULT_LED_PIN, 0);
                 LEDon = false;
             }
         }

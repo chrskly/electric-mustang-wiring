@@ -17,19 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#ifndef BMS_SRC_SETTINGS_H_
+#define BMS_SRC_SETTINGS_H_
 
 #define VERSION 1.0
 
 // Serial port
 #define UART_ID      uart0
 #define BAUD_RATE   115200
-#define UART_TX_PIN      0 // pin 1
-#define UART_RX_PIN      1 // pin 2
+#define UART_TX_PIN      0  // pin 1
+#define UART_RX_PIN      1  // pin 2
 
 
-//#define NUM_PACKS         2                        // The total number of paralleled packs in this battery
+// #define NUM_PACKS         2                        // The total number of paralleled packs in this battery
 #define NUM_PACKS         1
 #define CELLS_PER_MODULE 16                        // The number of cells in each module
 #define TEMPS_PER_MODULE  4                        // The number of temperature sensors in each module
@@ -43,8 +43,8 @@
 #define SAFE_VOLTAGE_DELTA_BETWEEN_PACKS 0.01      // When closing contactors, the voltage difference between the packs shall not
                                                    // be greater than this voltage, in volts.
 
-//const int CS_PINS[2] = { 20, 15 };               // Chip select pins for the CAN controllers for each battery pack.
-//const int CS_PINS[2] = { 15, 15 };
+// const int CS_PINS[2] = { 20, 15 };               // Chip select pins for the CAN controllers for each battery pack.
+// const int CS_PINS[2] = { 15, 15 };
 const int CS_PINS[1] = { 15, };
 
 // Outputs
@@ -63,19 +63,19 @@ const int INHIBIT_CONTACTOR_PINS[2] = { 2, 3 };    // Low-side switch to disallo
 
 #define SPI_PORT      spi0
 
-#define SPI_MISO        16 // pin 21
-#define SPI_CLK         18 // pin 24
-#define SPI_MOSI        19 // pin 25
+#define SPI_MISO        16  // pin 21
+#define SPI_CLK         18  // pin 24
+#define SPI_MOSI        19  // pin 25
 
 // mainNet
-#define MAIN_CAN_CS     17 // pin 22
+#define MAIN_CAN_CS     17  // pin 22
 
-#define CAN_CLK_PIN     21 // pin 27
+#define CAN_CLK_PIN     21  // pin 27
 
 // The capacity of the battery pack
-#define BATTERY_CAPACITY_WH 14800   // 7.4kWh usable per pack, x2 packs
-#define BATTERY_CAPACITY_AS 187,200 // 26Ah per pack (93,600 As), x2 packs
-#define CALCULATE_SOC_FROM 0        // Should we calculate SoC from amp seconds or kWh? 0 = As, else kWh
+#define BATTERY_CAPACITY_WH 14800    // 7.4kWh usable per pack, x2 packs
+#define BATTERY_CAPACITY_AS 187200   // 26Ah per pack (93,600 As), x2 packs
+#define CALCULATE_SOC_FROM 0         // Should we calculate SoC from amp seconds or kWh? 0 = As, else kWh
 
 // Official min pack voltage = 269V. 269 / 6 / 16 = 2.8020833333V
 #define CELL_EMPTY_VOLTAGE 2.9
@@ -104,6 +104,4 @@ const int INHIBIT_CONTACTOR_PINS[2] = { 2, 3 };    // Low-side switch to disallo
 #define CAN_ID_ISA_SHUNT_AH 0x527                   // Message ISA shunt sends which contains Ah data.
 #define CAN_ID_ISA_SHUNT_WH 0x528                   // Message ISA shunt sends which contains Wh data.
 
-#endif
-
-
+#endif  // BMS_SRC_SETTINGS_H_

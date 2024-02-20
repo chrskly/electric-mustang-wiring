@@ -17,23 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-enum Event {
-    E_TEMPERATURE_UPDATE,  // a battery temperature update has been received
-    E_CELL_VOLTAGE_UPDATE, // a cell voltage update has been received
-    E_IGNITION_ON,         // Ignition was turned on
-    E_IGNITION_OFF,        // Ignition was turned off
-    E_CHARGING_INITIATED,  // charging has been initiated
-    E_CHARGING_TERMINATED, // charging has stopped
-    E_EMERGENCY_SHUTDOWN,  //
+// This code was directly borrowed from the SimpBMS project over here :
+//   https://github.com/Tom-evnut/BMWPhevBMS.git
+
+
+#ifndef BMS_SRC_INCLUDE_CRC8_H_
+#define BMS_SRC_INCLUDE_CRC8_H_
+
+#include <stdint.h>
+
+typedef uint8_t crc;
+#define POLYNOMIAL 0x1D
+#define WIDTH  (8 * sizeof(crc))
+#define TOPBIT (1 << (WIDTH - 1))
+
+class CRC8 {
+ public:
+    CRC8();
+    void begin();
+    crc get_crc8(uint8_t const message[], int nBytes, uint8_t final);
+ private:
+    uint8_t crcTable[256];
 };
 
-typedef void (*State)(Event);
-
-void state_standby(Event event);
-void state_drive(Event event);
-void state_charging(Event event);
-void state_batteryEmpty(Event event);
-void state_overTempFault(Event event);
-void state_illegalStateTransitionFault(Event event);
-
-
+#endif  // BMS_SRC_INCLUDE_CRC8_H_

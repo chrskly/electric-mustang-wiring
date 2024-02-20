@@ -17,38 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef BMS_SRC_INCLUDE_INPUTS_H_
+#define BMS_SRC_INCLUDE_INPUTS_H_
 
-#ifndef LED_H
-#define LED_H
+void ignition_on_callback(uint gpio, uint32_t events);
+void enable_listen_for_ignition_signal();
 
-enum LED_MODE {
-    STANDBY,
-    DRIVE,
-    CHARGING,
-    FAULT
-};
+void charge_enable_callback(uint gpio, uint32_t events);
+void enable_listen_for_charge_enable_signal();
 
-
-class StatusLight {
-
-    private:
-        bool LEDon;
-        int LEDcounter;
-        int LEDonDuration;
-        int LEDoffDuration;
-
-
-    public:
-        void led_set_mode(LED_MODE newMode);
-        void led_blink();
-        bool process_led_blink_step();
-
-};
-
-
-
-void enable_led_blink();
-
-#endif
-
-
+#endif  // BMS_SRC_INCLUDE_INPUTS_H_

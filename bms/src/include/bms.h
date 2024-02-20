@@ -17,29 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// This code was directly borrowed from the SimpBMS project over here :
-//   https://github.com/Tom-evnut/BMWPhevBMS.git
+#ifndef BMS_SRC_INCLUDE_BMS_H_
+#define BMS_SRC_INCLUDE_BMS_H_
 
-#include <stdint.h>
-
-#ifndef CRC8_H
-#define CRC8_H
-
-typedef uint8_t crc;
-#define POLYNOMIAL 0x1D
-#define WIDTH  (8 * sizeof(crc))
-#define TOPBIT (1 << (WIDTH - 1))
-
-class CRC8 {
-    public:
-        CRC8();
-        void begin();
-        crc get_crc8(uint8_t const message[], int nBytes, uint8_t final);
- 
-    private:
-        uint8_t crcTable[256];
-  
-
-};
-
-#endif
+#endif  // BMS_SRC_INCLUDE_BMS_H_

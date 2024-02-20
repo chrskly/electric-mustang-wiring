@@ -17,14 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using namespace std;
-
 #include <stdio.h>
 
-#include "statemachine.h"
-#include "battery.h"
-#include "led.h"
-#include "comms.h"
+#include "include/statemachine.h"
+#include "include/battery.h"
+#include "include/led.h"
+#include "include/comms.h"
 
 extern Battery battery;
 extern State state;
@@ -41,9 +39,7 @@ extern StatusLight statusLight;
  * charge inhibit : off
  */
 void state_standby(Event event) {
-
     switch (event) {
-
         case E_TEMPERATURE_UPDATE:
             // Battery is overheating. Stop everything.
             if ( battery.has_temperature_sensor_over_max() ) {
@@ -54,7 +50,6 @@ void state_standby(Event event) {
                 state = state_overTempFault;
                 break;
             }
-
         case E_CELL_VOLTAGE_UPDATE:
             // Battery is empty. Disallow driving.
             if ( battery.has_empty_cell() ) {
@@ -74,7 +69,6 @@ void state_standby(Event event) {
                 battery.inhibit_contactor_close();
             }
             break;
-
         case E_IGNITION_ON:
             /* Packs are imbalanced. Decide which contactor(s) to allow to 
              * close. Since we're going into drive mode, we want to pick the
@@ -87,11 +81,9 @@ void state_standby(Event event) {
             statusLight.led_set_mode(DRIVE);
             state = state_drive;
             break;
-
         case E_IGNITION_OFF:
             // Already in standby state, nothing to do.
             break;
-
         case E_CHARGING_INITIATED:
             /* If the batteries are not warm enough to be charged, turn on the
              * battery heater, and disallow charging until they're warm enough.
@@ -104,17 +96,13 @@ void state_standby(Event event) {
             statusLight.led_set_mode(CHARGING);
             state = state_charging;
             break;
-
         case E_CHARGING_TERMINATED:
             break;
-
         case E_EMERGENCY_SHUTDOWN:
             break;
-
         default:
             printf("Received unknown event");
     }
-
 }
 
 /*
@@ -127,9 +115,7 @@ void state_standby(Event event) {
  * charge inhibit : off
  */
 void state_drive(Event event) {
-
     switch (event) {
-
         case E_TEMPERATURE_UPDATE:
             // Battery is overheating. Stop everything.
             if ( battery.has_temperature_sensor_over_max() ) {
@@ -140,11 +126,10 @@ void state_drive(Event event) {
                 state = state_overTempFault;
                 break;
             }
-
         case E_CELL_VOLTAGE_UPDATE:
             // Battery is full.
             // Can we disable regen?
-            //if ( battery.has_full_cell() ) { }
+            // if ( battery.has_full_cell() ) { }
 
             /* Battery is empty. Disallow driving (force car into neutral). We
              * cannot open the contactors as this could blow up the inverter.
@@ -156,7 +141,6 @@ void state_drive(Event event) {
                 state = state_batteryEmpty;
                 break;
             }
-
             /* If we're driving on a subset of pack(s), and we've driven down
              * the high pack(s) enough that its/their voltage matches the low
              * pack(s), allow the contactors to close on the low pack(s).
@@ -164,19 +148,15 @@ void state_drive(Event event) {
             if ( battery.one_or_more_contactors_inhibited() ) {
                 battery.disable_inhibit_for_drive();
             }
-
             break;
-
         case E_IGNITION_ON:
             // Already in drive mode, nothing to do.
             break;
-
         case E_IGNITION_OFF:
             printf("Switching to state : standby, reason : ignition turned off\n");
             statusLight.led_set_mode(STANDBY);
             state = state_standby;
             break;
-
         case E_CHARGING_INITIATED:
             /* If we're driving around with some of the packs inhibited, and we
              * want to go directly into charge mode, dealing with the contactors
@@ -193,7 +173,6 @@ void state_drive(Event event) {
                 state = state_illegalStateTransitionFault;
                 break;
             }
-
             /* Lets assume that we're not in motion (hopefully a safe 
              * assumption). All contactors are already closed so we can just 
              * switch straight into charge mode.
@@ -203,18 +182,14 @@ void state_drive(Event event) {
             statusLight.led_set_mode(CHARGING);
             state = state_charging;
             break;
-
         case E_CHARGING_TERMINATED:
             break;
-
         case E_EMERGENCY_SHUTDOWN:
             // Tell inverter to shut down + short sleep.
             break;
-
         default:
             printf("Received unknown event\n");
     }
-
 }
 
 /*
@@ -227,9 +202,7 @@ void state_drive(Event event) {
  * charge inhibit : off
  */
 void state_charging(Event event) {
-
     switch (event) {
-
         case E_TEMPERATURE_UPDATE:
             // Battery is overheating. Stop everything.
             if ( battery.has_temperature_sensor_over_max() ) {
@@ -240,54 +213,44 @@ void state_charging(Event event) {
                 state = state_overTempFault;
                 break;
             }
-
             // If we're waiting on the battery to warm, and it has, allow charging
-            if ( battery.heater_enabled() && ! battery.too_cold_to_charge() ) {
+            if ( battery.heater_enabled() && !battery.too_cold_to_charge() ) {
                 battery.disable_heater();
                 battery.disable_inhibit_charge();
             }
-
             /* Deal with the unlikely scenario where the battery gets too cold
              * mid-charge. Enable heater, block charging.
              */
-            if ( ! battery.heater_enabled() && battery.too_cold_to_charge() ) {
+            if ( !battery.heater_enabled() && battery.too_cold_to_charge() ) {
                 battery.enable_inhibit_charge();
                 battery.enable_heater();
             }
-
             // Recalculate max charging current
             battery.update_max_charge_current();
             break;
-
         case E_CELL_VOLTAGE_UPDATE:
             /* Prevent cells from getting over-charged */
             if ( battery.has_full_cell() ) {
                 battery.enable_inhibit_charge();
             }
             break;
-
         case E_IGNITION_ON:
             /* We're going to continue to charge so we should prevent the car
              * from driving away.
              */
             battery.enable_inhibit_drive();
             break;
-
         case E_IGNITION_OFF:
             battery.disable_inhibit_drive();
             break;
-
         case E_CHARGING_INITIATED:
             // We're already charging. Nothing to do.
             break;
-
         case E_CHARGING_TERMINATED:
             // In case we were in the process of heating the battery
             battery.disable_heater();
             battery.disable_inhibit_charge();
-
             battery.disable_inhibit_drive();
-
             /* Did we start charging with an empty battery, but cancel the
              * charge before actually putting any energy into the battery?
              */
@@ -298,14 +261,12 @@ void state_charging(Event event) {
                 state = state_batteryEmpty;
                 break;
             }
-
             /* If battery is full (i.e., we've charged to 100%), reset kWh/Ah
              * counters on the ISA shunt.
              */
             if ( battery.has_full_cell() ) {
                 send_ISA_reset_message();
             }
-
             // If ignition is already on, switch directly to drive mode
             if ( battery.ignition_is_on() ) {
                 printf("Switching to state : drive, reason : charging terminated + ignition on\n");
@@ -313,15 +274,12 @@ void state_charging(Event event) {
                 state = state_drive;
                 break;
             }
-
             printf("Switching to state : standby, reason : charging terminated\n");
             statusLight.led_set_mode(STANDBY);
             state = state_standby;
             break;
-
         case E_EMERGENCY_SHUTDOWN:
             break;
-
         default:
             printf("Received unknown event\n");
     }
@@ -338,9 +296,7 @@ void state_charging(Event event) {
  * charge inhibit : off
  */
 void state_batteryEmpty(Event event) {
-
     switch (event) {
-
         case E_TEMPERATURE_UPDATE:
             // Battery is overheating. Stop everything.
             if ( battery.has_temperature_sensor_over_max() ) {
@@ -351,10 +307,9 @@ void state_batteryEmpty(Event event) {
                 state = state_overTempFault;
                 break;
             }
-
         case E_CELL_VOLTAGE_UPDATE:
             // After resting for a while, the voltage may rise again slightly.
-            if ( ! battery.has_empty_cell() ) {
+            if ( !battery.has_empty_cell() ) {
                 // allow driving again
                 battery.disable_inhibit_drive();
 
@@ -368,21 +323,17 @@ void state_batteryEmpty(Event event) {
                     state = state_drive;
                     break;
                 }
-
                 printf("Switching to state : standby, reason : battery level rose\n");
                 statusLight.led_set_mode(STANDBY);
                 state = state_standby;
             }
             break;
-
         case E_IGNITION_ON:
             // Disallow driving.
             battery.enable_inhibit_drive();
             break;
-
         case E_IGNITION_OFF:
             break;
-
         case E_CHARGING_INITIATED:
             // Is it too cold to charge?
             if ( battery.too_cold_to_charge() ) {
@@ -393,13 +344,10 @@ void state_batteryEmpty(Event event) {
             statusLight.led_set_mode(CHARGING);
             state = state_charging;
             break;
-
         case E_CHARGING_TERMINATED:
             break;
-
         case E_EMERGENCY_SHUTDOWN:
             break;
-
         default:
             printf("Received unknown event");
     }
@@ -418,15 +366,12 @@ void state_batteryEmpty(Event event) {
  *   - Batteries are too hot
  */
 void state_overTempFault(Event event) {
-
     switch (event) {
-
         case E_TEMPERATURE_UPDATE:
             /* Temperature has dropped below max limit. We need to figure out
              * which state to switch to based on the input signals
              */
-            if ( ! battery.has_temperature_sensor_over_max() ) {
-
+            if ( !battery.has_temperature_sensor_over_max() ) {
                 // Charge mode overrides drive mode
                 if ( battery.charge_enable_is_on() ) {
                     if ( battery.one_or_more_contactors_inhibited() ) {
@@ -438,7 +383,6 @@ void state_overTempFault(Event event) {
                     state = state_charging;
                     break;
                 }
-
                 // Drive mode
                 if ( battery.ignition_is_on() ) {
                     if ( battery.one_or_more_contactors_inhibited() ) {
@@ -451,7 +395,6 @@ void state_overTempFault(Event event) {
                     state = state_drive;
                     break;
                 }
-
                 // Standby mode
                 battery.disable_inhibit_drive();
                 battery.disable_inhibit_charge();
@@ -459,28 +402,20 @@ void state_overTempFault(Event event) {
                 statusLight.led_set_mode(STANDBY);
                 state = state_standby;
                 break;
-
             }
             break;
-
         case E_CELL_VOLTAGE_UPDATE:
             break;
-
         case E_IGNITION_ON:
             break;
-
         case E_IGNITION_OFF:
             break;
-
         case E_CHARGING_INITIATED:
             break;
-
         case E_CHARGING_TERMINATED:
             break;
-
         case E_EMERGENCY_SHUTDOWN:
             break;
-
         default:
             printf("Received unknown event\n");
     }
@@ -500,37 +435,29 @@ void state_overTempFault(Event event) {
  *   - We tried to go straight from drive to charge with imbalanced packs
  */
 void state_illegalStateTransitionFault(Event event) {
-
     switch (event) {
-
         case E_TEMPERATURE_UPDATE:
             break;
-
         case E_CELL_VOLTAGE_UPDATE:
             break;
-
         case E_IGNITION_ON:
             break;
-
         case E_IGNITION_OFF:
             if ( battery.charge_enable_is_on() ) {
                 printf("Switching to state : standby, reason : ignition and charging off\n");
                 state = state_standby;
             }
             break;
-
         case E_CHARGING_INITIATED:
             break;
-
         case E_CHARGING_TERMINATED:
-            if ( ! battery.ignition_is_on() ) {
+            if ( !battery.ignition_is_on() ) {
                 printf("Switching to state : standby, reason : ignition and charging off\n");
                 state = state_standby;
             }
-
+            break;
         case E_EMERGENCY_SHUTDOWN:
             break;
-
         default:
             printf("Received unknown event\n");
     }

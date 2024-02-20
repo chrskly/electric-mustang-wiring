@@ -25,44 +25,32 @@
 
 #include <stdio.h>
 
-#include "module.h"
-#include "pack.h"
+#include "include/module.h"
+#include "include/pack.h"
 
-using namespace std;
 
-BatteryModule::BatteryModule(){}
+BatteryModule::BatteryModule() {}
 
-BatteryModule::BatteryModule (int _id, BatteryPack* _pack, int _numCells, int _numTemperatureSensors) {
-
-    //printf("Creating module (id:%d, pack:%d, cpm:%d, t:%d)\n", _id, _pack->id, _numCells, _numTemperatureSensors);
-
+BatteryModule::BatteryModule(int _id, BatteryPack* _pack, int _numCells, int _numTemperatureSensors) {
+    // printf("Creating module (id:%d, pack:%d, cpm:%d, t:%d)\n", _id, _pack->id, _numCells, _numTemperatureSensors);
     id = _id;
-
     // Point back to parent pack
     pack = _pack;
-
     // Initialise all cell voltages to zero
-    //numCells = _numCells;
+    // numCells = _numCells;
     numCells = 16;
-
     for ( int c = 0; c < numCells; c++ ) {
         cellVoltage[c] = 0.000f;
     }
-
     // Initialise temperature sensor readings to zero
     numTemperatureSensors = _numTemperatureSensors;
-
     for ( int t = 0; t < numTemperatureSensors; t++ ) {
         cellTemperature[t] = 0.000f;
     }
-
     allModuleDataPopulated = false;
-
-    //printf("    module %d creation complete\n", id);
-
 }
 
-void BatteryModule::print () {
+void BatteryModule::print() {
     printf("    Module id : %d (numCells : %d)\n", id, numCells);
     printf("        Cell Voltages : ");
     for ( int c = 0; c < numCells; c++ ) {
@@ -96,7 +84,7 @@ float BatteryModule::get_voltage() {
 float BatteryModule::get_lowest_cell_voltage() {
     float lowestCellVoltage = 10.0000f;
     for ( int c = 0; c < numCells; c++ ) {
-        //printf("Comparing %3.3f and %3.3f\n", cellVoltage[c], lowestCellVoltage);
+        // printf("Comparing %3.3f and %3.3f\n", cellVoltage[c], lowestCellVoltage);
         if ( cellVoltage[c] < lowestCellVoltage ) {
             lowestCellVoltage = cellVoltage[c];
         }
@@ -108,7 +96,7 @@ float BatteryModule::get_lowest_cell_voltage() {
 float BatteryModule::get_highest_cell_voltage() {
     float highestCellVoltage = 0.000f;
     for ( int c = 0; c < numCells; c++ ) {
-        //printf("module : comparing : %.4f to %.4f\n", cellVoltage[c], highestCellVoltage);
+        // printf("module : comparing : %.4f to %.4f\n", cellVoltage[c], highestCellVoltage);
         if ( cellVoltage[c] > highestCellVoltage ) {
             highestCellVoltage = cellVoltage[c];
         }
@@ -118,7 +106,7 @@ float BatteryModule::get_highest_cell_voltage() {
 
 // Update the voltage for a single cell
 void BatteryModule::update_cell_voltage(int cellIndex, float newCellVoltage) {
-    //printf("module : update_cell_voltage : %d : %.4f\n", cellIndex, newCellVoltage);
+    // printf("module : update_cell_voltage : %d : %.4f\n", cellIndex, newCellVoltage);
     cellVoltage[cellIndex] = newCellVoltage;
 }
 
@@ -208,7 +196,7 @@ bool BatteryModule::has_temperature_sensor_over_max() {
 // level, but below the critical level.
 bool BatteryModule::temperature_at_warning_level() {
     for ( int c = 0; c < numCells; c++ ) {
-        if ( cellTemperature[c] >= CELL_OVER_TEMPERATURE_WARNING_THRESHOLD and 
+        if ( cellTemperature[c] >= CELL_OVER_TEMPERATURE_WARNING_THRESHOLD &&
             cellTemperature[c] < CELL_OVER_TEMPERATURE_FAULT_THRESHOLD ) {
             return true;
         }
@@ -228,11 +216,11 @@ int BatteryModule::get_max_charge_current() {
     float highestTemperature = get_highest_temperature();
     if ( highestTemperature > CHARGE_THROTTLE_TEMP_LOW ) {
         float degreesOver = highestTemperature - CHARGE_THROTTLE_TEMP_LOW;
-        float scaleFactor = 1 - ( degreesOver / ( CHARGE_THROTTLE_TEMP_HIGH - CHARGE_THROTTLE_TEMP_LOW ) );
-        float chargeCurrent = ( scaleFactor * ( CHARGE_CURRENT_MAX - CHARGE_CURRENT_MIN ) ) + CHARGE_CURRENT_MIN;
-        return (int)chargeCurrent;
+        float scaleFactor = 1 - (degreesOver / (CHARGE_THROTTLE_TEMP_HIGH - CHARGE_THROTTLE_TEMP_LOW));
+        float chargeCurrent = (scaleFactor * (CHARGE_CURRENT_MAX - CHARGE_CURRENT_MIN)) + CHARGE_CURRENT_MIN;
+        return static_cast<int>(chargeCurrent);
     } else {
-        return (int)CHARGE_CURRENT_MAX;
+        return static_cast<int>(CHARGE_CURRENT_MAX);
     }
 }
 
