@@ -33,6 +33,7 @@ void setup() {
 
 void loop() {
 
+/*
     // FLASH overrides everything else
     if ( digitalRead(FLASH_IN_PIN) == 1 ) {
         if ( state != FLASH ) {
@@ -55,6 +56,9 @@ void loop() {
     else {
         do_off();
     }
+*/
+
+    do_flash();
 
 }
 
